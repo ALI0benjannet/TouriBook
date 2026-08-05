@@ -20,11 +20,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 
-class UserRole(str, enum.Enum):
-    tourist = "tourist"
-    admin = "admin"
-
-
 class BookingStatus(str, enum.Enum):
     pending = "pending"
     confirmed = "confirmed"
@@ -40,23 +35,6 @@ class PaymentStatus(str, enum.Enum):
     pending = "pending"
     succeeded = "succeeded"
     failed = "failed"
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    nom: Mapped[str] = mapped_column(String(100))
-    prenom: Mapped[str] = mapped_column(String(100))
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    mot_de_passe: Mapped[str] = mapped_column(String(255))
-    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.tourist)
-    preferences: Mapped[str | None] = mapped_column(Text, nullable=True)
-    date_inscription: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-
-    bookings = relationship("Booking", back_populates="user")
-    reviews = relationship("Review", back_populates="user")
-    favorites = relationship("Favorite", back_populates="user")
 
 
 class Category(Base):

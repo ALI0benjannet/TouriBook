@@ -1,0 +1,15 @@
+# ============================================
+# DÉPENDANCES DÉVELOPPEMENT
+# On récupère d'abord toutes les dépendances de production
+# ============================================
+
+-r requirements.txt
+
+# ============================================
+# OUTILS DE DÉVELOPPEMENT (versions majeures figées)
+# ============================================
+
+pytest~=8.3      # Framework de tests unitaires
+httpx~=0.28      # Client HTTP pour tester les API
+ruff~=0.9        # Linter ultra-rapide (remplace Flake8, isort)
+black~=25.1      # Formateur de code automatique

@@ -40,33 +40,33 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ## 🗄️ Phase 1 — Conception & base de données
 
-- [ ]  Concevoir le modèle de données (MCD / diagramme entité-association)
+- [x]  Concevoir le modèle de données (MCD / diagramme entité-association)
 
-- [ ]  Tables principales : `users`, `activities`, `categories`, `bookings`, `payments`, `reviews`, `availabilities`, `promo_codes`, `favorites`
-- [ ]  Définir les rôles utilisateurs (touriste, administrateur)
-- [ ]  Installer PostgreSQL et créer la base `touribook`
-- [ ]  Configurer SQLAlchemy + Alembic (première migration)
-- [ ]  Rédiger le dictionnaire de données
+- [x]  Tables principales : `users`, `activities`, `categories`, `bookings`, `payments`, `reviews`, `availabilities`, `promo_codes`, `favorites`
+- [x]  Définir les rôles utilisateurs (touriste, administrateur)
+- [x]  Installer PostgreSQL et créer la base `touribook`
+- [x]  Configurer SQLAlchemy + Alembic (première migration)
+- [x]  Rédiger le dictionnaire de données
 
 ---
 
 ## ⚙️ Phase 2 — Backend Python (FastAPI) : fondations
 
-- [ ]  Initialiser le projet FastAPI (structure `app/`, `models/`, `schemas/`, `routers/`, `services/`)
-- [ ]  Configurer la connexion à la base (SQLAlchemy session)
-- [ ]  Mettre en place la configuration via variables d'environnement (Pydantic Settings)
-- [ ]  Configurer CORS pour le frontend React
-- [ ]  Mettre en place la documentation auto (Swagger `/docs`)
-- [ ]  Configurer le logging et la gestion centralisée des erreurs
+- [x]  Initialiser le projet FastAPI (structure `app/`, `models/`, `schemas/`, `routers/`, `services/`)
+- [x]  Configurer la connexion à la base (SQLAlchemy session)
+- [x]  Mettre en place la configuration via variables d'environnement (Pydantic Settings)
+- [x]  Configurer CORS pour le frontend React
+- [x]  Mettre en place la documentation auto (Swagger `/docs`)
+- [x]  Configurer le logging et la gestion centralisée des erreurs
 
 ### 🔐 Authentification
 
-- [ ]  Modèle `User` + schéma Pydantic
-- [ ]  Endpoint `POST /auth/register` (inscription + hash bcrypt)
-- [ ]  Endpoint `POST /auth/login` (génération JWT access + refresh)
-- [ ]  Middleware / dépendance de vérification du token JWT
-- [ ]  Gestion des rôles (dépendance `require_admin`)
-- [ ]  Endpoint `GET /auth/me` (profil courant)
+- [x]  Modèle `User` + schéma Pydantic
+- [x]  Endpoint `POST /auth/register` (inscription + hash bcrypt)
+- [x]  Endpoint `POST /auth/login` (génération JWT access + refresh)
+- [x]  Middleware / dépendance de vérification du token JWT
+- [x]  Gestion des rôles (dépendance `require_admin`)
+- [x]  Endpoint `GET /auth/me` (profil courant)
 
 ---
 
