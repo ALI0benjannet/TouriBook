@@ -1,9 +1,33 @@
+import os
+from pathlib import Path
 from logging.config import fileConfig
+
+from dotenv import load_dotenv
+
+env_path = Path(__file__).resolve().parent.parent / ".env"
+# Try to read DATABASE_URL from .env directly (handles UTF-8 BOM reliably).
+db_url = None
+if env_path.exists():
+    text = env_path.read_text(encoding="utf-8")
+    if text.startswith('\ufeff'):
+        text = text.lstrip('\ufeff')
+    for line in text.splitlines():
+        if line.strip().startswith("DATABASE_URL="):
+            db_url = line.split("=", 1)[1].strip()
+            break
+else:
+    # fall back to environment
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=env_path)
+    db_url = os.getenv("DATABASE_URL")
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+from app.database import Base
+import app.models  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,7 +42,10 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+if db_url:
+    config.set_main_option("sqlalchemy.url", db_url)
+
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

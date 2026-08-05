@@ -1,16 +1,25 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from pydantic_settings import BaseSettings
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-class Settings(BaseSettings):
-    DATABASE_URL: str
-    SECRET_KEY: str
-    class Config:
-        env_file = ".env"
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
-settings = Settings()
-engine = create_engine(settings.DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Create engine and session only if DATABASE_URL is provided. This makes
+# importing app.database safe during Alembic runs when the env may not be
+# available or intentionally omitted. Alembic only needs `Base` for
+# autogeneration.
+if DATABASE_URL:
+    engine = create_engine(DATABASE_URL, echo=True, future=True)
+    SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+else:
+    engine = None
+    SessionLocal = None
+
 Base = declarative_base()
 
 def get_db():
