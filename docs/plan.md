@@ -70,14 +70,90 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ---
 
-## 🧩 Phase 3 — Backend : modules métier (API REST)
+## Phase 3 — Backend : authentification complète 
+
+### Service e-mail 
+
+- [x]  Configurer le service SMTP (Gmail app password / SendGrid) via variables d'env
+- [x]  Créer un `EmailService` réutilisable (envoi asynchrone / `BackgroundTasks`)
+- [x]  Créer les templates HTML : confirmation de compte, réinitialisation de mot de passe
+
+### Confirmation de compte par e-mail
+
+- [x]  Ajouter les champs `is_active` / `is_verified` + `email_verified_at` au modèle `User` (migration Alembic)
+- [x]  Modèle/table `email_verification_tokens` (token, user_id, expiration, used) — ou token JWT signé à durée courte
+- [x]  Envoyer l'e-mail de confirmation à l'inscription (`POST /auth/register`)
+- [x]  `GET|POST /auth/verify-email?token=...` (validation du token + activation du compte)
+- [x]  `POST /auth/resend-verification` (avec rate limiting)
+- [x]  Bloquer le login des comptes non vérifiés (message d'erreur explicite)
+
+### Mot de passe oublié / réinitialisation
+
+- [x]  Modèle/table `password_reset_tokens` (token hashé, expiration ~30 min, usage unique)
+- [x]  `POST /auth/forgot-password` (réponse toujours identique pour éviter l'énumération d'e-mails)
+- [x]  `POST /auth/reset-password` (token + nouveau mot de passe + politique de robustesse)
+- [x]  `POST /auth/change-password` (utilisateur connecté, vérif. ancien mot de passe)
+- [x]  Invalider les sessions / refresh tokens après reset
+
+### Sessions & sécurité
+
+- [x]  `POST /auth/refresh` (rotation du refresh token)
+- [x]  `POST /auth/logout` (révocation / blacklist du refresh token)
+- [x]  Rate limiting sur `/auth/login`, `/forgot-password`, `/resend-verification`
+- [x]  `PATCH /auth/me` (mise à jour du profil : nom, langue préférée, téléphone)
+- [x]  Créer un compte administrateur de départ (script de seed)
+- [x]  Tests pytest du parcours auth complet (register → verify → login → forgot → reset)
+
+---
+
+## ⚛️ Phase 4 — Frontend React : fondations 
+
+- [ ]  Initialiser le projet React (Vite + TypeScript)
+- [ ]  Configurer le routing (React Router) + structure de dossiers (`pages/`, `components/`, `features/`, `lib/`)
+- [ ]  Configurer Axios + intercepteurs (injection du JWT, refresh auto sur 401)
+- [ ]  Configurer React Query (cache et requêtes)
+- [ ]  Mettre en place le design system (Tailwind + shadcn/ui, thème, tokens)
+- [ ]  Layout responsive (ordinateur, tablette, smartphone) + Navbar / Footer
+- [ ]  Configurer i18n (FR / EN / AR + gestion RTL) et le sélecteur de langue
+- [ ]  Contexte d'authentification (stockage token, `useAuth`, routes protégées)
+- [ ]  Composants de garde : `ProtectedRoute` (touriste) et `AdminRoute` (rôle admin)
+- [ ]  Gestion globale des erreurs + notifications (toasts) + états de chargement
+- [ ]  Configurer `.env` frontend (URL de l'API) et le proxy de développement
+
+---
+
+## 👤 Phase 5 — Frontend : parcours d'authentification complet 
+
+
+### Espace client
+
+- [ ]  Page d'inscription (validation de formulaire : e-mail, mot de passe fort, confirmation)
+- [ ]  Écran « Vérifiez votre boîte mail » après inscription + bouton de renvoi
+- [ ]  Page de confirmation de compte (`/verify-email`) : succès, token expiré, token invalide
+- [ ]  Page de connexion (gestion des erreurs : identifiants invalides, compte non vérifié)
+- [ ]  Page « Mot de passe oublié » (saisie de l'e-mail + message de confirmation)
+- [ ]  Page « Réinitialiser le mot de passe » (`/reset-password?token=...`)
+- [ ]  Déconnexion + persistance de session au rechargement (refresh token)
+- [ ]  Page profil : informations personnelles + changement de mot de passe
+- [ ]  Traduction FR / EN / AR de tous les écrans d'auth (dont RTL)
+
+### Espace administrateur
+
+- [ ]  Page de connexion admin sécurisée (`/admin/login`)
+- [ ]  Redirection selon le rôle après connexion (touriste → accueil, admin → dashboard)
+- [ ]  Layout admin (sidebar + protection de toutes les routes `/admin/*`)
+- [ ]  Page 403 / accès refusé
+
+---
+
+## 🧩 Phase 6 — Backend : modules métier (API REST) 
 
 ### Activités & catégories
 
 - [ ]  CRUD catégories (`/categories`)
 - [ ]  CRUD activités (`/activities`) avec photos, prix, durée, description
-- [ ]  Recherche & filtrage (catégorie, localisation, prix)
-- [ ]  Endpoint détail activité `GET /activities/{id}`
+- [ ]  Recherche & filtrage (catégorie, localisation, prix) + pagination
+- [ ]  `GET /activities/{id}` (détail)
 - [ ]  Stockage des coordonnées GPS (latitude / longitude)
 
 ### Disponibilités
@@ -93,8 +169,8 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 ### Réservations
 
 - [ ]  Modèle `Booking` (activité, date, créneau, statut)
-- [ ]  Endpoint `POST /bookings` (création + vérif. disponibilité)
-- [ ]  Endpoint historique des réservations du touriste
+- [ ]  `POST /bookings` (création + vérification de disponibilité)
+- [ ]  Historique des réservations du touriste
 - [ ]  Gestion des statuts (en attente, confirmée, annulée)
 
 ### Codes promo
@@ -109,75 +185,62 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ---
 
-## 💳 Phase 4 — Paiement en ligne (Stripe)
+## 🖼️ Phase 7 — Frontend : catalogue & découverte
+
+- [ ]  Page d'accueil + liste de toutes les activités
+- [ ]  Barre de recherche et filtres (catégorie, localisation, prix)
+- [ ]  Page détail d'une activité (photos, prix, durée, disponibilité)
+- [ ]  Affichage de la localisation sur une carte (Leaflet / Google Maps)
+- [ ]  Bouton favoris + page « Mes favoris »
+- [ ]  Calendrier de sélection date & heure (créneaux disponibles)
+- [ ]  Panier / sélection d'une ou plusieurs activités
+
+---
+
+## 💳 Phase 8 — Paiement en ligne (Stripe)
+
+### Backend
 
 - [ ]  Créer un compte Stripe (mode test) + clés API
-- [ ]  Endpoint `POST /payments/create-intent` (montant total ou avance)
-- [ ]  Gérer le calcul du montant (avec code promo appliqué)
-- [ ]  Configurer le webhook Stripe (`payment_intent.succeeded`)
-- [ ]  Mettre à jour le statut de la réservation après paiement
-- [ ]  Enregistrer le paiement (complet / avance) en base
-- [ ]  Sécuriser les transactions (HTTPS obligatoire)
+- [ ]  `POST /payments/create-intent` (montant total ou avance)
+- [ ]  Calcul du montant (avec code promo appliqué)
+- [ ]  Webhook Stripe (`payment_intent.succeeded`)
+- [ ]  Mise à jour du statut de la réservation après paiement
+- [ ]  Enregistrement du paiement (complet / avance) en base
+- [ ]  Sécurisation des transactions (HTTPS, vérification de signature du webhook)
+
+### Frontend
+
+- [ ]  Tunnel de réservation (récapitulatif → paiement → confirmation)
+- [ ]  Intégration Stripe.js (total / avance) + champ code promo
+- [ ]  Écran de confirmation + affichage du QR Code
+- [ ]  Page historique des réservations (+ annulation)
 
 ---
 
-## 📧 Phase 5 — Services externes
+## 📧 Phase 9 — Services externes (réservation)
 
-- [ ]  Configurer le service SMTP (Gmail / SendGrid)
-- [ ]  E-mail automatique de confirmation après paiement
+- [ ]  E-mail automatique de confirmation de réservation après paiement (réutilise l'`EmailService` de la Phase 3)
 - [ ]  Générer un QR Code de validation (lib `qrcode`) rattaché à la réservation
-- [ ]  Endpoint admin de scan/validation du QR Code sur place
-- [ ]  Intégration cartographie (Google Maps API ou OpenStreetMap)
+- [ ]  Endpoint admin de scan / validation du QR Code sur place
+- [ ]  Intégration cartographie avancée (itinéraire, marqueurs multiples)
 
 ---
 
-## 🤖 Phase 6 — Fonctionnalités intelligentes (IA)
+## 🤖 Phase 10 — Fonctionnalités intelligentes (IA) 
 
 - [ ]  Collecter les données de préférences et l'historique de réservation
 - [ ]  Moteur de recommandation v1 (par règles : catégorie, budget, durée du séjour)
 - [ ]  Proposition d'activités similaires
 - [ ]  Suggestions selon la saison et les activités populaires
-- [ ]  Endpoint `GET /recommendations`
+- [ ]  `GET /recommendations`
+- [ ]  Section « recommandations personnalisées » côté frontend
 - [ ]  (Optionnel) Amélioration ML avec scikit-learn (filtrage collaboratif)
 
 ---
 
-## ⚛️ Phase 7 — Frontend React : fondations
+## 🛠️ Phase 11 — Frontend : Espace Administrateur 
 
-- [ ]  Initialiser le projet React (Vite + TypeScript)
-- [ ]  Configurer le routing (React Router)
-- [ ]  Configurer Axios + intercepteurs (injection du token JWT)
-- [ ]  Configurer React Query (cache et requêtes)
-- [ ]  Mettre en place le design system (Tailwind + composants)
-- [ ]  Layout responsive (ordinateur, tablette, smartphone)
-- [ ]  Configurer i18n (FR / EN / AR + gestion RTL pour l'arabe)
-- [ ]  Contexte d'authentification (stockage token, routes protégées)
-
----
-
-## 👤 Phase 8 — Frontend : Espace Client
-
-- [ ]  Pages inscription / connexion
-- [ ]  Page d'accueil + liste de toutes les activités
-- [ ]  Barre de recherche et filtres (catégorie, localisation, prix)
-- [ ]  Page détail d'une activité (photos, prix, durée, disponibilité)
-- [ ]  Affichage de la localisation sur une carte
-- [ ]  Bouton favoris + page « Mes favoris »
-- [ ]  Calendrier de sélection date & heure
-- [ ]  Panier / sélection d'une ou plusieurs activités
-- [ ]  Tunnel de réservation
-- [ ]  Intégration paiement Stripe (total / avance) + champ code promo
-- [ ]  Écran de confirmation + affichage du QR Code
-- [ ]  Page historique des réservations
-- [ ]  Formulaire de dépôt d'avis et de note
-- [ ]  Section recommandations personnalisées
-- [ ]  Sélecteur de langue
-
----
-
-## 🛠️ Phase 9 — Frontend : Espace Administrateur
-
-- [ ]  Page de connexion admin sécurisée
 - [ ]  Tableau de bord avec statistiques (réservations, chiffre d'affaires, activités populaires, nb clients, paiements complets/avances)
 - [ ]  Gestion des activités (ajouter / modifier / supprimer)
 - [ ]  Gestion des catégories
@@ -191,26 +254,26 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ---
 
-## 🧪 Phase 10 — Tests & qualité
+## 🧪 Phase 12 — Tests & qualité
 
 - [ ]  Tests unitaires backend (pytest)
 - [ ]  Tests d'intégration des endpoints API
 - [ ]  Tests frontend (Vitest / React Testing Library)
-- [ ]  Tests end-to-end (Playwright ou Cypress)
-- [ ]  Validation de la sécurité (JWT, protection des données, HTTPS)
+- [ ]  Tests end-to-end (Playwright ou Cypress) — parcours inscription → confirmation → réservation → paiement
+- [ ]  Validation de la sécurité (JWT, tokens de reset, protection des données, HTTPS)
 - [ ]  Tests de compatibilité navigateurs et responsive
 
 ---
 
-## 🚀 Phase 11 — Déploiement & mise en production
+## 🚀 Phase 13 — Déploiement & mise en production
 
 - [ ]  Dockeriser le backend et le frontend (`Dockerfile` + `docker-compose`)
 - [ ]  Mettre en place la CI/CD (GitHub Actions)
 - [ ]  Configurer HTTPS (certificat SSL)
 - [ ]  Déployer la base PostgreSQL (managed ou VPS)
-- [ ]  Mettre en place la sauvegarde des données (backups planifiés)
+- [ ]  Sauvegarde des données (backups planifiés)
 - [ ]  Déployer backend (Render / Railway / VPS) et frontend (Vercel / Netlify)
-- [ ]  Configurer les variables d'environnement de production
+- [ ]  Configurer les variables d'environnement de production (dont SMTP et clés Stripe live)
 - [ ]  Monitoring et optimisation des temps de réponse
 
 ---
@@ -220,10 +283,7 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 - [ ]  Application web responsive multilingue (FR/EN/AR)
 - [ ]  API REST documentée (Swagger)
 - [ ]  Espace client + espace administrateur fonctionnels
+- [ ]  Authentification complète (inscription, confirmation e-mail, login, mot de passe oublié)
 - [ ]  Paiement Stripe opérationnel (total/avance)
 - [ ]  Système de recommandation IA
 - [ ]  Documentation technique et guide d'utilisation
-
-
-
-https://app.notion.com/p/TouriBook-Plan-de-projet-complet-React-Python-2333aab3383e4a338b5c5376ac936df2

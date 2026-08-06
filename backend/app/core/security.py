@@ -1,15 +1,57 @@
+import hashlib
+import re
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from pydantic import BaseModel, EmailStr, field_validator
 
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256"],
+    deprecated="auto",
+)
 
 ACCESS = "access"
 REFRESH = "refresh"
+
+PASSWORD_RE = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$")
+
+
+def generate_raw_token() -> str:
+    """Token aléatoire envoyé par e-mail (URL-safe)."""
+    return secrets.token_urlsafe(48)
+
+
+def hash_token(raw: str) -> str:
+    """Hash stocké en base."""
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def expires_in(minutes: int = 0, hours: int = 0, days: int = 0) -> datetime:
+    return datetime.now(timezone.utc) + timedelta(minutes=minutes, hours=hours, days=days)
+
+
+def is_valid(token_row) -> bool:
+    return (
+        token_row is not None
+        and token_row.used_at is None
+        and token_row.expires_at > datetime.now(timezone.utc)
+    )
+
+
+class PasswordMixin(BaseModel):
+    password: str
+
+    @field_validator("password")
+    @classmethod
+    def strong(cls, v: str) -> str:
+        if not PASSWORD_RE.match(v):
+            raise ValueError("8 caractères minimum, avec majuscule, minuscule et chiffre")
+        return v
 
 
 def hash_password(password: str) -> str:

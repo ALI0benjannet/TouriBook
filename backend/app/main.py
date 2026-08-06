@@ -1,13 +1,17 @@
 import logging
 import time
 
-from fastapi import FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
+from app.core.limiter import limiter, rate_limit_exceeded_handler
 from app.core.logging import setup_logging
+from app.services.email_service import send_verification_email
 
 setup_logging()
 logger = logging.getLogger(__name__)  # Correction : __name__ au lieu de name
@@ -20,6 +24,10 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
 )
+
+app.add_middleware(SlowAPIMiddleware)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,6 +59,17 @@ async def log_requests(request: Request, call_next):
 @app.get("/health", tags=["Système"])
 def health():
     return {"status": "ok", "environment": settings.ENVIRONMENT}
+
+
+@app.post("/test-email", tags=["Système"])
+def test_email(background_tasks: BackgroundTasks):
+    background_tasks.add_task(
+        send_verification_email,
+        "alibenjannette@gmail.com",
+        "Test utilisateur",
+        "test-token-123",
+    )
+    return {"status": "ok", "message": "E-mail de test planifié"}
 
 
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
