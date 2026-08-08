@@ -21,12 +21,13 @@ fm = FastMail(conf)
 
 
 async def send_verification_email(email: str, name: str, token: str) -> None:
-    link = f"{settings.FRONTEND_URL}/verify-email?token={token}"
+    link = f"{settings.FRONTEND_URL}/verify-email?email={email}"
     message = MessageSchema(
         subject="Confirmez votre compte TouriBook",
         recipients=[email],
         template_body={
             "name": name,
+            "code": token,
             "link": link,
             "hours": settings.EMAIL_VERIFICATION_EXPIRE_HOURS,
         },

@@ -108,17 +108,17 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ## ⚛️ Phase 4 — Frontend React : fondations 
 
-- [ ]  Initialiser le projet React (Vite + TypeScript)
-- [ ]  Configurer le routing (React Router) + structure de dossiers (`pages/`, `components/`, `features/`, `lib/`)
-- [ ]  Configurer Axios + intercepteurs (injection du JWT, refresh auto sur 401)
-- [ ]  Configurer React Query (cache et requêtes)
-- [ ]  Mettre en place le design system (Tailwind + shadcn/ui, thème, tokens)
-- [ ]  Layout responsive (ordinateur, tablette, smartphone) + Navbar / Footer
-- [ ]  Configurer i18n (FR / EN / AR + gestion RTL) et le sélecteur de langue
-- [ ]  Contexte d'authentification (stockage token, `useAuth`, routes protégées)
-- [ ]  Composants de garde : `ProtectedRoute` (touriste) et `AdminRoute` (rôle admin)
-- [ ]  Gestion globale des erreurs + notifications (toasts) + états de chargement
-- [ ]  Configurer `.env` frontend (URL de l'API) et le proxy de développement
+- [x]  Initialiser le projet React (Vite + TypeScript)
+- [x]  Configurer le routing (React Router) + structure de dossiers (`pages/`, `components/`, `features/`, `lib/`)
+- [x]  Configurer Axios + intercepteurs (injection du JWT, refresh auto sur 401)
+- [x]  Configurer React Query (cache et requêtes)
+- [x]  Mettre en place le design system (Tailwind + shadcn/ui, thème, tokens)
+- [x]  Layout responsive (ordinateur, tablette, smartphone) + Navbar / Footer
+- [x]  Configurer i18n (FR / EN / AR + gestion RTL) et le sélecteur de langue
+- [x]  Contexte d'authentification (stockage token, `useAuth`, routes protégées)
+- [x]  Composants de garde : `ProtectedRoute` (touriste) et `AdminRoute` (rôle admin)
+- [x]  Gestion globale des erreurs + notifications (toasts) + états de chargement
+- [x]  Configurer `.env` frontend (URL de l'API) et le proxy de développement
 
 ---
 
@@ -127,15 +127,15 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ### Espace client
 
-- [ ]  Page d'inscription (validation de formulaire : e-mail, mot de passe fort, confirmation)
-- [ ]  Écran « Vérifiez votre boîte mail » après inscription + bouton de renvoi
-- [ ]  Page de confirmation de compte (`/verify-email`) : succès, token expiré, token invalide
-- [ ]  Page de connexion (gestion des erreurs : identifiants invalides, compte non vérifié)
-- [ ]  Page « Mot de passe oublié » (saisie de l'e-mail + message de confirmation)
-- [ ]  Page « Réinitialiser le mot de passe » (`/reset-password?token=...`)
-- [ ]  Déconnexion + persistance de session au rechargement (refresh token)
-- [ ]  Page profil : informations personnelles + changement de mot de passe
-- [ ]  Traduction FR / EN / AR de tous les écrans d'auth (dont RTL)
+- [x]  Page d'inscription (validation de formulaire : e-mail, mot de passe fort, confirmation)
+- [x]  Écran « Vérifiez votre boîte mail » après inscription + bouton de renvoi
+- [x]  Page de confirmation de compte (`/verify-email`) : succès, token expiré, token invalide
+- [x]  Page de connexion (gestion des erreurs : identifiants invalides, compte non vérifié)
+- [x]  Page « Mot de passe oublié » (saisie de l'e-mail + message de confirmation)
+- [x]  Page « Réinitialiser le mot de passe » (`/reset-password?token=...`)
+- [x]  Déconnexion + persistance de session au rechargement (refresh token)
+- [x]  Page profil : informations personnelles + changement de mot de passe
+- [x]  Traduction FR / EN / AR de tous les écrans d'auth (dont RTL)
 
 ### Espace administrateur
 

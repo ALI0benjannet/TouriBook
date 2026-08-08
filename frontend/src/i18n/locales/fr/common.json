@@ -1,0 +1,113 @@
+{
+  "app": { "name": "TouriBook", "tagline": "Réservez vos activités en un clic" },
+  "nav": { "home": "Accueil", "activities": "Activités", "favorites": "Mes favoris", "bookings": "Mes réservations", "login": "Connexion", "register": "Inscription", "profile": "Profil", "logout": "Déconnexion" },
+  "activities": { "description": "Découvrez les meilleures activités à réserver près de chez vous." },
+  "favorites": { "description": "Retrouvez vos activités favorites pour y revenir facilement." },
+  "bookings": { "description": "Consultez vos réservations en cours et vos prochains voyages." },
+  "actions": { "search": "Rechercher", "save": "Enregistrer", "cancel": "Annuler", "retry": "Réessayer", "back": "Retour" },
+  "states": { "loading": "Chargement…", "empty": "Aucun résultat" },
+  "login": {
+    "title": "Connectez-vous à votre compte",
+    "subtitle": "Entrez votre e-mail et votre mot de passe pour continuer.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion…",
+    "no_account": "Vous n'avez pas de compte ?",
+    "register": "Créer un compte"
+  },
+  "errors": {
+    "network": "Connexion impossible. Vérifiez votre réseau.",
+    "validation": "Veuillez corriger les champs en rouge.",
+    "unknown": "Une erreur inattendue est survenue.",
+    "sessionExpired": "Votre session a expiré, veuillez vous reconnecter.",
+    "http": { "403": "Accès refusé.", "404": "Ressource introuvable.", "500": "Erreur serveur. Réessayez plus tard." }
+  },
+  "auth": {
+    "errors": {
+      "invalid_credentials": "E-mail ou mot de passe incorrect.",
+      "email_not_verified": "Veuillez confirmer votre e-mail avant de vous connecter.",
+      "email_already_exists": "Un compte existe déjà avec cet e-mail.",
+      "invalid_token": "Jeton d'authentification invalide.",
+      "expired_token": "Votre session a expiré. Veuillez vous reconnecter.",
+      "rate_limited": "Trop de tentatives. Réessayez plus tard.",
+      "not_admin": "Accès administrateur requis.",
+      "account_disabled": "Votre compte est désactivé. Contactez le support.",
+      "unknown": "Une erreur est survenue lors de la connexion."
+    },
+    "password": {
+      "min": "Le mot de passe doit contenir au moins 8 caractères.",
+      "max": "Le mot de passe ne peut pas dépasser 128 caractères.",
+      "upper": "Ajoutez une lettre majuscule.",
+      "lower": "Ajoutez une lettre minuscule.",
+      "digit": "Ajoutez un chiffre.",
+      "special": "Ajoutez un caractère spécial.",
+      "required": "Ce champ est requis.",
+      "mismatch": "Les mots de passe ne correspondent pas.",
+      "same_as_old": "Le nouveau mot de passe doit être différent de l'ancien."
+    },
+    "email": { "invalid": "Veuillez saisir une adresse e-mail valide." },
+    "name": { "min": "Le champ doit contenir au moins 2 caractères.", "max": "Le champ ne peut pas dépasser 100 caractères." },
+    "token": { "required": "Le jeton est requis." },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Saisissez votre e-mail pour recevoir un lien de réinitialisation.",
+      "email": "Adresse e-mail",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi…",
+      "back_to_login": "Retour à la connexion"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser votre mot de passe",
+      "subtitle": "Choisissez un nouveau mot de passe sécurisé.",
+      "new_password": "Nouveau mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "submit": "Réinitialiser",
+      "submitting": "Réinitialisation…",
+      "success": "Votre mot de passe a été réinitialisé."
+    },
+    "checkEmail": {
+      "title": "Vérifiez votre boîte mail",
+      "description": "Nous avons envoyé un e-mail à {email}.",
+      "fallback_email": "votre adresse e-mail",
+      "resend": "Renvoyer l'e-mail",
+      "resend_wait": "Renvoyer dans {seconds}s",
+      "back_to_login": "Retour à la connexion"
+    },
+    "verifyEmail": {
+      "title": "Vérification de l'e-mail",
+      "loading": "Vérification en cours…",
+      "success": "Votre e-mail a été vérifié avec succès.",
+      "invalid": "Le lien de vérification est invalide ou expiré.",
+      "missing": "Le lien de vérification est incomplet.",
+      "resend": "Renvoyer l'e-mail",
+      "resend_wait": "Renvoyer dans {seconds}s"
+    },
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Gérez vos informations personnelles et votre mot de passe.",
+      "personal_info": "Informations personnelles",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "save": "Enregistrer",
+      "password": "Mot de passe",
+      "old_password": "Mot de passe actuel",
+      "new_password": "Nouveau mot de passe",
+      "confirm_new_password": "Confirmer le nouveau mot de passe",
+      "update_password": "Mettre à jour",
+      "success": "Profil mis à jour."
+    },
+    "password_strength": {
+      "weak": "Mot de passe faible",
+      "fair": "Mot de passe correct",
+      "good": "Mot de passe bon",
+      "strong": "Mot de passe fort",
+      "length": "Au moins 8 caractères",
+      "lower": "Une lettre minuscule",
+      "upper": "Une lettre majuscule",
+      "digit": "Un chiffre",
+      "special": "Un caractère spécial"
+    }
+  },
+  "language": { "label": "Langue", "fr": "Français", "en": "English", "ar": "العربية" }
+}

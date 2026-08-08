@@ -26,6 +26,11 @@ def generate_raw_token() -> str:
     return secrets.token_urlsafe(48)
 
 
+def generate_verification_code(length: int = 4) -> str:
+    """Code de vérification numérique envoyé par e-mail."""
+    return "".join(secrets.choice("0123456789") for _ in range(length))
+
+
 def hash_token(raw: str) -> str:
     """Hash stocké en base."""
     return hashlib.sha256(raw.encode()).hexdigest()

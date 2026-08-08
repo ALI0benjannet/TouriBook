@@ -1,0 +1,113 @@
+{
+  "app": { "name": "TouriBook", "tagline": "Book your activities in one click" },
+  "nav": { "home": "Home", "activities": "Activities", "favorites": "My favorites", "bookings": "My bookings", "login": "Log in", "register": "Sign up", "profile": "Profile", "logout": "Log out" },
+  "activities": { "description": "Browse the best activities to book near you." },
+  "favorites": { "description": "Open your favorite activities again quickly." },
+  "bookings": { "description": "View your current bookings and upcoming trips." },
+  "actions": { "search": "Search", "save": "Save", "cancel": "Cancel", "retry": "Retry", "back": "Back" },
+  "states": { "loading": "Loading…", "empty": "No results" },
+  "login": {
+    "title": "Sign in to your account",
+    "subtitle": "Enter your email and password to continue.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "submitting": "Signing in…",
+    "no_account": "Don’t have an account?",
+    "register": "Create one"
+  },
+  "errors": {
+    "network": "Cannot reach the server. Check your connection.",
+    "validation": "Please fix the highlighted fields.",
+    "unknown": "An unexpected error occurred.",
+    "sessionExpired": "Your session expired, please log in again.",
+    "http": { "403": "Access denied.", "404": "Resource not found.", "500": "Server error. Try again later." }
+  },
+  "auth": {
+    "errors": {
+      "invalid_credentials": "Incorrect email or password.",
+      "email_not_verified": "Please verify your email before logging in.",
+      "email_already_exists": "An account already exists with this email.",
+      "invalid_token": "Invalid authentication token.",
+      "expired_token": "Your session has expired. Please log in again.",
+      "rate_limited": "Too many attempts. Please wait and try again.",
+      "not_admin": "Administrator access is required.",
+      "account_disabled": "Your account is disabled. Contact support.",
+      "unknown": "An unexpected error occurred while signing in."
+    },
+    "password": {
+      "min": "The password must be at least 8 characters long.",
+      "max": "The password must not exceed 128 characters.",
+      "upper": "Add an uppercase letter.",
+      "lower": "Add a lowercase letter.",
+      "digit": "Add a number.",
+      "special": "Add a special character.",
+      "required": "This field is required.",
+      "mismatch": "Passwords do not match.",
+      "same_as_old": "The new password must be different from the current one."
+    },
+    "email": { "invalid": "Please enter a valid email address." },
+    "name": { "min": "The field must be at least 2 characters long.", "max": "The field must not exceed 100 characters." },
+    "token": { "required": "A token is required." },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a reset link.",
+      "email": "Email address",
+      "submit": "Send link",
+      "submitting": "Sending…",
+      "back_to_login": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "subtitle": "Choose a new secure password.",
+      "new_password": "New password",
+      "confirm_password": "Confirm password",
+      "submit": "Reset password",
+      "submitting": "Resetting…",
+      "success": "Your password has been reset."
+    },
+    "checkEmail": {
+      "title": "Check your email",
+      "description": "We sent an email to {email}.",
+      "fallback_email": "your email address",
+      "resend": "Resend email",
+      "resend_wait": "Resend in {seconds}s",
+      "back_to_login": "Back to login"
+    },
+    "verifyEmail": {
+      "title": "Email verification",
+      "loading": "Verifying your email…",
+      "success": "Your email has been verified successfully.",
+      "invalid": "The verification link is invalid or expired.",
+      "missing": "The verification link is incomplete.",
+      "resend": "Resend email",
+      "resend_wait": "Resend in {seconds}s"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Manage your personal information and password.",
+      "personal_info": "Personal information",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "save": "Save",
+      "password": "Password",
+      "old_password": "Current password",
+      "new_password": "New password",
+      "confirm_new_password": "Confirm new password",
+      "update_password": "Update",
+      "success": "Profile updated."
+    },
+    "password_strength": {
+      "weak": "Weak password",
+      "fair": "Fair password",
+      "good": "Good password",
+      "strong": "Strong password",
+      "length": "At least 8 characters",
+      "lower": "A lowercase letter",
+      "upper": "An uppercase letter",
+      "digit": "A number",
+      "special": "A special character"
+    }
+  },
+  "language": { "label": "Language", "fr": "Français", "en": "English", "ar": "العربية" }
+}

@@ -1,0 +1,27 @@
+{
+  "app": { "name": "TouriBook", "tagline": "Book your experiences in one click" },
+  "nav": {
+    "home": "Home",
+    "activities": "Activities",
+    "favorites": "Favorites",
+    "bookings": "Bookings",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search"
+  },
+  "errors": {
+    "network": "Unable to reach the server. Please check your connection.",
+    "unexpected": "An unexpected error occurred.",
+    "validation": "Please fix the highlighted fields.",
+    "forbidden": "You do not have permission to access this.",
+    "notFound": "Page not found."
+  }
+}

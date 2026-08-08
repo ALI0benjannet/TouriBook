@@ -1,11 +1,6 @@
-import { useEffect, useState } from "react";
-import { api } from "./api";
+import { RouterProvider } from "react-router-dom";
+import { router } from "@/app/router";
 
-function App() {
-  const [msg, setMsg] = useState("");
-  useEffect(() => {
-    api.get("/").then((res) => setMsg(res.data.message));
-  }, []);
-  return <h1>{msg || "Chargement..."}</h1>;
+export default function App() {
+  return <RouterProvider router={router} />;
 }
-export default App;

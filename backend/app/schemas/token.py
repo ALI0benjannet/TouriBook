@@ -19,7 +19,7 @@ class RefreshRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 
@@ -28,6 +28,11 @@ class EmailIn(BaseModel):
 
 
 class TokenIn(BaseModel):
+    token: str
+
+
+class VerifyEmailIn(BaseModel):
+    email: EmailStr
     token: str
 
 

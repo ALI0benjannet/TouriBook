@@ -10,6 +10,7 @@ from app.core.limiter import limiter
 from app.core.security import (
     create_access_token,
     decode_token,
+    generate_verification_code,
     hash_password,
     generate_raw_token,
     hash_token,
@@ -32,6 +33,7 @@ from app.schemas.token import (
     ResendVerificationRequest,
     Token,
     TokenIn,
+    VerifyEmailIn,
 )
 from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.services import user_service
@@ -62,7 +64,7 @@ def register(
     db.add(user)
     db.flush()
 
-    raw = generate_raw_token()
+    raw = generate_verification_code()
     db.add(
         EmailVerificationToken(
             user_id=user.id,
@@ -72,8 +74,8 @@ def register(
     )
     db.commit()
 
-    full_name = f"{payload.prenom} {payload.nom}"
-    background.add_task(send_verification_email, user.email, full_name, raw)
+    nom = f"{payload.prenom} {payload.nom}"
+    background.add_task(send_verification_email, user.email, nom, raw)
     return {"message": "Compte créé. Vérifiez votre boîte mail pour l'activer."}
 
 
@@ -89,17 +91,29 @@ def _issue_tokens(user: User, refresh_token: str) -> Token:
 def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)):
     user = user_service.authenticate(db, payload.email, payload.password)
     if not user:
-        raise HTTPException(status_code=401, detail="E-mail ou mot de passe incorrect")
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "code": "invalid_credentials",
+                "message": "E-mail ou mot de passe incorrect",
+            },
+        )
     if not user.is_verified:
         raise HTTPException(
             status_code=403,
             detail={
-                "code": "EMAIL_NOT_VERIFIED",
+                "code": "email_not_verified",
                 "message": "Confirmez votre e-mail avant de vous connecter",
             },
         )
     if not user.is_active:
-        raise HTTPException(status_code=403, detail="Compte désactivé")
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "account_disabled",
+                "message": "Compte désactivé",
+            },
+        )
 
     raw_refresh = generate_raw_token()
     db.add(
@@ -125,17 +139,29 @@ def login_form(
 ):
     user = user_service.authenticate(db, form.username, form.password)
     if not user:
-        raise HTTPException(status_code=401, detail="E-mail ou mot de passe incorrect")
+        raise HTTPException(
+            status_code=401,
+            detail={
+                "code": "invalid_credentials",
+                "message": "E-mail ou mot de passe incorrect",
+            },
+        )
     if not user.is_verified:
         raise HTTPException(
             status_code=403,
             detail={
-                "code": "EMAIL_NOT_VERIFIED",
+                "code": "email_not_verified",
                 "message": "Confirmez votre e-mail avant de vous connecter",
             },
         )
     if not user.is_active:
-        raise HTTPException(status_code=403, detail="Compte désactivé")
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "account_disabled",
+                "message": "Compte désactivé",
+            },
+        )
 
     raw_refresh = generate_raw_token()
     db.add(
@@ -196,8 +222,8 @@ async def forgot_password(
             )
         )
         db.commit()
-        full_name = f"{user.prenom} {user.nom}"
-        background.add_task(send_reset_password_email, user.email, full_name, raw)
+        nom = f"{user.prenom} {user.nom}"
+        background.add_task(send_reset_password_email, user.email, nom, raw)
 
     return {"message": "Si un compte existe avec cet e-mail, un lien vient d'être envoyé."}
 
@@ -276,7 +302,7 @@ def resend_verification(
         for token in tokens:
             token.used_at = now
 
-        raw = generate_raw_token()
+        raw = generate_verification_code()
         db.add(
             EmailVerificationToken(
                 user_id=user.id,
@@ -285,23 +311,26 @@ def resend_verification(
             )
         )
         db.commit()
-        full_name = f"{user.prenom} {user.nom}"
-        background.add_task(send_verification_email, user.email, full_name, raw)
+        nom = f"{user.prenom} {user.nom}"
+        background.add_task(send_verification_email, user.email, nom, raw)
 
     return {"message": "Si cet e-mail existe, un nouveau lien de vérification a été envoyé."}
 
 
 @router.post("/verify-email")
 @limiter.limit("5/minute")
-def verify_email(request: Request, payload: TokenIn, db: Session = Depends(get_db)):
+def verify_email(request: Request, payload: VerifyEmailIn, db: Session = Depends(get_db)):
     row = db.scalar(
-        select(EmailVerificationToken).where(
-            EmailVerificationToken.token_hash == hash_token(payload.token)
+        select(EmailVerificationToken)
+        .join(EmailVerificationToken.user)
+        .where(
+            User.email == payload.email.lower(),
+            EmailVerificationToken.token_hash == hash_token(payload.token),
         )
     )
 
     if not is_valid(row):
-        raise HTTPException(status_code=400, detail="Lien invalide ou expiré")
+        raise HTTPException(status_code=400, detail="Code invalide ou expiré")
 
     user = row.user
     if user.is_verified:
