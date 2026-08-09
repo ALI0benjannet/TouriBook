@@ -8,6 +8,7 @@ export const endpoints = {
     verifyEmail: "/api/v1/auth/verify-email",
     resendVerification: "/api/v1/auth/resend-verification",
     forgotPassword: "/api/v1/auth/forgot-password",
+    validateResetToken: "/api/v1/auth/validate-reset-token",
     resetPassword: "/api/v1/auth/reset-password",
     changePassword: "/api/v1/auth/change-password",
   },

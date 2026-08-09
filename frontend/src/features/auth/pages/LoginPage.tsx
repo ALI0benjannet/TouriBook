@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 import { TextField } from "@/components/form/TextField";
+import { paths } from "@/routes/paths";
 import { useLoginForm } from "@/features/auth/hooks/useLoginForm";
 
 export default function LoginPage() {
@@ -49,13 +50,28 @@ export default function LoginPage() {
             error={errors.email?.message && t(errors.email.message)}
           />
 
-          <TextField
-            {...register("password")}
-            type="password"
-            autoComplete="current-password"
-            label={t("login.password")}
-            error={errors.password?.message && t(errors.password.message)}
-          />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-4">
+              <label className="text-sm font-medium text-slate-700">
+                {t("login.password")}
+              </label>
+              <Link
+                to={paths.forgotPassword}
+                className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+              >
+                {t("auth.forgotPassword.title")}
+              </Link>
+            </div>
+
+            <TextField
+              {...register("password")}
+              type="password"
+              autoComplete="current-password"
+              label={<span className="sr-only">{t("login.password")}</span>}
+              aria-label={t("login.password")}
+              error={errors.password?.message && t(errors.password.message)}
+            />
+          </div>
         </fieldset>
 
         <button

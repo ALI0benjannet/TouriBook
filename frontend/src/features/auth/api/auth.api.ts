@@ -30,6 +30,10 @@ export const authApi = {
     api.post(endpoints.auth.resendVerification, payload).then((response) => response.data),
   forgotPassword: (payload: ForgotPasswordPayload) =>
     api.post(endpoints.auth.forgotPassword, payload).then((response) => response.data),
+  validateResetToken: (token: string) =>
+    api
+      .get<{ message: string }>(endpoints.auth.validateResetToken, { params: { token } })
+      .then((response) => response.data),
   resetPassword: (payload: ResetPasswordPayload) =>
     api.post(endpoints.auth.resetPassword, payload).then((response) => response.data),
   updateProfile: (payload: UpdateProfilePayload) =>

@@ -213,7 +213,7 @@ async def forgot_password(
     user = user_service.get_by_email(db, payload.email.lower())
 
     if user and user.is_active:
-        raw = generate_raw_token()
+        raw = generate_verification_code()
         db.add(
             PasswordResetToken(
                 user_id=user.id,
@@ -226,6 +226,21 @@ async def forgot_password(
         background.add_task(send_reset_password_email, user.email, nom, raw)
 
     return {"message": "Si un compte existe avec cet e-mail, un lien vient d'être envoyé."}
+
+
+@router.get("/validate-reset-token")
+@limiter.limit("10/minute")
+def validate_reset_token(request: Request, token: str, db: Session = Depends(get_db)):
+    row = db.scalar(
+        select(PasswordResetToken).where(
+            PasswordResetToken.token_hash == hash_token(token)
+        )
+    )
+
+    if not is_valid(row):
+        raise HTTPException(status_code=400, detail="Lien invalide ou expiré")
+
+    return {"message": "Token valide"}
 
 
 @router.post("/reset-password")

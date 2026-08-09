@@ -63,11 +63,13 @@ export const changePasswordSchema = z
 
 export const verifyEmailSchema = z.object({
   email: z.string().trim().email("auth.email.invalid"),
-  token: z.string().trim().min(1, "auth.token.required"),
+  token: z.string().trim().regex(/^[0-9]{4}$/, "auth.token.invalid"),
 });
 
 export const verifyCodeSchema = z.object({
-  code: z.string().trim().min(1, "auth.token.required"),
+  code: z.string()
+    .trim()
+    .regex(/^[0-9]{4}$/, "auth.token.invalid"),
 });
 
 export const forgotSchema = forgotPasswordSchema;

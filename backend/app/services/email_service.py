@@ -37,12 +37,13 @@ async def send_verification_email(email: str, name: str, token: str) -> None:
 
 
 async def send_reset_password_email(email: str, name: str, token: str) -> None:
-    link = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+    link = f"{settings.FRONTEND_URL}/reset-password?email={email}"
     message = MessageSchema(
         subject="Réinitialisation de votre mot de passe",
         recipients=[email],
         template_body={
             "name": name,
+            "code": token,
             "link": link,
             "minutes": settings.PASSWORD_RESET_EXPIRE_MINUTES,
         },
