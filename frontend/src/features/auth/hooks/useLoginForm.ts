@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { authApi } from "@/features/auth/api/auth.api";
 import { getAuthErrorCode } from "@/lib/api-error";
 import { loginSchema, type LoginInput } from "@/features/auth/schemas/authSchemas";
+import { authStore } from "@/features/auth/stores/auth.store";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -15,6 +16,7 @@ export function useLoginForm() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const setTokens = authStore((state) => state.setTokens);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -27,7 +29,8 @@ export function useLoginForm() {
   const onSubmit = useCallback(
     async (data: LoginInput) => {
       try {
-        await authApi.login(data);
+        const tokens = await authApi.login(data);
+        setTokens(tokens.access_token, tokens.refresh_token);
 
         const from = (location.state as { from?: string } | null)?.from;
         navigate(from ?? DEFAULT_REDIRECT, { replace: true });
@@ -45,7 +48,7 @@ export function useLoginForm() {
         toast.error(message);
       }
     },
-    [location.state, navigate, setError, t],
+    [location.state, navigate, setError, setTokens, t],
   );
 
   return { form, onSubmit };

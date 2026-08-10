@@ -5,10 +5,12 @@
     "activities": "Activities",
     "favorites": "Favorites",
     "bookings": "Bookings",
+    "account": "My account",
+    "profile": "Profile",
+    "settings": "Settings",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout",
-    "profile": "Profile"
+    "logout": "Logout"
   },
   "common": {
     "loading": "Loading…",
@@ -23,5 +25,21 @@
     "validation": "Please fix the highlighted fields.",
     "forbidden": "You do not have permission to access this.",
     "notFound": "Page not found."
+  },
+  "auth": {
+    "profile": {
+      "photo": "Profile photo",
+      "photo_hint": "JPG, PNG, or WebP — up to 2 MB.",
+      "change_photo": "Change photo",
+      "upload": "Upload",
+      "remove": "Remove",
+      "avatar_success": "Profile photo updated.",
+      "avatar_error": "Failed to upload photo.",
+      "avatar_removed": "Photo removed.",
+      "avatar_type_error": "Unsupported format (JPG, PNG or WebP).",
+      "avatar_size_error": "Image must not exceed 2 MB.",
+      "personal_info_hint": "These details appear on your account.",
+      "password_hint": "Use at least 8 characters, with numbers and symbols."
+    }
   }
 }

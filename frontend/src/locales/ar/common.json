@@ -5,10 +5,12 @@
     "activities": "الأنشطة",
     "favorites": "المفضلات",
     "bookings": "حجوزاتي",
+    "account": "حسابي",
+    "profile": "ملفي",
+    "settings": "الإعدادات",
     "login": "تسجيل الدخول",
     "register": "إنشاء حساب",
-    "logout": "تسجيل الخروج",
-    "profile": "ملفي"
+    "logout": "تسجيل الخروج"
   },
   "common": {
     "loading": "جاري التحميل…",
@@ -23,5 +25,21 @@
     "validation": "يرجى تصحيح الحقول المميزة.",
     "forbidden": "ليس لديك إذن للوصول إلى هذا.",
     "notFound": "الصفحة غير موجودة."
+  },
+  "auth": {
+    "profile": {
+      "photo": "صورة الملف الشخصي",
+      "photo_hint": "JPG أو PNG أو WebP — بحد أقصى 2 ميغابايت.",
+      "change_photo": "تغيير الصورة",
+      "upload": "تحميل",
+      "remove": "إزالة",
+      "avatar_success": "تم تحديث صورة الملف الشخصي.",
+      "avatar_error": "فشل تحميل الصورة.",
+      "avatar_removed": "تمت إزالة الصورة.",
+      "avatar_type_error": "تنسيق غير مدعوم (JPG أو PNG أو WebP).",
+      "avatar_size_error": "يجب ألا تتجاوز الصورة 2 ميغابايت.",
+      "personal_info_hint": "تظهر هذه المعلومات على حسابك.",
+      "password_hint": "استخدم 8 أحرف على الأقل، مع أرقام ورموز."
+    }
   }
 }

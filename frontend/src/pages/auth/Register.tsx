@@ -48,27 +48,27 @@ export default function Register() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Créer un compte</h1>
+      <h1 className="text-2xl font-bold">{t("register.title")}</h1>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <input {...register("prenom")} placeholder="Prénom" aria-label="Prénom" className="w-full border rounded p-2" />
+          <input {...register("prenom")} placeholder={t("register.first_name")} aria-label={t("register.first_name")} className="w-full border rounded p-2" />
           <p role="alert" className="text-red-600 text-sm">{errors.prenom?.message}</p>
         </div>
         <div>
-          <input {...register("nom")} placeholder="Nom" aria-label="Nom" className="w-full border rounded p-2" />
+          <input {...register("nom")} placeholder={t("register.last_name")} aria-label={t("register.last_name")} className="w-full border rounded p-2" />
           <p role="alert" className="text-red-600 text-sm">{errors.nom?.message}</p>
         </div>
       </div>
-      <input {...register("email")} placeholder="E-mail" aria-label="E-mail" className="w-full border rounded p-2" />
+      <input {...register("email")} placeholder={t("register.email")} aria-label={t("register.email")} className="w-full border rounded p-2" />
       <p role="alert" className="text-red-600 text-sm">{errors.email?.message}</p>
-      <input type="password" {...register("password")} placeholder="Mot de passe" aria-label="Mot de passe" className="w-full border rounded p-2" />
+      <input type="password" {...register("password")} placeholder={t("register.password")} aria-label={t("register.password")} className="w-full border rounded p-2" />
       <p role="alert" className="text-red-600 text-sm">{errors.password?.message}</p>
-      <input type="password" {...register("confirm")} placeholder="Confirmer" aria-label="Confirmer" className="w-full border rounded p-2" />
+      <input type="password" {...register("confirm")} placeholder={t("register.confirm_password")} aria-label={t("register.confirm_password")} className="w-full border rounded p-2" />
       <p role="alert" className="text-red-600 text-sm">{errors.confirm?.message}</p>
       <button disabled={isSubmitting} className="w-full bg-blue-600 text-white rounded p-2">
-        {isSubmitting ? "Envoi…" : "S'inscrire"}
+        {isSubmitting ? t("register.submitting") : t("register.submit")}
       </button>
-      <Link to={paths.login} className="text-sm underline">Déjà un compte ?</Link>
+      <Link to={paths.login} className="text-sm underline">{t("register.already_account")} {t("register.login")}</Link>
     </form>
   );
 }

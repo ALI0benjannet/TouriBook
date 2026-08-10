@@ -10,4 +10,5 @@ export type User = {
   is_verified: boolean;
   preferred_language?: string;
   phone?: string | null;
+  avatar_url?: string | null;
 };

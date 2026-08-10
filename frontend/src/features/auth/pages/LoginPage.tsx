@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-
+import { Eye, EyeOff, LogIn } from "lucide-react";
+import { AuthCard } from "@/components/auth/AuthCards";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/form/TextField";
-import { paths } from "@/routes/paths";
 import { useLoginForm } from "@/features/auth/hooks/useLoginForm";
+import { paths } from "@/routes/paths";
 
 export default function LoginPage() {
   const { t } = useTranslation();
+  const [showPassword, setShowPassword] = useState(false);
   const { form, onSubmit } = useLoginForm();
   const {
     register,
@@ -18,26 +22,24 @@ export default function LoginPage() {
   const serverError = errors.root?.serverError?.message;
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-6 sm:p-8">
-      <form
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-        aria-busy={isSubmitting}
-        className="w-full max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white/80 p-8 shadow-xl backdrop-blur"
-      >
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("login.title")}</h1>
-          <p className="text-sm text-slate-500">{t("login.subtitle")}</p>
-        </header>
-
-        {serverError && (
-          <div
-            role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+    <AuthCard
+      icon={<LogIn aria-hidden className="size-5" />}
+      title={t("login.title")}
+      subtitle={t("login.subtitle")}
+      footer={
+        <>
+          {t("login.no_account")}{" "}
+          <Link
+            to={paths.register}
+            className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
           >
-            {serverError}
-          </div>
-        )}
+            {t("login.register")}
+          </Link>
+        </>
+      }
+    >
+      <form noValidate onSubmit={handleSubmit(onSubmit)} aria-busy={isSubmitting} className="space-y-5">
+        {serverError && <Alert>{t(serverError, { defaultValue: serverError })}</Alert>}
 
         <fieldset disabled={isSubmitting} className="space-y-5 border-0 p-0">
           <TextField
@@ -47,14 +49,12 @@ export default function LoginPage() {
             autoComplete="email"
             autoFocus
             label={t("login.email")}
-            error={errors.email?.message && t(errors.email.message)}
+            error={errors.email?.message ? t(errors.email.message) : undefined}
           />
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-4">
-              <label className="text-sm font-medium text-slate-700">
-                {t("login.password")}
-              </label>
+              <span className="text-sm font-medium text-slate-700">{t("login.password")}</span>
               <Link
                 to={paths.forgotPassword}
                 className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
@@ -63,36 +63,31 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <TextField
-              {...register("password")}
-              type="password"
-              autoComplete="current-password"
-              label={<span className="sr-only">{t("login.password")}</span>}
-              aria-label={t("login.password")}
-              error={errors.password?.message && t(errors.password.message)}
-            />
+            <div className="relative">
+              <TextField
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                label={<span className="sr-only">{t("login.password")}</span>}
+                aria-label={t("login.password")}
+                error={errors.password?.message ? t(errors.password.message) : undefined}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? t("login.hide_password", "Masquer") : t("login.show_password", "Afficher")}
+                className="absolute end-3 top-2.5 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              >
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
           </div>
         </fieldset>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 disabled:opacity-60"
-        >
-          {isSubmitting && <Loader2 aria-hidden className="size-4 animate-spin" />}
+        <Button type="submit" fullWidth size="lg" loading={isSubmitting}>
           {isSubmitting ? t("login.submitting") : t("login.submit")}
-        </button>
-
-        <p className="text-center text-sm text-slate-600">
-          {t("login.no_account")} {" "}
-          <Link
-            to="/register"
-            className="font-medium text-slate-950 underline underline-offset-4"
-          >
-            {t("login.register")}
-          </Link>
-        </p>
+        </Button>
       </form>
-    </main>
+    </AuthCard>
   );
 }

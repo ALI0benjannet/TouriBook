@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import { AuthCard } from "@/components/auth/AuthCards";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/form/TextField";
 import { useForgotPasswordForm } from "@/features/auth/hooks/useForgotPasswordForm";
 import { paths } from "@/routes/paths";
@@ -17,28 +20,21 @@ export default function ForgotPasswordPage() {
   const serverError = errors.root?.serverError?.message;
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-6 sm:p-8">
-      <form
-        noValidate
-        onSubmit={handleSubmit(onSubmit)}
-        aria-busy={isSubmitting}
-        className="w-full max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white/80 p-8 shadow-xl backdrop-blur"
-      >
-        <header className="space-y-3">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-900">
-            <Mail aria-hidden="true" className="size-5" />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">{t("auth.forgotPassword.title")}</h1>
-            <p className="text-sm text-slate-500">{t("auth.forgotPassword.subtitle")}</p>
-          </div>
-        </header>
-
-        {serverError && (
-          <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {serverError}
-          </div>
-        )}
+    <AuthCard
+      icon={<Mail aria-hidden className="size-5" />}
+      title={t("auth.forgotPassword.title")}
+      subtitle={t("auth.forgotPassword.subtitle")}
+      footer={
+        <Link
+          to={paths.login}
+          className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+        >
+          {t("auth.forgotPassword.back_to_login")}
+        </Link>
+      }
+    >
+      <form noValidate onSubmit={handleSubmit(onSubmit)} aria-busy={isSubmitting} className="space-y-5">
+        {serverError && <Alert>{t(serverError, { defaultValue: serverError })}</Alert>}
 
         <fieldset disabled={isSubmitting} className="space-y-5 border-0 p-0">
           <TextField
@@ -52,21 +48,10 @@ export default function ForgotPasswordPage() {
           />
         </fieldset>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 disabled:opacity-60"
-        >
-          {isSubmitting && <Loader2 aria-hidden className="size-4 animate-spin" />}
+        <Button type="submit" fullWidth size="lg" loading={isSubmitting}>
           {isSubmitting ? t("auth.forgotPassword.submitting") : t("auth.forgotPassword.submit")}
-        </button>
-
-        <p className="text-center text-sm text-slate-600">
-          <Link to={paths.login} className="font-medium text-slate-950 underline underline-offset-4">
-            {t("auth.forgotPassword.back_to_login")}
-          </Link>
-        </p>
+        </Button>
       </form>
-    </main>
+    </AuthCard>
   );
 }

@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
+from pathlib import Path
+from urllib.parse import urlparse
+from uuid import uuid4
 from sqlalchemy import select
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Request, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -40,6 +43,8 @@ from app.services import user_service
 from app.services.email_service import send_reset_password_email, send_verification_email
 
 router = APIRouter(prefix="/auth", tags=["Authentification"])
+
+AVATAR_UPLOAD_DIR = Path(__file__).resolve().parents[4] / "static" / "avatars"
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -357,6 +362,55 @@ def verify_email(request: Request, payload: VerifyEmailIn, db: Session = Depends
     row.used_at = now
     db.commit()
     return {"message": "Compte activé avec succès"}
+
+
+@router.post("/me/avatar", response_model=dict)
+async def upload_avatar(
+    request: Request,
+    avatar: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    if not avatar.content_type or not avatar.content_type.startswith("image/"):
+        raise HTTPException(status_code=415, detail="Le fichier doit être une image")
+
+    AVATAR_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    extension = Path(avatar.filename).suffix.lower() or ".png"
+    if extension not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
+        raise HTTPException(status_code=415, detail="Format d'image non supporté")
+
+    filename = f"{current_user.id}-{uuid4().hex}{extension}"
+    avatar_path = AVATAR_UPLOAD_DIR / filename
+    avatar_path.write_bytes(await avatar.read())
+
+    if current_user.avatar_url:
+        parsed = urlparse(current_user.avatar_url)
+        if parsed.path.startswith("/static/avatars/"):
+            old_file = AVATAR_UPLOAD_DIR / parsed.path.split("/static/avatars/", 1)[1]
+            if old_file.exists():
+                old_file.unlink()
+
+    current_user.avatar_url = request.url_for("static", path=f"avatars/{filename}")
+    db.commit()
+    db.refresh(current_user)
+    return {"avatar_url": current_user.avatar_url}
+
+
+@router.delete("/me/avatar", status_code=status.HTTP_204_NO_CONTENT)
+def delete_avatar(
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    if current_user.avatar_url:
+        parsed = urlparse(current_user.avatar_url)
+        if parsed.path.startswith("/static/avatars/"):
+            file_path = AVATAR_UPLOAD_DIR / parsed.path.split("/static/avatars/", 1)[1]
+            if file_path.exists():
+                file_path.unlink()
+
+    current_user.avatar_url = None
+    db.commit()
 
 
 @router.get("/me", response_model=UserRead)

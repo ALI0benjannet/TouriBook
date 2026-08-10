@@ -13,7 +13,7 @@ export function useAuth() {
     })),
   );
 
-  const { data, isLoading, isError } = useMe(Boolean(accessToken) && !user);
+  const { data, isLoading, isError, refetch } = useMe(Boolean(accessToken) && !user);
 
   useEffect(() => {
     if (data && !user) {
@@ -27,5 +27,6 @@ export function useAuth() {
     isAdmin: (user ?? data)?.role === "admin",
     isLoading: Boolean(accessToken) && !user && isLoading,
     logout,
+    refreshUser: refetch,
   };
 }

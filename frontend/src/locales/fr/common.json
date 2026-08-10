@@ -5,10 +5,12 @@
     "activities": "Activités",
     "favorites": "Mes favoris",
     "bookings": "Mes réservations",
+    "account": "Mon compte",
+    "profile": "Mon profil",
+    "settings": "Paramètres",
     "login": "Connexion",
     "register": "Inscription",
-    "logout": "Déconnexion",
-    "profile": "Mon profil"
+    "logout": "Déconnexion"
   },
   "common": {
     "loading": "Chargement…",
@@ -23,5 +25,21 @@
     "validation": "Veuillez corriger les champs en surbrillance.",
     "forbidden": "Vous n'avez pas les droits nécessaires.",
     "notFound": "Page introuvable."
+  },
+  "auth": {
+    "profile": {
+      "photo": "Photo de profil",
+      "photo_hint": "JPG, PNG ou WebP — 2 Mo maximum.",
+      "change_photo": "Changer la photo",
+      "upload": "Téléverser",
+      "remove": "Supprimer",
+      "avatar_success": "Photo de profil mise à jour.",
+      "avatar_error": "Échec de l’envoi de la photo.",
+      "avatar_removed": "Photo supprimée.",
+      "avatar_type_error": "Format non supporté (JPG, PNG ou WebP).",
+      "avatar_size_error": "L’image ne doit pas dépasser 2 Mo.",
+      "personal_info_hint": "Ces informations apparaissent sur votre compte.",
+      "password_hint": "Utilisez au moins 8 caractères, avec chiffres et symboles."
+    }
   }
 }

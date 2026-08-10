@@ -40,4 +40,14 @@ export const authApi = {
     api.patch<UserRead>(endpoints.auth.me, payload).then((response) => response.data),
   changePassword: (payload: ChangePasswordPayload) =>
     api.post<Token>(endpoints.auth.changePassword, payload).then((response) => response.data),
+    async uploadAvatar(file: File): Promise<{ avatar_url: string }> {
+    const formData = new FormData();
+    formData.append("avatar", file);
+    const { data } = await api.post<{ avatar_url: string }>("/api/v1/auth/me/avatar", formData);
+    return data;
+  },
+
+  async deleteAvatar(): Promise<void> {
+    await api.delete("/api/v1/auth/me/avatar");
+  },
 };

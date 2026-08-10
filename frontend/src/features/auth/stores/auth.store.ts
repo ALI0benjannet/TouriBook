@@ -11,6 +11,7 @@ export type User = {
   role: Role;
   is_verified: boolean;
   preferred_language?: string;
+  avatar_url?: string | null;
 };
 
 type AuthState = {

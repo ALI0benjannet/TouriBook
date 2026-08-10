@@ -13,7 +13,7 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def http_error(request: Request, exc: StarletteHTTPException):
         return JSONResponse(
             status_code=exc.status_code,
-            content={"success": False, "error": {"message": exc.detail}},
+            content={"success": False, "detail": exc.detail},
         )
 
     @app.exception_handler(RequestValidationError)
@@ -22,7 +22,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
                 "success": False,
-                "error": {"message": "Données invalides", "details": exc.errors()},
+                "detail": exc.errors(),
             },
         )
 

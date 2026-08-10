@@ -1,8 +1,10 @@
 import logging
 import time
+from pathlib import Path
 
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -38,6 +40,11 @@ app.add_middleware(
 )
 
 register_exception_handlers(app)
+
+# Static files (avatars, etc.) served from backend/static
+static_dir = Path(__file__).resolve().parents[1] / "static"
+static_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
 @app.middleware("http")

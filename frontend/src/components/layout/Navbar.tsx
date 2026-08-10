@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu } from "lucide-react";
+import { Menu, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -22,15 +22,17 @@ export function Navbar() {
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "group relative px-3 py-2 text-sm font-medium transition-colors",
-      "hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none rounded-md",
+      "group relative rounded-md px-3 py-2 text-sm font-medium transition-colors",
+      "hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       isActive ? "text-foreground" : "text-muted-foreground",
     );
 
   const navUnderline = (isActive: boolean) =>
     cn(
-      "pointer-events-none absolute inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-primary transition-all duration-300 ease-out",
-      isActive ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-40 group-hover:scale-x-100",
+      "pointer-events-none absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary transition-all duration-300 ease-out",
+      isActive
+        ? "scale-x-100 opacity-100"
+        : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-40",
     );
 
   return (
@@ -38,12 +40,13 @@ export function Navbar() {
       <nav className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to={paths.home}
-          className="group flex items-center gap-2.5 font-display text-lg font-bold tracking-tight"
+          className="group flex items-center gap-2.5 text-lg font-bold tracking-tight"
         >
           <img
             src="/icon.png"
-            alt="TouriBook"
-            className="h-8 w-8 transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-6"
+            alt=""
+            aria-hidden
+            className="size-8 transition-transform duration-300 ease-out group-hover:rotate-6 group-hover:scale-105"
           />
           <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             TouriBook
@@ -66,20 +69,16 @@ export function Navbar() {
 
         <div className="ms-auto flex items-center gap-2">
           <LanguageSwitcher />
-
           <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
 
           {isAuthenticated ? (
             <UserMenu />
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
-              <Button variant="ghost" size="sm">
+              <Button asChild variant="ghost" size="sm">
                 <Link to={paths.login}>{t("nav.login")}</Link>
               </Button>
-              <Button
-                size="sm"
-                className="bg-gradient-to-r from-primary to-primary/80 shadow-sm transition-shadow hover:shadow-md hover:shadow-primary/20"
-              >
+              <Button asChild size="sm">
                 <Link to={paths.register}>{t("nav.register")}</Link>
               </Button>
             </div>
@@ -87,8 +86,8 @@ export function Navbar() {
 
           {/* Mobile */}
           <Sheet>
-            <SheetTrigger>
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu">
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label={t("nav.menu", "Menu")}>
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
@@ -101,7 +100,7 @@ export function Navbar() {
                     className={({ isActive }) =>
                       cn(
                         "rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
-                        "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                        "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         isActive ? "bg-muted text-foreground" : "text-muted-foreground",
                       )
                     }
@@ -109,6 +108,16 @@ export function Navbar() {
                     {t(l.key)}
                   </NavLink>
                 ))}
+
+                {isAuthenticated && (
+                  <NavLink
+                    to={paths.profile}
+                    className="mt-2 flex items-center gap-2 rounded-md border-t border-border px-3 py-2.5 pt-4 text-sm font-medium text-muted-foreground hover:bg-muted"
+                  >
+                    <UserRound className="size-4" />
+                    {t("nav.profile", "Mon profil")}
+                  </NavLink>
+                )}
               </div>
             </SheetContent>
           </Sheet>

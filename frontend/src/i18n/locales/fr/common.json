@@ -1,6 +1,7 @@
 {
   "app": { "name": "TouriBook", "tagline": "Réservez vos activités en un clic" },
-  "nav": { "home": "Accueil", "activities": "Activités", "favorites": "Mes favoris", "bookings": "Mes réservations", "login": "Connexion", "register": "Inscription", "profile": "Profil", "logout": "Déconnexion" },
+  "home": { "welcome": "Bienvenue", "subtitle": "Découvrez et réservez les meilleures activités touristiques.", "explore": "Explorer les activités", "profile": "Profil" },
+  "nav": { "home": "Accueil", "activities": "Activités", "favorites": "Mes favoris", "bookings": "Mes réservations", "account": "Mon compte", "profile": "Profil", "settings": "Paramètres", "login": "Connexion", "register": "Inscription", "logout": "Déconnexion", "menu": "Menu" },
   "activities": { "description": "Découvrez les meilleures activités à réserver près de chez vous." },
   "favorites": { "description": "Retrouvez vos activités favorites pour y revenir facilement." },
   "bookings": { "description": "Consultez vos réservations en cours et vos prochains voyages." },
@@ -14,7 +15,9 @@
     "submit": "Se connecter",
     "submitting": "Connexion…",
     "no_account": "Vous n'avez pas de compte ?",
-    "register": "Créer un compte"
+    "register": "Créer un compte",
+    "show_password": "Afficher le mot de passe",
+    "hide_password": "Masquer le mot de passe"
   },
   "errors": {
     "network": "Connexion impossible. Vérifiez votre réseau.",
@@ -33,7 +36,8 @@
       "rate_limited": "Trop de tentatives. Réessayez plus tard.",
       "not_admin": "Accès administrateur requis.",
       "account_disabled": "Votre compte est désactivé. Contactez le support.",
-      "unknown": "Une erreur est survenue lors de la connexion."
+      "unknown": "Une erreur est survenue lors de la connexion.",
+      "email_not_found": "Aucun compte ne correspond à cette adresse e-mail."
     },
     "password": {
       "min": "Le mot de passe doit contenir au moins 8 caractères.",
@@ -44,7 +48,8 @@
       "special": "Ajoutez un caractère spécial.",
       "required": "Ce champ est requis.",
       "mismatch": "Les mots de passe ne correspondent pas.",
-      "same_as_old": "Le nouveau mot de passe doit être différent de l'ancien."
+      "same_as_old": "Le nouveau mot de passe doit être différent de l'ancien.",
+      "success": "Mot de passe mis à jour."
     },
     "email": { "invalid": "Veuillez saisir une adresse e-mail valide." },
     "name": { "min": "Le champ doit contenir au moins 2 caractères.", "max": "Le champ ne peut pas dépasser 100 caractères." },
@@ -64,7 +69,17 @@
       "confirm_password": "Confirmer le mot de passe",
       "submit": "Réinitialiser",
       "submitting": "Réinitialisation…",
-      "success": "Votre mot de passe a été réinitialisé."
+      "success": "Votre mot de passe a été réinitialisé.",
+      "invalid_token": "Le code est invalide ou expiré.",
+      "no_email": "Adresse e-mail manquante.",
+      "resent": "Un nouveau code a été envoyé.",
+      "resend_error": "Impossible de renvoyer le code.",
+      "code_step": "Vérifiez votre code",
+      "code_label": "Code de vérification",
+      "verify_code": "Vérifier le code",
+      "resend_code": "Renvoyer le code",
+      "validating": "Vérification…",
+      "new_password_step": "Choisissez votre nouveau mot de passe"
     },
     "checkEmail": {
       "title": "Vérifiez votre boîte mail",
@@ -72,7 +87,8 @@
       "fallback_email": "votre adresse e-mail",
       "resend": "Renvoyer l'e-mail",
       "resend_wait": "Renvoyer dans {seconds}s",
-      "back_to_login": "Retour à la connexion"
+      "back_to_login": "Retour à la connexion",
+      "open_verification": "Ouvrir la page de vérification"
     },
     "verifyEmail": {
       "title": "Vérification de l'e-mail",
@@ -81,11 +97,33 @@
       "invalid": "Le lien de vérification est invalide ou expiré.",
       "missing": "Le lien de vérification est incomplet.",
       "resend": "Renvoyer l'e-mail",
-      "resend_wait": "Renvoyer dans {seconds}s"
+      "resend_wait": "Renvoyer dans {seconds}s",
+      "subtitle": "Saisissez votre e-mail et le code à 4 chiffres reçu par e-mail.",
+      "email": "Adresse e-mail",
+      "code": "Code de vérification",
+      "code_hint": "4 chiffres reçus par e-mail",
+      "submitting": "Vérification…",
+      "confirm": "Confirmer",
+      "resending": "Envoi en cours…",
+      "no_email": "Impossible de renvoyer le code sans e-mail.",
+      "resend_success": "Un nouveau code a été envoyé.",
+      "resend_error": "Impossible de renvoyer le code pour le moment."
     },
     "profile": {
       "title": "Profil",
       "subtitle": "Gérez vos informations personnelles et votre mot de passe.",
+      "photo": "Photo de profil",
+      "photo_hint": "JPG, PNG ou WebP — 2 Mo maximum.",
+      "change_photo": "Changer la photo",
+      "upload": "Téléverser",
+      "remove": "Supprimer",
+      "avatar_success": "Photo de profil mise à jour.",
+      "avatar_error": "Échec de l’envoi de la photo.",
+      "avatar_removed": "Photo supprimée.",
+      "avatar_type_error": "Format non supporté (JPG, PNG ou WebP).",
+      "avatar_size_error": "L’image ne doit pas dépasser 2 Mo.",
+      "personal_info_hint": "Ces informations apparaissent sur votre compte.",
+      "password_hint": "Utilisez au moins 8 caractères, avec chiffres et symboles.",
       "personal_info": "Informations personnelles",
       "first_name": "Prénom",
       "last_name": "Nom",
@@ -109,5 +147,6 @@
       "special": "Un caractère spécial"
     }
   },
+  "register": { "title": "Créer un compte", "first_name": "Prénom", "last_name": "Nom", "email": "E-mail", "password": "Mot de passe", "confirm_password": "Confirmer le mot de passe", "submit": "S'inscrire", "submitting": "Envoi…", "already_account": "Vous avez déjà un compte ?", "login": "Se connecter" },
   "language": { "label": "Langue", "fr": "Français", "en": "English", "ar": "العربية" }
 }

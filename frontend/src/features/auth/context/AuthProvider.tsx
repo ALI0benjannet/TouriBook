@@ -14,6 +14,7 @@ type AuthContextValue = {
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<User>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -36,12 +37,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: me.role,
         is_verified: me.is_active,
         preferred_language: undefined,
+        avatar_url: me.avatar_url ?? null,
       };
     },
     enabled: hasToken,
     retry: false,
     staleTime: 5 * 60_000,
   });
+
+  const refreshUser = useCallback(async () => {
+    const me = await authApi.me();
+    const refreshedUser: User = {
+      id: me.id.toString(),
+      email: me.email,
+      nom: me.nom,
+      prenom: me.prenom,
+      full_name: `${me.prenom} ${me.nom}`,
+      role: me.role,
+      is_verified: me.is_active,
+      preferred_language: undefined,
+      avatar_url: me.avatar_url ?? null,
+    };
+    queryClient.setQueryData(queryKeys.auth.me, refreshedUser);
+    return refreshedUser;
+  }, [queryClient]);
 
   const clearSession = useCallback(() => {
     tokenStorage.clear();
@@ -71,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: me.role,
         is_verified: me.is_active,
         preferred_language: undefined,
+        avatar_url: me.avatar_url ?? null,
       };
       queryClient.setQueryData(queryKeys.auth.me, userResult);
       return userResult;
@@ -95,8 +115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: hasToken && isLoading,
       login,
       logout,
+      refreshUser,
     }),
-    [user, hasToken, isLoading, login, logout],
+    [user, hasToken, isLoading, login, logout, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
