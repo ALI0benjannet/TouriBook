@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import i18n from "@/lib/i18n";
+import i18n from "@/i18n";
 import { toApiError } from "@/lib/api-error";
 
 export const notify = {
