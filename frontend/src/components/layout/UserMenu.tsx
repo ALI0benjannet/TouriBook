@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CalendarCheck, Heart, LogOut, Settings, UserRound } from "lucide-react";
+import { CalendarCheck, Heart, LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -82,6 +82,15 @@ export function UserMenu() {
               {t("nav.settings", "Paramètres")}
             </span>
           </DropdownMenuItem>
+
+          {user?.role === "admin" && (
+            <DropdownMenuItem onSelect={() => navigate(paths.admin.dashboard)}>
+              <span className="flex items-center gap-2">
+                <LayoutDashboard className="size-4 text-slate-400" />
+                Tableau de bord admin
+              </span>
+            </DropdownMenuItem>
+          )}
         </div>
 
         <div className="mt-2 border-t border-slate-100 pt-2">

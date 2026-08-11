@@ -8,6 +8,8 @@ import { AdminRoute } from "@/features/auth/guards/AdminRoute";
 import { GuestRoute } from "@/features/auth/guards/GuestRoute";
 import { RouteError } from "@/components/feedback/RouteError";
 import { FullPageLoader } from "@/components/feedback/FullPageLoader";
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { paths } from "@/routes/paths";
 
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
@@ -23,7 +25,17 @@ const BookingsPage = lazy(() => import("@/pages/BookingsPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const ForbiddenPage = lazy(() => import("@/pages/ForbiddenPage"));
 const DashboardPage = lazy(() => import("@/pages/admin/DashboardPage"));
-const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLoginPage"));
+
+function HomeEntry() {
+  const { isAuthenticated, isAdmin, isLoading } = useAuth();
+
+  if (isLoading) return <FullPageLoader />;
+  if (isAuthenticated && isAdmin) {
+    return <Navigate to={paths.admin.dashboard} replace />;
+  }
+
+  return withSuspense(<HomePage />);
+}
 
 const withSuspense = (node: React.ReactNode) => (
   <Suspense fallback={<FullPageLoader />}>{node}</Suspense>
@@ -34,7 +46,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     errorElement: <RouteError />,
     children: [
-      { index: true, element: withSuspense(<HomePage />) },
+      { index: true, element: <HomeEntry /> },
       { path: "403", element: withSuspense(<ForbiddenPage />) },
       { path: "activities", element: withSuspense(<ActivitiesPage />) },
       { path: "favorites", element: withSuspense(<FavoritesPage />) },
@@ -69,7 +81,6 @@ export const router = createBrowserRouter([
     path: "/admin",
     errorElement: <RouteError />,
     children: [
-      { path: "login", element: withSuspense(<AdminLoginPage />) },
       {
         element: <AdminRoute />,
         children: [

@@ -9,6 +9,7 @@ import { authApi } from "@/features/auth/api/auth.api";
 import { getAuthErrorCode } from "@/lib/api-error";
 import { loginSchema, type LoginInput } from "@/features/auth/schemas/authSchemas";
 import { authStore } from "@/features/auth/stores/auth.store";
+import type { User } from "@/features/auth/stores/auth.store";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -17,6 +18,7 @@ export function useLoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const setTokens = authStore((state) => state.setTokens);
+  const setUser = authStore((state) => state.setUser);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -32,8 +34,23 @@ export function useLoginForm() {
         const tokens = await authApi.login(data);
         setTokens(tokens.access_token, tokens.refresh_token);
 
+        const me = await authApi.me();
+        const user: User = {
+          id: me.id.toString(),
+          email: me.email,
+          nom: me.nom,
+          prenom: me.prenom,
+          full_name: `${me.prenom} ${me.nom}`,
+          role: me.role,
+          is_verified: me.is_active,
+          avatar_url: me.avatar_url,
+        };
+        setUser(user);
+
         const from = (location.state as { from?: string } | null)?.from;
-        navigate(from ?? DEFAULT_REDIRECT, { replace: true });
+        navigate(from ?? (user.role === "admin" ? "/admin/dashboard" : DEFAULT_REDIRECT), {
+          replace: true,
+        });
       } catch (error: unknown) {
         const code = getAuthErrorCode(error);
         const message = t(`auth.errors.${code}`, {
@@ -48,7 +65,7 @@ export function useLoginForm() {
         toast.error(message);
       }
     },
-    [location.state, navigate, setError, setTokens, t],
+    [location.state, navigate, setError, setTokens, setUser, t],
   );
 
   return { form, onSubmit };

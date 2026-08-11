@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, MapPin, Tags, CalendarCheck,
   CreditCard, Users, Star, LogOut,
@@ -6,6 +6,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { paths } from "@/routes/paths";
 
 const NAV = [
   { to: "/admin/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
@@ -19,6 +20,7 @@ const NAV = [
 
 export function AdminLayout() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-dvh bg-muted/30">
@@ -56,7 +58,10 @@ export function AdminLayout() {
             variant="ghost"
             size="sm"
             className="w-full justify-start"
-            onClick={() => void logout()}
+            onClick={() => {
+              logout();
+              navigate(paths.login, { replace: true });
+            }}
           >
             <LogOut className="size-4" />
             <span className="ms-2">Déconnexion</span>

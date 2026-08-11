@@ -13,7 +13,6 @@ export const paths = {
   forbidden: "/403",
   admin: {
     root: "/admin",
-    login: "/admin/login",
     dashboard: "/admin/dashboard",
   },
 } as const;

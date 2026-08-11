@@ -9,7 +9,7 @@ export function AdminRoute() {
 
   if (isLoading) return <FullPageLoader />;
   if (!isAuthenticated) {
-    return <Navigate to={paths.admin.login} state={{ from: location }} replace />;
+    return <Navigate to={paths.login} state={{ from: location }} replace />;
   }
   if (!isAdmin) return <Navigate to={paths.forbidden} replace />;
 

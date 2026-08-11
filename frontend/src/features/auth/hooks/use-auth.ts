@@ -1,17 +1,12 @@
 import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 import { authStore } from "@/features/auth/stores/auth.store";
 import { useMe } from "@/features/auth/api/use-me";
 
 export function useAuth() {
-  const { accessToken, user, setUser, logout } = authStore(
-    useShallow((state) => ({
-      accessToken: state.accessToken,
-      user: state.user,
-      setUser: state.setUser,
-      logout: state.logout,
-    })),
-  );
+  const accessToken = authStore((state) => state.accessToken);
+  const user = authStore((state) => state.user);
+  const setUser = authStore((state) => state.setUser);
+  const logout = authStore((state) => state.logout);
 
   const { data, isLoading, isError, refetch } = useMe(Boolean(accessToken) && !user);
 
