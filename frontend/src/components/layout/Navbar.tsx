@@ -1,6 +1,11 @@
 import { Link, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, UserRound } from "lucide-react";
+import {
+  LogIn,
+  Menu,
+  UserPlus,
+  UserRound,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -10,10 +15,10 @@ import { paths } from "@/routes/paths";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { to: paths.home, key: "nav.home" },
-  { to: paths.activities, key: "nav.activities" },
-  { to: paths.favorites, key: "nav.favorites" },
-  { to: paths.bookings, key: "nav.bookings" },
+  { to: paths.home, key: "nav.home", image: "/accueil.png" },
+  { to: paths.activities, key: "nav.activities", image: "/activite.png" },
+  { to: paths.favorites, key: "nav.favorites", image: "/favoris.png" },
+  { to: paths.bookings, key: "nav.bookings", image: "/reservation.png" },
 ];
 
 export function Navbar() {
@@ -55,13 +60,14 @@ export function Navbar() {
 
         {/* Desktop */}
         <div className="ms-6 hidden items-center gap-1 md:flex">
-          {links.map((l) => (
-            <NavLink key={l.to} to={l.to} className={navClass}>
+          {links.map(({ to, key, image }) => (
+            <NavLink key={to} to={to} className={navClass}>
               {({ isActive }) => (
-                <>
-                  {t(l.key)}
+                <span className="flex items-center gap-2">
+                  <img src={image} alt="" aria-hidden="true" className="size-4 object-contain" />
+                  {t(key)}
                   <span className={navUnderline(isActive)} />
-                </>
+                </span>
               )}
             </NavLink>
           ))}
@@ -76,10 +82,16 @@ export function Navbar() {
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
               <Button asChild variant="ghost" size="sm">
-                <Link to={paths.login}>{t("nav.login")}</Link>
+                <Link to={paths.login}>
+                  <LogIn className="size-4" aria-hidden="true" />
+                  {t("nav.login")}
+                </Link>
               </Button>
               <Button asChild size="sm">
-                <Link to={paths.register}>{t("nav.register")}</Link>
+                <Link to={paths.register}>
+                  <UserPlus className="size-4" aria-hidden="true" />
+                  {t("nav.register")}
+                </Link>
               </Button>
             </div>
           )}
@@ -93,19 +105,20 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="end" className="w-72">
               <div className="mt-8 flex flex-col gap-1">
-                {links.map((l) => (
+                {links.map(({ to, key, image }) => (
                   <NavLink
-                    key={l.to}
-                    to={l.to}
+                    key={to}
+                    to={to}
                     className={({ isActive }) =>
                       cn(
-                        "rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                        "flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
                         "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         isActive ? "bg-muted text-foreground" : "text-muted-foreground",
                       )
                     }
                   >
-                    {t(l.key)}
+                    <img src={image} alt="" aria-hidden="true" className="size-4 object-contain" />
+                    {t(key)}
                   </NavLink>
                 ))}
 
