@@ -1,17 +1,19 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+
 import { env } from "@/lib/env";
-import { tokenStorage } from "@/lib/storage";
+import { endpoints } from "@/lib/api/endpoints";
+import { authStore } from "@/features/auth/stores/auth.store";
 
 export const api = axios.create({
   baseURL: env.VITE_API_URL,
   timeout: 20_000,
-  withCredentials: true, // indispensable pour le cookie refresh httpOnly
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
 /* ---------- Requête : injection du JWT + langue ---------- */
 api.interceptors.request.use((config) => {
-  const token = tokenStorage.get();
+  const token = authStore.getState().accessToken;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   config.headers["Accept-Language"] = localStorage.getItem("i18nextLng") ?? "fr";
   return config;
@@ -28,13 +30,17 @@ const notifyWaiters = (token: string | null) => {
   waiters = [];
 };
 
-/** Callback branché par le AuthProvider pour déconnecter proprement. */
+/* Branché par le AuthProvider pour déconnecter proprement. */
 let onSessionExpired: () => void = () => {};
 export const setSessionExpiredHandler = (fn: () => void) => {
   onSessionExpired = fn;
 };
 
-const NO_REFRESH_PATHS = ["/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/auth/register"];
+const NO_REFRESH_PATHS = [
+  endpoints.auth.login,
+  endpoints.auth.refresh,
+  endpoints.auth.register,
+];
 
 api.interceptors.response.use(
   (response) => response,
@@ -44,15 +50,14 @@ api.interceptors.response.use(
 
     const shouldRefresh =
       status === 401 &&
-      original &&
+      !!original &&
       !original._retry &&
-      !NO_REFRESH_PATHS.some((p) => original.url?.includes(p));
+      !NO_REFRESH_PATHS.some((path) => original.url?.includes(path));
 
-    if (!shouldRefresh) return Promise.reject(error);
+    if (!shouldRefresh || !original) return Promise.reject(error);
 
     original._retry = true;
 
-    // Un refresh est déjà en cours → on attend son résultat
     if (isRefreshing) {
       const token = await new Promise<string | null>((r) => waiters.push(r));
       if (!token) return Promise.reject(error);
@@ -62,20 +67,23 @@ api.interceptors.response.use(
 
     isRefreshing = true;
     try {
+      const refreshToken = authStore.getState().refreshToken;
+      if (!refreshToken) throw error;
+
       // Instance nue : évite une boucle infinie d'intercepteurs
       const { data } = await axios.post(
-        `${env.VITE_API_URL}/api/v1/auth/refresh`,
-        {},
+        `${env.VITE_API_URL}${endpoints.auth.refresh}`,
+        { refresh_token: refreshToken },
         { withCredentials: true },
       );
-      const newToken: string = data.access_token;
-      tokenStorage.set(newToken);
-      notifyWaiters(newToken);
-      original.headers.Authorization = `Bearer ${newToken}`;
+
+      authStore.getState().setTokens(data.access_token, data.refresh_token);
+      notifyWaiters(data.access_token);
+      original.headers.Authorization = `Bearer ${data.access_token}`;
       return api(original);
     } catch (refreshError) {
       notifyWaiters(null);
-      tokenStorage.clear();
+      authStore.getState().logout();
       onSessionExpired();
       return Promise.reject(refreshError);
     } finally {

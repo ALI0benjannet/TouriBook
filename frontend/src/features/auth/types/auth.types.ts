@@ -7,6 +7,7 @@ export interface UserRead {
   prenom: string;
   role: UserRole;
   is_active: boolean;
+  is_verified: boolean;
   created_at: string;
   avatar_url: string | null;
 }

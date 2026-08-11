@@ -1,22 +1,28 @@
-const ACCESS_KEY = "touribook.access_token";
+// src/lib/storage.ts
+// ⚠️ Façade de compatibilité uniquement.
+// La source de vérité des tokens est authStore (Zustand + persist).
+// Ce fichier ne stocke rien lui-même : il délègue tout.
+// À SUPPRIMER une fois que plus aucun fichier n'importe "@/lib/storage".
 
-/**
- * Stratégie :
- *  - access token  → mémoire + localStorage (courte durée, ~15 min)
- *  - refresh token → cookie httpOnly posé par le backend (jamais lisible en JS)
- * Si ton backend renvoie le refresh dans le body, stocke-le ici aussi,
- * mais le cookie httpOnly reste la solution la plus sûre contre le XSS.
- */
-let accessTokenInMemory: string | null = null;
+import { authStore } from "@/features/auth/stores/auth.store";
 
 export const tokenStorage = {
-  get: () => accessTokenInMemory ?? localStorage.getItem(ACCESS_KEY),
-  set: (token: string) => {
-    accessTokenInMemory = token;
-    localStorage.setItem(ACCESS_KEY, token);
-  },
-  clear: () => {
-    accessTokenInMemory = null;
-    localStorage.removeItem(ACCESS_KEY);
-  },
+  /** Jeton d'accès courant (ou null). */
+  get: (): string | null => authStore.getState().accessToken,
+  getAccessToken: (): string | null => authStore.getState().accessToken,
+  getRefreshToken: (): string | null => authStore.getState().refreshToken,
+
+  /** Enregistre le jeton d'accès (et optionnellement le refresh). */
+  set: (accessToken: string, refreshToken?: string | null): void =>
+    authStore.getState().setTokens(accessToken, refreshToken),
+  setTokens: (accessToken: string, refreshToken?: string | null): void =>
+    authStore.getState().setTokens(accessToken, refreshToken),
+
+  /** Efface la session. */
+  clear: (): void => authStore.getState().logout(),
+  clearTokens: (): void => authStore.getState().logout(),
+
+  has: (): boolean => Boolean(authStore.getState().accessToken),
 };
+
+export default tokenStorage;

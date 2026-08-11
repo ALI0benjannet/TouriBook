@@ -1,1 +1,1 @@
-export { api, tokenStore } from "./api";
+export { api } from "./axios";

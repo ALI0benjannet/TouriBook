@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
+
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { AuthLayout } from "@/components/layout/AuthLayout";
@@ -24,22 +25,28 @@ const FavoritesPage = lazy(() => import("@/pages/FavoritesPage"));
 const BookingsPage = lazy(() => import("@/pages/BookingsPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const ForbiddenPage = lazy(() => import("@/pages/ForbiddenPage"));
+
 const DashboardPage = lazy(() => import("@/pages/admin/DashboardPage"));
+const AdminUsersPage = lazy(() => import("@/pages/admin/UsersPage"));
+const AdminBookingsPage = lazy(() => import("@/pages/admin/BookingsPage"));
+const AdminActivitiesPage = lazy(() => import("@/pages/admin/AdminActivitiesPage"));
+const AdminPaymentsPage = lazy(() => import("@/pages/admin/PaymentsPage"));
+
+const withSuspense = (node: React.ReactNode) => (
+  <Suspense fallback={<FullPageLoader />}>{node}</Suspense>
+);
 
 function HomeEntry() {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
 
   if (isLoading) return <FullPageLoader />;
+
   if (isAuthenticated && isAdmin) {
     return <Navigate to={paths.admin.dashboard} replace />;
   }
 
   return withSuspense(<HomePage />);
 }
-
-const withSuspense = (node: React.ReactNode) => (
-  <Suspense fallback={<FullPageLoader />}>{node}</Suspense>
-);
 
 export const router = createBrowserRouter([
   {
@@ -51,7 +58,6 @@ export const router = createBrowserRouter([
       { path: "activities", element: withSuspense(<ActivitiesPage />) },
       { path: "favorites", element: withSuspense(<FavoritesPage />) },
       { path: "bookings", element: withSuspense(<BookingsPage />) },
-
       {
         element: <GuestRoute />,
         children: [
@@ -68,14 +74,12 @@ export const router = createBrowserRouter([
           },
         ],
       },
-
       {
         element: <ProtectedRoute />,
         children: [{ path: "profile", element: withSuspense(<ProfilePage />) }],
       },
     ],
   },
-
   // Espace administrateur
   {
     path: "/admin",
@@ -89,17 +93,15 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <Navigate to="dashboard" replace /> },
               { path: "dashboard", element: withSuspense(<DashboardPage />) },
+              { path: "users", element: withSuspense(<AdminUsersPage />) },
+              { path: "bookings", element: withSuspense(<AdminBookingsPage />) },
+              { path: "activities", element: withSuspense(<AdminActivitiesPage />) },
+              { path: "payments", element: withSuspense(<AdminPaymentsPage />) },
             ],
           },
         ],
       },
     ],
   },
-
   { path: "*", element: withSuspense(<NotFoundPage />) },
 ]);
-
-
-
-
-

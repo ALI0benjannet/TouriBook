@@ -12,7 +12,7 @@ import { toApiError } from "@/lib/api/errors";
 
 export function useProfileForm() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const profileForm = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
@@ -35,12 +35,8 @@ export function useProfileForm() {
   const onSubmitProfile = useCallback(
     async (data: UpdateProfileInput) => {
       try {
-        const updatedUser = await authApi.updateProfile({ nom: data.nom, prenom: data.prenom });
-        authStore.getState().setUser({
-          ...user,
-          nom: updatedUser.nom,
-          prenom: updatedUser.prenom,
-        } as typeof user);
+        await authApi.updateProfile({ nom: data.nom, prenom: data.prenom });
+        await refreshUser();
         toast.success(t("auth.profile.success"));
       } catch (error: unknown) {
         const apiError = toApiError(error);
@@ -49,7 +45,7 @@ export function useProfileForm() {
         toast.error(message);
       }
     },
-    [profileForm, t, user],
+    [profileForm, refreshUser, t],
   );
 
   const onSubmitPassword = useCallback(
@@ -60,7 +56,8 @@ export function useProfileForm() {
           new_password: data.new_password,
           refresh_token: authStore.getState().refreshToken ?? "",
         });
-        authStore.setState({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token });
+        authStore.getState().setTokens(tokens.access_token, tokens.refresh_token);
+        await refreshUser();
         passwordForm.reset();
         toast.success(t("auth.password.success"));
       } catch (error: unknown) {
@@ -71,7 +68,7 @@ export function useProfileForm() {
         toast.error(message);
       }
     },
-    [passwordForm, t],
+    [passwordForm, refreshUser, t],
   );
 
   return { profileForm, onSubmitProfile, passwordForm, onSubmitPassword };

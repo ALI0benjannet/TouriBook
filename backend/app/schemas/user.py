@@ -52,5 +52,6 @@ class UserRead(UserBase):
     id: int
     role: UserRole
     is_active: bool
+    is_verified: bool
     created_at: datetime
     avatar_url: str | None = None
