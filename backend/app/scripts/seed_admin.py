@@ -4,7 +4,7 @@ import os
 # Ajoute le dossier parent (backend/) au chemin de recherche
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from app.database import SessionLocal
+from app.core.database import SessionLocal
 from app.models.enums import UserRole
 from app.models.users import User
 from app.core.security import hash_password

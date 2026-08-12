@@ -38,8 +38,8 @@ from app.schemas.token import (
     VerifyEmailIn,
 )
 from app.schemas.user import UserCreate, UserRead, UserUpdate
-from app.services import user_service
-from app.services.email_service import send_reset_password_email, send_verification_email
+from app.services import user_service, auth_service, email_service
+import logging
 
 router = APIRouter(prefix="/auth", tags=["Authentification"])
 
@@ -57,29 +57,16 @@ def register(
     if user_service.get_by_email(db, payload.email):
         raise HTTPException(status_code=409, detail="Un compte existe déjà avec cet e-mail")
 
-    user = User(
-        email=payload.email.lower(),
-        nom=payload.nom,
-        prenom=payload.prenom,
-        hashed_password=hash_password(payload.password),
-        role=UserRole.tourist,
-        is_verified=False,
+    user, raw = auth_service.register_user(
+        db, payload.email, payload.nom, payload.prenom, payload.password
     )
-    db.add(user)
-    db.flush()
-
-    raw = generate_verification_code()
-    db.add(
-        EmailVerificationToken(
-            user_id=user.id,
-            token_hash=hash_token(raw),
-            expires_at=expires_in(hours=settings.EMAIL_VERIFICATION_EXPIRE_HOURS),
-        )
-    )
-    db.commit()
-
     nom = f"{payload.prenom} {payload.nom}"
-    background.add_task(send_verification_email, user.email, nom, raw)
+    logger = logging.getLogger(__name__)
+    logger.info("Scheduling verification email for %s", user.email)
+    try:
+        background.add_task(email_service.send_verification_email, user.email, nom, raw)
+    except Exception:
+        logger.exception("Failed to schedule verification email for %s", user.email)
     return {"message": "Compte créé. Vérifiez votre boîte mail pour l'activer."}
 
 
@@ -93,6 +80,8 @@ def _issue_tokens(user: User, refresh_token: str) -> Token:
 @router.post("/login", response_model=Token)
 @limiter.limit("5/minute")
 def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)):
+    logger = logging.getLogger(__name__)
+    logger.info("Login attempt for %s", payload.email)
     user = user_service.authenticate(db, payload.email, payload.password)
     if not user:
         raise HTTPException(
@@ -119,17 +108,7 @@ def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)
             },
         )
 
-    raw_refresh = generate_raw_token()
-    db.add(
-        RefreshToken(
-            user_id=user.id,
-            token_hash=hash_token(raw_refresh),
-            expires_at=expires_in(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
-            user_agent=request.headers.get("user-agent"),
-        )
-    )
-    db.commit()
-
+    raw_refresh = auth_service.create_refresh_token(db, user, request.headers.get("user-agent"))
     return _issue_tokens(user, raw_refresh)
 
 
@@ -183,27 +162,13 @@ def login_form(
 @router.post("/refresh", response_model=Token)
 @limiter.limit("10/minute")
 def refresh(payload: RefreshRequest, request: Request, db: Session = Depends(get_db)):
-    row = db.scalar(
-        select(RefreshToken).where(
-            RefreshToken.token_hash == hash_token(payload.refresh_token)
+    try:
+        user, new_raw = auth_service.rotate_refresh_token(
+            db, payload.refresh_token, request.headers.get("user-agent")
         )
-    )
-    if not row or row.revoked or row.expires_at < datetime.now(timezone.utc):
+    except ValueError:
         raise HTTPException(status_code=401, detail="Session expirée, reconnectez-vous")
-
-    row.revoked = True
-    new_raw = generate_raw_token()
-    db.add(
-        RefreshToken(
-            user_id=row.user_id,
-            token_hash=hash_token(new_raw),
-            expires_at=expires_in(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
-            user_agent=request.headers.get("user-agent"),
-        )
-    )
-    db.commit()
-
-    return _issue_tokens(row.user, new_raw)
+    return _issue_tokens(user, new_raw)
 
 
 @router.post("/forgot-password")
@@ -217,17 +182,9 @@ async def forgot_password(
     user = user_service.get_by_email(db, payload.email.lower())
 
     if user and user.is_active:
-        raw = generate_verification_code()
-        db.add(
-            PasswordResetToken(
-                user_id=user.id,
-                token_hash=hash_token(raw),
-                expires_at=expires_in(minutes=settings.PASSWORD_RESET_EXPIRE_MINUTES),
-            )
-        )
-        db.commit()
+        raw = auth_service.create_password_reset_token(db, user)
         nom = f"{user.prenom} {user.nom}"
-        background.add_task(send_reset_password_email, user.email, nom, raw)
+        background.add_task(email_service.send_reset_password_email, user.email, nom, raw)
 
     return {"message": "Si un compte existe avec cet e-mail, un lien vient d'être envoyé."}
 
@@ -250,23 +207,10 @@ def validate_reset_token(request: Request, token: str, db: Session = Depends(get
 @router.post("/reset-password")
 @limiter.limit("5/minute")
 def reset_password(request: Request, payload: ResetPasswordIn, db: Session = Depends(get_db)):
-    row = db.scalar(
-        select(PasswordResetToken).where(
-            PasswordResetToken.token_hash == hash_token(payload.token)
-        )
-    )
-
-    if not is_valid(row):
+    try:
+        auth_service.reset_password(db, payload.token, payload.new_password)
+    except ValueError:
         raise HTTPException(status_code=400, detail="Lien invalide ou expiré")
-
-    user = row.user
-    user.hashed_password = hash_password(payload.new_password)
-    row.used_at = datetime.now(timezone.utc)
-    db.query(RefreshToken).filter(
-        RefreshToken.user_id == user.id,
-        RefreshToken.revoked.is_(False),
-    ).update({"revoked": True}, synchronize_session=False)
-    db.commit()
     return {"message": "Mot de passe réinitialisé. Vous pouvez vous connecter."}
 
 
@@ -278,29 +222,23 @@ def change_password(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    if not user_service.verify_password(payload.old_password, current_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Ancien mot de passe incorrect")
-    if user_service.verify_password(payload.new_password, current_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit être différent de l'ancien")
-
-    current_user.hashed_password = hash_password(payload.new_password)
-    current_hash = hash_token(payload.refresh_token)
-    db.query(RefreshToken).filter(
-        RefreshToken.user_id == current_user.id,
-        RefreshToken.token_hash != current_hash,
-        RefreshToken.revoked.is_(False),
-    ).update({"revoked": True}, synchronize_session=False)
-    db.commit()
+    try:
+        auth_service.change_password(
+            db, current_user, payload.old_password, payload.new_password, payload.refresh_token
+        )
+    except ValueError as exc:
+        if str(exc) == "old_password_incorrect":
+            raise HTTPException(status_code=400, detail="Ancien mot de passe incorrect")
+        if str(exc) == "new_same_as_old":
+            raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit être différent de l'ancien")
+        raise
     return {"message": "Mot de passe changé avec succès."}
 
 
 @router.post("/logout")
 @limiter.limit("10/minute")
 def logout(request: Request, payload: TokenIn, db: Session = Depends(get_db)):
-    db.query(RefreshToken).filter(
-        RefreshToken.token_hash == hash_token(payload.token)
-    ).update({"revoked": True}, synchronize_session=False)
-    db.commit()
+    auth_service.revoke_refresh_token(db, payload.token)
     return {"message": "Déconnecté"}
 
 
@@ -314,52 +252,20 @@ def resend_verification(
 ):
     user = user_service.get_by_email(db, payload.email)
     if user:
-        now = datetime.now(timezone.utc)
-        tokens = db.scalars(
-            select(EmailVerificationToken).where(EmailVerificationToken.user_id == user.id)
-        ).all()
-        for token in tokens:
-            token.used_at = now
-
-        raw = generate_verification_code()
-        db.add(
-            EmailVerificationToken(
-                user_id=user.id,
-                token_hash=hash_token(raw),
-                expires_at=expires_in(hours=settings.EMAIL_VERIFICATION_EXPIRE_HOURS),
-            )
-        )
-        db.commit()
+        raw = auth_service.resend_verification(db, user)
         nom = f"{user.prenom} {user.nom}"
-        background.add_task(send_verification_email, user.email, nom, raw)
+        background.add_task(email_service.send_verification_email, user.email, nom, raw)
 
     return {"message": "Si cet e-mail existe, un nouveau lien de vérification a été envoyé."}
 
 
 @router.post("/verify-email")
 @limiter.limit("5/minute")
-def verify_email(request: Request, payload: VerifyEmailIn, db: Session = Depends(get_db)):
-    row = db.scalar(
-        select(EmailVerificationToken)
-        .join(EmailVerificationToken.user)
-        .where(
-            User.email == payload.email.lower(),
-            EmailVerificationToken.token_hash == hash_token(payload.token),
-        )
-    )
-
-    if not is_valid(row):
+def verify_email(request: Request, payload: TokenIn, db: Session = Depends(get_db)):
+    try:
+        auth_service.verify_email(db, None, payload.token)
+    except ValueError:
         raise HTTPException(status_code=400, detail="Code invalide ou expiré")
-
-    user = row.user
-    if user.is_verified:
-        return {"message": "Compte déjà vérifié"}
-
-    now = datetime.now(timezone.utc)
-    user.is_verified = True
-    user.email_verified_at = now
-    row.used_at = now
-    db.commit()
     return {"message": "Compte activé avec succès"}
 
 

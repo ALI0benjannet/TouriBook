@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base
+from app.core.database import Base
 from app.models.enums import BookingStatus
 from sqlalchemy import Enum as SQLAlchemyEnum
 

@@ -1,7 +1,7 @@
 """add created_at and updated_at to users
 
 Revision ID: dfca0dde039f
-Revises: ae41889d5623
+Revises: c7e9a1b2d304
 Create Date: 2026-08-05 17:18:39.021806
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'dfca0dde039f'
-down_revision: Union[str, Sequence[str], None] = 'ae41889d5623'
+down_revision: Union[str, Sequence[str], None] = 'c7e9a1b2d304'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

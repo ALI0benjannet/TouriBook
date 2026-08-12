@@ -21,6 +21,8 @@ fm = FastMail(conf)
 
 
 async def send_verification_email(email: str, name: str, token: str) -> None:
+    import logging
+    logger = logging.getLogger(__name__)
     link = f"{settings.FRONTEND_URL}/verify-email?email={email}"
     message = MessageSchema(
         subject="Confirmez votre compte TouriBook",
@@ -33,10 +35,17 @@ async def send_verification_email(email: str, name: str, token: str) -> None:
         },
         subtype=MessageType.html,
     )
-    await fm.send_message(message, template_name="verify_account.html")
+    try:
+        await fm.send_message(message, template_name="verify_account.html")
+        logger.info("Verification email sent to %s", email)
+    except Exception:
+        logger.exception("Failed to send verification email to %s", email)
+        raise
 
 
 async def send_reset_password_email(email: str, name: str, token: str) -> None:
+    import logging
+    logger = logging.getLogger(__name__)
     link = f"{settings.FRONTEND_URL}/reset-password?email={email}"
     message = MessageSchema(
         subject="Réinitialisation de votre mot de passe",
@@ -49,4 +58,9 @@ async def send_reset_password_email(email: str, name: str, token: str) -> None:
         },
         subtype=MessageType.html,
     )
-    await fm.send_message(message, template_name="reset_password.html")
+    try:
+        await fm.send_message(message, template_name="reset_password.html")
+        logger.info("Reset password email sent to %s", email)
+    except Exception:
+        logger.exception("Failed to send reset password email to %s", email)
+        raise

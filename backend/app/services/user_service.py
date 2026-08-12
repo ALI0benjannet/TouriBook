@@ -1,4 +1,5 @@
 from sqlalchemy import select
+import logging
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password, verify_password
@@ -32,7 +33,18 @@ def create_user(
 
 
 def authenticate(db: Session, email: str, password: str) -> User | None:
+    logger = logging.getLogger(__name__)
+    logger.debug("Authenticating user: %s", email)
     user = get_by_email(db, email)
-    if not user or not verify_password(password, user.hashed_password):
+    if not user:
+        logger.debug("User not found for email: %s", email)
+        return None
+    try:
+        ok = verify_password(password, user.hashed_password)
+    except Exception as exc:
+        logger.exception("Error verifying password for user %s: %s", email, exc)
+        return None
+    logger.debug("Password verification for %s: %s", email, ok)
+    if not ok:
         return None
     return user

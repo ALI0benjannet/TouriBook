@@ -1,7 +1,7 @@
 """add avatar url to users
 
 Revision ID: b4a7d8e9f012
-Revises: f9768632d239
+Revises: ae41889d5623
 """
 from typing import Sequence, Union
 
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 revision: str = "b4a7d8e9f012"
-down_revision: Union[str, Sequence[str], None] = "f9768632d239"
+down_revision: Union[str, Sequence[str], None] = "ae41889d5623"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

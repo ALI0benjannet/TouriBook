@@ -10,6 +10,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.database import SessionLocal
 from app.core.exceptions import register_exception_handlers
 from app.core.limiter import limiter, rate_limit_exceeded_handler
 from app.core.logging import setup_logging
@@ -77,6 +78,110 @@ def test_email(background_tasks: BackgroundTasks):
         "test-token-123",
     )
     return {"status": "ok", "message": "E-mail de test planifié"}
+
+
+# ============ TEMPORARY DEBUG ENDPOINTS (REMOVE AFTER DIAGNOSTICS) ============
+
+@app.post("/debug/test-login", tags=["DEBUG"])
+def debug_test_login(email: str, password: str):
+    """
+    Temporary endpoint to diagnose login failures.
+    Logs detailed info about user lookup, password hash format, and verify result.
+    """
+    from app.services import user_service
+    from app.core.security import pwd_context, verify_password
+    
+    # Get a DB session
+    db = SessionLocal()
+    try:
+        user = user_service.get_by_email(db, email)
+        if not user:
+            return {
+                "status": "user_not_found",
+                "email": email,
+                "message": "User not found in database"
+            }
+        
+        # User found, check password
+        hash_info = {
+            "stored_hash": user.hashed_password[:50] + "..." if len(user.hashed_password) > 50 else user.hashed_password,
+            "hash_length": len(user.hashed_password),
+            "hash_format": user.hashed_password.split("$")[0] if "$" in user.hashed_password else "unknown",
+        }
+        
+        # Test verify_password
+        try:
+            result = verify_password(password, user.hashed_password)
+            return {
+                "status": "login_attempt_complete",
+                "email": email,
+                "user_found": True,
+                "user_id": user.id,
+                "password_verify_result": result,
+                "hash_info": hash_info,
+                "pwd_context_schemes": pwd_context.schemes(),
+                "message": "Password verification returned " + str(result)
+            }
+        except Exception as e:
+            return {
+                "status": "password_verify_error",
+                "email": email,
+                "user_found": True,
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "hash_info": hash_info,
+                "pwd_context_schemes": pwd_context.schemes(),
+            }
+    finally:
+        db.close()
+
+
+@app.post("/debug/test-smtp", tags=["DEBUG"])
+def debug_test_smtp():
+    """
+    Temporary endpoint to test real SMTP connectivity and send a test email.
+    Does NOT use background tasks — runs synchronously to capture exceptions.
+    """
+    import asyncio
+    from app.services import email_service
+    
+    try:
+        # Run async function synchronously
+        asyncio.run(
+            email_service.send_verification_email(
+                email="test-recipient@example.com",
+                name="Debug Test",
+                token="debug-token-12345"
+            )
+        )
+        return {
+            "status": "success",
+            "message": "SMTP test email sent successfully",
+            "mail_config": {
+                "MAIL_SERVER": settings.MAIL_SERVER,
+                "MAIL_PORT": settings.MAIL_PORT,
+                "MAIL_FROM": settings.MAIL_FROM,
+                "MAIL_STARTTLS": settings.MAIL_STARTTLS,
+                "MAIL_SSL_TLS": settings.MAIL_SSL_TLS,
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_message": str(e),
+            "error_type": type(e).__name__,
+            "mail_config": {
+                "MAIL_SERVER": settings.MAIL_SERVER,
+                "MAIL_PORT": settings.MAIL_PORT,
+                "MAIL_FROM": settings.MAIL_FROM,
+                "MAIL_STARTTLS": settings.MAIL_STARTTLS,
+                "MAIL_SSL_TLS": settings.MAIL_SSL_TLS,
+            },
+            "traceback_hint": "Check logs for full traceback"
+        }
+
+
+# ============ END DEBUG ENDPOINTS ============
 
 
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
