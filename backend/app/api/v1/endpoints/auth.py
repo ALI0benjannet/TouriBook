@@ -21,12 +21,11 @@ from app.core.security import (
     is_valid,
 )
 from app.db.session import get_db
-from app.models.token import (
-    EmailVerificationToken,
-    PasswordResetToken,
-    RefreshToken,
-)
-from app.models.user import User, UserRole
+from app.models.email_verification_tokens import EmailVerificationToken
+from app.models.enums import UserRole
+from app.models.password_reset_tokens import PasswordResetToken
+from app.models.refresh_tokens import RefreshToken
+from app.models.users import User
 from app.schemas.token import (
     ChangePasswordIn,
     EmailIn,

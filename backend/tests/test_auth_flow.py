@@ -3,9 +3,10 @@ from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 from sqlalchemy import delete
 from app.main import app
-from app.database import SessionLocal, engine, Base
-from app.models.user import User
-from app.models.token import EmailVerificationToken, PasswordResetToken
+from app.database import Base, SessionLocal, engine
+from app.models.email_verification_tokens import EmailVerificationToken
+from app.models.password_reset_tokens import PasswordResetToken
+from app.models.users import User
 from app.services import email_service
 
 

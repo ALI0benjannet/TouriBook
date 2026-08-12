@@ -6,8 +6,12 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import require_admin
 from app.db.session import get_db
-from app.models.models import Activity, Booking, BookingStatus, Category, Payment
-from app.models.user import User
+from app.models.activities import Activity
+from app.models.bookings import Booking
+from app.models.categories import Category
+from app.models.enums import BookingStatus
+from app.models.payments import Payment
+from app.models.users import User
 from app.schemas.admin import (
     AdminActivityRow,
     AdminBookingRow,
@@ -70,7 +74,7 @@ def list_users(
             nom=u.nom,
             prenom=u.prenom,
             email=u.email,
-            role=u.role.value,
+            role=u.role.name,
             is_active=u.is_active,
             is_verified=u.is_verified,
             phone=u.phone,

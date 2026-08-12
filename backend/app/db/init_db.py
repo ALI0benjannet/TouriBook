@@ -1,5 +1,5 @@
 from app.db.session import get_db
-from app.models.user import UserRole
+from app.models.enums import UserRole
 from app.schemas.user import UserCreate
 from app.services import user_service
 

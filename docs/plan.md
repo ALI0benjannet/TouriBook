@@ -139,8 +139,8 @@ Plan de réalisation complet de **TouriBook**, plateforme de réservation d'acti
 
 ### Espace administrateur
 
-- [ ]  Page de connexion admin sécurisée (`/admin/login`)
-- [ ]  Redirection selon le rôle après connexion (touriste → accueil, admin → dashboard)
+- [x]  Page de connexion admin sécurisée (`/admin/login`)
+- [x]  Redirection selon le rôle après connexion (touriste → accueil, admin → dashboard)
 - [ ]  Layout admin (sidebar + protection de toutes les routes `/admin/*`)
 - [ ]  Page 403 / accès refusé
 

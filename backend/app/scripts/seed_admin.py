@@ -5,7 +5,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from app.database import SessionLocal
-from app.models.user import User, UserRole          # <- import modifié
+from app.models.enums import UserRole
+from app.models.users import User
 from app.core.security import hash_password
 from app.core.config import settings
 from datetime import datetime, timezone

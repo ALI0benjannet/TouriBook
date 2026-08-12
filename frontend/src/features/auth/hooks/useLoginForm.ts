@@ -11,6 +11,18 @@ import { loginSchema, type LoginInput } from "@/features/auth/schemas/authSchema
 import { authStore } from "@/features/auth/stores/auth.store";
 
 const DEFAULT_REDIRECT = "/";
+const ADMIN_ROOT = "/admin";
+const ADMIN_DASHBOARD = "/admin/dashboard";
+
+export function resolvePostLoginRedirect(from: string | undefined, role: "tourist" | "admin") {
+  if (from && from.startsWith(ADMIN_ROOT)) {
+    return role === "admin" ? ADMIN_DASHBOARD : DEFAULT_REDIRECT;
+  }
+
+  if (from) return from;
+
+  return role === "admin" ? ADMIN_DASHBOARD : DEFAULT_REDIRECT;
+}
 
 export function useLoginForm() {
   const { t } = useTranslation();
@@ -35,9 +47,8 @@ export function useLoginForm() {
         const me = await authApi.me();
 
         const from = (location.state as { from?: string } | null)?.from;
-        navigate(from ?? (me.role === "admin" ? "/admin/dashboard" : DEFAULT_REDIRECT), {
-          replace: true,
-        });
+        const redirectTo = resolvePostLoginRedirect(from, me.role);
+        navigate(redirectTo, { replace: true });
       } catch (error: unknown) {
         const code = getAuthErrorCode(error);
         const message = t(`auth.errors.${code}`, {

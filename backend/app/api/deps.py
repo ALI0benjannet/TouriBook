@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.security import ACCESS, decode_token
 from app.db.session import get_db
-from app.models.user import User, UserRole
+from app.models.enums import UserRole
+from app.models.users import User
 from app.services import user_service
 
 oauth2_scheme = OAuth2PasswordBearer(

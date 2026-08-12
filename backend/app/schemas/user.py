@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_serializer, model_validator
 
-from app.models.user import UserRole
+from app.models.enums import UserRole
 
 
 class UserBase(BaseModel):
@@ -55,3 +55,7 @@ class UserRead(UserBase):
     is_verified: bool
     created_at: datetime
     avatar_url: str | None = None
+
+    @field_serializer("role")
+    def serialize_role(self, role: UserRole) -> str:
+        return role.name

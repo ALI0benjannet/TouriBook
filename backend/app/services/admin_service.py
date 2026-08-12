@@ -1,16 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from app.models.models import (
-    Activity,
-    Availability,
-    Booking,
-    BookingStatus,
-    Category,
-    Payment,
-    PaymentStatus,
-)
-from app.models.user import User, UserRole
+from app.models.activities import Activity
+from app.models.availabilities import Availability
+from app.models.bookings import Booking
+from app.models.categories import Category
+from app.models.enums import BookingStatus, PaymentStatus, UserRole
+from app.models.payments import Payment
+from app.models.users import User
 from app.schemas.admin import (
     ActivityStats,
     BookingStats,

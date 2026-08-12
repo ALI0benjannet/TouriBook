@@ -95,7 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await authApi.logout();
+      const refreshToken = authStore.getState().refreshToken;
+      await authApi.logout(refreshToken ?? undefined);
     } catch {
       // On ignore l'échec réseau : la session locale doit partir quoi qu'il arrive.
     } finally {
