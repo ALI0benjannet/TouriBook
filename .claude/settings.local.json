@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(backend/.venv/Scripts/python.exe -m pip install -e libs/common --quiet)",
+      "Bash(backend/.venv/Scripts/python.exe -c \"import touribook_common; print\\('touribook_common OK'\\)\")"
+    ]
+  }
+}
