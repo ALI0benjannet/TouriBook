@@ -8,7 +8,7 @@ import arCommon from "./locales/ar/common.json";
 
 export const SUPPORTED_LANGUAGES = ["fr", "en", "ar"] as const;
 export type Language = (typeof SUPPORTED_LANGUAGES)[number];
-export const RTL_LANGUAGES: Language[] = ["fr"];
+export const RTL_LANGUAGES: Language[] = ["ar"];
 
 const isBrowser = typeof window !== "undefined";
 
