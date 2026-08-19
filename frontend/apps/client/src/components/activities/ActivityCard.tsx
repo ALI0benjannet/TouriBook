@@ -43,8 +43,7 @@ export function ActivityCard({
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <Link
           href={detailPath}
-          className="font-display text-lg leading-snug text-foreground transition-colors hover:text-accent"
-        >
+          className="font-display text-lg leading-snug text-foreground transition-colors hover:text-blue-600"        >
           {activity.titre}
         </Link>
         <div className="text-[13px] text-muted-foreground">
@@ -62,8 +61,7 @@ export function ActivityCard({
           </div>
           <Link
             href={detailPath}
-            className="rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-background transition-colors hover:bg-accent"
-          >
+            className="rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-background transition-colors hover:bg-blue-600"          >
             {labels.book}
           </Link>
         </div>
