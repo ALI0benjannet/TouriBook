@@ -41,11 +41,18 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 class CategoryIn(BaseModel):
     nom: str = Field(min_length=2, max_length=100)
+    nom_en: str | None = Field(default=None, max_length=100)
+    nom_ar: str | None = Field(default=None, max_length=100)
 
 
 class ActivityIn(BaseModel):
     titre: str = Field(min_length=3, max_length=200)
     description: str = Field(min_length=10)
+    # Traductions facultatives ; vides, le français est affiché en repli.
+    titre_en: str | None = Field(default=None, max_length=200)
+    titre_ar: str | None = Field(default=None, max_length=200)
+    description_en: str | None = None
+    description_ar: str | None = None
     prix: float = Field(gt=0)
     duree: int = Field(gt=0, description="Durée en minutes")
     localisation: str = Field(min_length=2, max_length=255)
@@ -57,6 +64,10 @@ class ActivityIn(BaseModel):
 class ActivityUpdate(BaseModel):
     titre: str | None = Field(default=None, min_length=3, max_length=200)
     description: str | None = Field(default=None, min_length=10)
+    titre_en: str | None = Field(default=None, max_length=200)
+    titre_ar: str | None = Field(default=None, max_length=200)
+    description_en: str | None = None
+    description_ar: str | None = None
     prix: float | None = Field(default=None, gt=0)
     duree: int | None = Field(default=None, gt=0)
     localisation: str | None = Field(default=None, min_length=2, max_length=255)
@@ -93,7 +104,7 @@ def _get_or_404(db: Session, model, obj_id: int, label: str):
 def create_category(payload: CategoryIn, db: Session = Depends(get_db)):
     if db.scalar(select(Category).where(Category.nom == payload.nom)):
         raise HTTPException(status_code=409, detail="Cette catégorie existe déjà")
-    category = Category(nom=payload.nom)
+    category = Category(**payload.model_dump())
     db.add(category)
     db.commit()
     db.refresh(category)
@@ -108,7 +119,8 @@ def update_category(category_id: int, payload: CategoryIn, db: Session = Depends
     )
     if duplicate:
         raise HTTPException(status_code=409, detail="Cette catégorie existe déjà")
-    category.nom = payload.nom
+    for key, value in payload.model_dump().items():
+        setattr(category, key, value)
     db.commit()
     db.refresh(category)
     return category

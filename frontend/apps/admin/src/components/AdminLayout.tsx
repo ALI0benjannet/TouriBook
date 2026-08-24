@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, MapPin, Tags, CalendarCheck,
   CreditCard, Users, ExternalLink, LogOut,
@@ -8,18 +9,22 @@ import { useAuth } from "@touribook/auth/hooks/use-auth";
 import { cn } from "@touribook/ui/lib/utils";
 import { env } from "@touribook/api/env";
 
+import { AdminLanguageSwitcher } from "./AdminLanguageSwitcher";
+
+/** Entrées de navigation : on stocke la clé i18n, pas le libellé. */
 const NAV = [
-  { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
-  { to: "/activities", label: "Activités", icon: MapPin },
-  { to: "/categories", label: "Catégories", icon: Tags },
-  { to: "/bookings", label: "Réservations", icon: CalendarCheck },
-  { to: "/payments", label: "Paiements", icon: CreditCard },
-  { to: "/users", label: "Utilisateurs", icon: Users },
+  { to: "/dashboard", key: "admin.nav.dashboard", icon: LayoutDashboard },
+  { to: "/activities", key: "admin.nav.activities", icon: MapPin },
+  { to: "/categories", key: "admin.nav.categories", icon: Tags },
+  { to: "/bookings", key: "admin.nav.bookings", icon: CalendarCheck },
+  { to: "/payments", key: "admin.nav.payments", icon: CreditCard },
+  { to: "/users", key: "admin.nav.users", icon: Users },
 ];
 
 export function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex min-h-dvh bg-muted/30">
@@ -28,11 +33,11 @@ export function AdminLayout() {
           <span className="flex size-9 items-center justify-center rounded-xl bg-white p-1 shadow-sm">
             <img src="/admin/logo.png" alt="" className="size-full object-contain" />
           </span>
-          <span>TouriBook Admin</span>
+          <span>{t("admin.brand")}</span>
         </div>
 
         <nav className="flex-1 space-y-1 p-3">
-          {NAV.map(({ to, label, icon: Icon }) => (
+          {NAV.map(({ to, key, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -46,7 +51,7 @@ export function AdminLayout() {
               }
             >
               <Icon className="size-4" />
-              {label}
+              {t(key)}
             </NavLink>
           ))}
 
@@ -55,11 +60,12 @@ export function AdminLayout() {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <ExternalLink className="size-4" />
-            Voir le site
+            {t("admin.nav.viewSite")}
           </a>
         </nav>
 
         <div className="border-t p-3">
+          <AdminLanguageSwitcher />
           <p className="truncate px-3 pb-2 text-xs text-muted-foreground">
             {user?.email}
           </p>
@@ -73,7 +79,7 @@ export function AdminLayout() {
             }}
           >
             <LogOut className="size-4" />
-            <span className="ms-2">Déconnexion</span>
+            <span className="ms-2">{t("admin.nav.logout")}</span>
           </Button>
         </div>
       </aside>

@@ -17,6 +17,9 @@ class Category(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nom: Mapped[str] = mapped_column(String(100), unique=True)
+    # Traductions optionnelles ; `nom` (français) sert de repli.
+    nom_en: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    nom_ar: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     activities = relationship("Activity", back_populates="category")
 
@@ -27,6 +30,12 @@ class Activity(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     titre: Mapped[str] = mapped_column(String(200))
     description: Mapped[str] = mapped_column(Text)
+    # Traductions optionnelles : le français (colonnes ci-dessus) sert de repli
+    # quand une langue n'est pas renseignée.
+    titre_en: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    titre_ar: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    description_en: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description_ar: Mapped[str | None] = mapped_column(Text, nullable=True)
     prix: Mapped[float] = mapped_column(Float)
     duree: Mapped[int] = mapped_column(Integer)
     localisation: Mapped[str] = mapped_column(String(255))

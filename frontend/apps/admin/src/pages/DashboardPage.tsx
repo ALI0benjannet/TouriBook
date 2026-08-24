@@ -1,4 +1,5 @@
 import { AlertCircle, CalendarCheck, MapPin, RefreshCw, Users, Wallet } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@touribook/ui/components/ui/button";
 import { useAdminStats } from "@/features/admin/hook/use-admin";
@@ -11,10 +12,10 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: "bg-rose-100 text-rose-700",
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  confirmed: "Confirmée",
-  pending: "En attente",
-  cancelled: "Annulée",
+const STATUS_KEYS: Record<string, string> = {
+  confirmed: "admin.status.confirmed",
+  pending: "admin.status.pending",
+  cancelled: "admin.status.cancelled",
 };
 
 function StatCard({
@@ -50,23 +51,24 @@ function StatCard({
 
 export default function DashboardPage() {
   const { data, isLoading, isFetching, isError, error, refetch } = useAdminStats();
+  const { t } = useTranslation();
 
   if (isError) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Tableau de bord</h1>
+        <h1 className="text-2xl font-semibold">{t("admin.dashboard.title")}</h1>
         <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
           <AlertCircle className="mt-0.5 size-5 text-destructive" />
           <div className="space-y-2">
             <p className="font-medium text-destructive">
-              Impossible de charger les statistiques
+              {t("admin.dashboard.statsError")}
             </p>
             <p className="text-sm text-muted-foreground">
-              {(error as Error)?.message ?? "Erreur inconnue"}
+              {(error as Error)?.message ?? t("admin.common.error")}
             </p>
             <Button size="sm" variant="outline" onClick={() => refetch()}>
               <RefreshCw className="size-4" />
-              Réessayer
+              {t("admin.common.retry")}
             </Button>
           </div>
         </div>
@@ -78,7 +80,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Tableau de bord</h1>
+          <h1 className="text-2xl font-semibold">{t("admin.dashboard.title")}</h1>
           {data && (
             <p className="text-sm text-muted-foreground">
               Dernière mise à jour : {formatDateTime(data.generated_at)}
@@ -98,7 +100,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Réservations"
+          label={t("admin.dashboard.bookings")}
           icon={CalendarCheck}
           loading={isLoading}
           value={formatNumber(data?.bookings.total ?? 0)}
@@ -107,7 +109,7 @@ export default function DashboardPage() {
           )} en attente`}
         />
         <StatCard
-          label="Chiffre d'affaires"
+          label={t("admin.dashboard.revenue")}
           icon={Wallet}
           loading={isLoading}
           value={formatCurrency(data?.revenue.total ?? 0)}
@@ -116,7 +118,7 @@ export default function DashboardPage() {
           )}`}
         />
         <StatCard
-          label="Clients"
+          label={t("admin.dashboard.clients")}
           icon={Users}
           loading={isLoading}
           value={formatNumber(data?.users.total ?? 0)}
@@ -125,7 +127,7 @@ export default function DashboardPage() {
           )} nouveaux`}
         />
         <StatCard
-          label="Activités"
+          label={t("admin.dashboard.activities")}
           icon={MapPin}
           loading={isLoading}
           value={formatNumber(data?.activities.total ?? 0)}
@@ -137,7 +139,7 @@ export default function DashboardPage() {
 
       <section className="rounded-lg border bg-card">
         <header className="border-b px-4 py-3">
-          <h2 className="font-semibold">Dernières réservations</h2>
+          <h2 className="font-semibold">{t("admin.dashboard.latest")}</h2>
         </header>
         {isLoading ? (
           <div className="space-y-2 p-4">
@@ -150,11 +152,11 @@ export default function DashboardPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-2 font-medium">Client</th>
-                  <th className="px-4 py-2 font-medium">Activité</th>
-                  <th className="px-4 py-2 font-medium">Date</th>
-                  <th className="px-4 py-2 font-medium">Statut</th>
-                  <th className="px-4 py-2 font-medium text-right">Montant</th>
+                  <th className="px-4 py-2 font-medium">{t("admin.dashboard.colClient")}</th>
+                  <th className="px-4 py-2 font-medium">{t("admin.dashboard.colActivity")}</th>
+                  <th className="px-4 py-2 font-medium">{t("admin.dashboard.colDate")}</th>
+                  <th className="px-4 py-2 font-medium">{t("admin.dashboard.colStatus")}</th>
+                  <th className="px-4 py-2 font-medium text-right">{t("admin.dashboard.colAmount")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -175,7 +177,7 @@ export default function DashboardPage() {
                           STATUS_STYLES[booking.statut] ?? "bg-muted text-muted-foreground",
                         )}
                       >
-                        {STATUS_LABELS[booking.statut] ?? booking.statut}
+                        {STATUS_KEYS[booking.statut] ? t(STATUS_KEYS[booking.statut]!) : booking.statut}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -188,7 +190,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <p className="p-6 text-center text-sm text-muted-foreground">
-            Aucune réservation enregistrée pour le moment.
+            {t("admin.dashboard.empty")}
           </p>
         )}
       </section>

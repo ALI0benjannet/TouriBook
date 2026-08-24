@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { AuthCard } from "@touribook/ui/components/auth/AuthCards";
@@ -9,14 +10,16 @@ import { useAuth } from "@touribook/auth/hooks/use-auth";
 import { getAuthErrorCode } from "@touribook/api/api-error";
 import { env } from "@touribook/api/env";
 
-const ERROR_MESSAGES: Record<string, string> = {
-  invalid_credentials: "E-mail ou mot de passe incorrect.",
-  email_not_verified: "Confirmez votre e-mail avant de vous connecter.",
-  account_disabled: "Ce compte est désactivé.",
-  rate_limited: "Trop de tentatives. Réessayez dans une minute.",
+/** Code d'erreur renvoyé par l'API -> clé i18n (résolue au rendu). */
+const ERROR_KEYS: Record<string, string> = {
+  invalid_credentials: "admin.login.errBadCredentials",
+  email_not_verified: "admin.login.errUnverified",
+  account_disabled: "admin.login.errDisabled",
+  rate_limited: "admin.login.errRateLimited",
 };
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const { login, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,14 +45,14 @@ export default function LoginPage() {
     try {
       const user = await login({ email, password });
       if (user.role !== "admin") {
-        setError("Ce compte n'a pas les droits administrateur.");
+        setError(t("admin.login.errNotAdmin"));
         return;
       }
       const from = (location.state as { from?: string } | null)?.from;
       navigate(from ?? "/dashboard", { replace: true });
     } catch (err) {
       const code = getAuthErrorCode(err);
-      setError(ERROR_MESSAGES[code] ?? "Connexion impossible. Réessayez.");
+      setError(ERROR_KEYS[code] ? t(ERROR_KEYS[code]!) : t("admin.login.errGeneric"));
     } finally {
       setSubmitting(false);
     }
@@ -62,8 +65,8 @@ export default function LoginPage() {
           <img src="/admin/logo.png" alt="" className="size-full object-contain" />
         </span>
       }
-      title="Espace administrateur"
-      subtitle="Connectez-vous avec un compte administrateur TouriBook."
+      title={t("admin.login.title")}
+      subtitle={t("admin.login.subtitle")}
       footer={
         <a href={env.VITE_CLIENT_URL} className="text-slate-600 underline-offset-4 hover:underline">
           ← Retour au site
@@ -74,7 +77,7 @@ export default function LoginPage() {
         {error && <Alert tone="error">{error}</Alert>}
 
         <TextField
-          label="Adresse e-mail"
+          label={t("admin.login.email")}
           type="email"
           autoComplete="email"
           required
@@ -82,7 +85,7 @@ export default function LoginPage() {
           onChange={(event) => setEmail(event.target.value)}
         />
         <TextField
-          label="Mot de passe"
+          label={t("admin.login.password")}
           type="password"
           autoComplete="current-password"
           required
@@ -91,7 +94,7 @@ export default function LoginPage() {
         />
 
         <Button type="submit" fullWidth loading={submitting}>
-          Se connecter
+          {t("admin.login.submit")}
         </Button>
       </form>
     </AuthCard>

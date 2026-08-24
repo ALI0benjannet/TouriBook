@@ -49,6 +49,9 @@ export function Footer() {
             <Link href="/privacy" className="text-ink-foreground/80 hover:text-gold">
               {t("footer.privacy", "Confidentialité")}
             </Link>
+            <Link href="/credits" className="text-ink-foreground/80 hover:text-gold">
+              {t("footer.credits", "Crédits photo")}
+            </Link>
             <a href={env.VITE_ADMIN_URL} className="text-ink-foreground/80 hover:text-gold">
               {t("footer.admin")}
             </a>

@@ -1,4 +1,5 @@
 import { ShieldAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@touribook/ui/components/ui/button";
 import { useAuth } from "@touribook/auth/hooks/use-auth";
@@ -6,17 +7,18 @@ import { env } from "@touribook/api/env";
 
 export default function ForbiddenPage() {
   const { logout } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
       <ShieldAlert className="size-12 text-destructive" />
-      <h1 className="text-2xl font-semibold">Accès réservé</h1>
+      <h1 className="text-2xl font-semibold">{t("admin.forbidden.title")}</h1>
       <p className="text-muted-foreground">
-        Ce compte n'a pas les droits administrateur.
+        {t("admin.forbidden.message")}
       </p>
       <div className="flex gap-2">
         <Button variant="secondary" onClick={() => window.location.assign(env.VITE_CLIENT_URL)}>
-          Retour au site
+          {t("admin.forbidden.backSite")}
         </Button>
         <Button
           onClick={async () => {
@@ -24,7 +26,7 @@ export default function ForbiddenPage() {
             window.location.assign("/admin/login");
           }}
         >
-          Changer de compte
+          {t("admin.forbidden.switchAccount")}
         </Button>
       </div>
     </div>

@@ -4,12 +4,18 @@ import { endpoints } from "@touribook/api/endpoints";
 export interface Category {
   id: number;
   nom: string;
+  nom_en?: string | null;
+  nom_ar?: string | null;
 }
 
 export interface Activity {
   id: number;
   titre: string;
   description: string;
+  titre_en?: string | null;
+  titre_ar?: string | null;
+  description_en?: string | null;
+  description_ar?: string | null;
   prix: number;
   duree: number; // minutes
   localisation: string;

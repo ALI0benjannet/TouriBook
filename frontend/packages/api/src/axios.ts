@@ -16,6 +16,9 @@ api.interceptors.request.use((config) => {
   const token = authStore.getState().accessToken;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   config.headers["Accept-Language"] = localStorage.getItem("i18nextLng") ?? "fr";
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
   return config;
 });
 

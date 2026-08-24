@@ -61,18 +61,7 @@ export default function FavoritesPage() {
       ) : (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
           {items.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              activity={activity}
-              lang={i18n.resolvedLanguage}
-              labels={{
-                book: t("catalog.book"),
-                perPerson: t("catalog.perPerson"),
-                category: activity.category
-                  ? t(`catalog.categories.${activity.category.nom}`, activity.category.nom)
-                  : undefined,
-              }}
-            />
+            <ActivityCard key={activity.id} activity={activity} />
           ))}
         </div>
       )}

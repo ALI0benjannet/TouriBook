@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ImagePlus, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import {
   useActivity,
@@ -15,6 +16,10 @@ import {
 const EMPTY: ActivityPayload = {
   titre: "",
   description: "",
+  titre_en: "",
+  titre_ar: "",
+  description_en: "",
+  description_ar: "",
   prix: 0,
   duree: 60,
   localisation: "",
@@ -45,6 +50,7 @@ const inputClass =
 
 /** Création (/activities/new) et édition (/activities/:id/edit) d'une activité. */
 export default function ActivityFormPage() {
+  const { t, i18n } = useTranslation();
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const activityId = params.id ? Number(params.id) : null;
@@ -69,6 +75,11 @@ export default function ActivityFormPage() {
       setForm({
         titre: activity.titre,
         description: activity.description,
+        // Sans ces champs, un enregistrement écraserait les traductions.
+        titre_en: activity.titre_en ?? "",
+        titre_ar: activity.titre_ar ?? "",
+        description_en: activity.description_en ?? "",
+        description_ar: activity.description_ar ?? "",
         prix: activity.prix,
         duree: activity.duree,
         localisation: activity.localisation,
@@ -85,15 +96,25 @@ export default function ActivityFormPage() {
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!form.category_id) {
-      toast.error("Choisissez une catégorie");
+      toast.error(t("admin.form.errNoCategory"));
       return;
     }
+    // Un champ de traduction laissé vide vaut « pas de traduction » : on envoie
+    // null plutôt qu'une chaîne vide, pour que le repli français s'applique.
+    const payload: ActivityPayload = {
+      ...form,
+      titre_en: form.titre_en?.trim() || null,
+      titre_ar: form.titre_ar?.trim() || null,
+      description_en: form.description_en?.trim() || null,
+      description_ar: form.description_ar?.trim() || null,
+    };
+
     if (isEdit) {
-      update.mutate({ id: activityId, payload: form });
+      update.mutate({ id: activityId, payload });
     } else {
-      create.mutate(form, {
+      create.mutate(payload, {
         onSuccess: (created) => {
-          toast.success("Activité créée — ajoutez une photo et des créneaux");
+          toast.success(t("admin.form.createdToast"));
           navigate(`/activities/${created.id}/edit`, { replace: true });
         },
       });
@@ -112,7 +133,7 @@ export default function ActivityFormPage() {
 
   const addSlot = () => {
     if (!isEdit || !slotDate) {
-      toast.error("Choisissez une date");
+      toast.error(t("admin.form.errNoDate"));
       return;
     }
     slotMutations.create.mutate(
@@ -136,18 +157,20 @@ export default function ActivityFormPage() {
         <Link
           to="/activities"
           className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-          aria-label="Retour aux activités"
+          aria-label={t("admin.form.backAria")}
         >
           <ArrowLeft className="size-5" />
         </Link>
         <h1 className="font-display text-2xl font-semibold">
-          {isEdit ? `Modifier — ${activity?.titre ?? ""}` : "Nouvelle activité"}
+          {isEdit
+            ? t("admin.form.editTitle", { name: activity?.titre ?? "" })
+            : t("admin.form.titleNew")}
         </h1>
       </div>
 
       {/* ---- Informations ---- */}
       <form onSubmit={submit} className="space-y-4 rounded-lg border bg-card p-5">
-        <Field label="Titre">
+        <Field label={t("admin.form.fieldTitle")}>
           <input
             required
             minLength={3}
@@ -156,7 +179,7 @@ export default function ActivityFormPage() {
             className={inputClass}
           />
         </Field>
-        <Field label="Description">
+        <Field label={t("admin.form.fieldDescription")}>
           <textarea
             required
             minLength={10}
@@ -166,8 +189,53 @@ export default function ActivityFormPage() {
             className={inputClass}
           />
         </Field>
+
+        {/* ---- Traductions (facultatives : repli automatique sur le français) ---- */}
+        <fieldset className="rounded-lg border border-input p-4">
+          <legend className="px-1 text-[13px] font-semibold">
+            {t("admin.form.translations")}
+          </legend>
+          <p className="mb-3 text-xs text-muted-foreground">
+            {t("admin.form.translationsHint")}
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label={`${t("admin.form.fieldTitle")} — ${t("admin.form.tabEn")}`}>
+              <input
+                value={form.titre_en ?? ""}
+                onChange={(e) => set("titre_en", e.target.value)}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={`${t("admin.form.fieldTitle")} — ${t("admin.form.tabAr")}`}>
+              <input
+                dir="rtl"
+                value={form.titre_ar ?? ""}
+                onChange={(e) => set("titre_ar", e.target.value)}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={`${t("admin.form.fieldDescription")} — ${t("admin.form.tabEn")}`}>
+              <textarea
+                rows={3}
+                value={form.description_en ?? ""}
+                onChange={(e) => set("description_en", e.target.value)}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={`${t("admin.form.fieldDescription")} — ${t("admin.form.tabAr")}`}>
+              <textarea
+                dir="rtl"
+                rows={3}
+                value={form.description_ar ?? ""}
+                onChange={(e) => set("description_ar", e.target.value)}
+                className={inputClass}
+              />
+            </Field>
+          </div>
+        </fieldset>
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Prix (DT / pers.)">
+          <Field label={t("admin.form.fieldPricePer")}>
             <input
               required
               type="number"
@@ -178,7 +246,7 @@ export default function ActivityFormPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Durée (minutes)">
+          <Field label={t("admin.form.fieldDuration")}>
             <input
               required
               type="number"
@@ -189,7 +257,7 @@ export default function ActivityFormPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Catégorie">
+          <Field label={t("admin.form.fieldCategory")}>
             <select
               required
               value={form.category_id || ""}
@@ -208,7 +276,7 @@ export default function ActivityFormPage() {
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Localisation (ville)">
+          <Field label={t("admin.form.fieldPlaceCity")}>
             <input
               required
               value={form.localisation}
@@ -216,7 +284,7 @@ export default function ActivityFormPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Latitude (carte)">
+          <Field label={t("admin.form.fieldLatMap")}>
             <input
               type="number"
               step="any"
@@ -225,7 +293,7 @@ export default function ActivityFormPage() {
               className={inputClass}
             />
           </Field>
-          <Field label="Longitude (carte)">
+          <Field label={t("admin.form.fieldLngMap")}>
             <input
               type="number"
               step="any"
@@ -242,7 +310,7 @@ export default function ActivityFormPage() {
             className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
           >
             <Save className="size-4" />
-            {isEdit ? "Enregistrer" : "Créer l'activité"}
+            {isEdit ? t("admin.common.save") : t("admin.form.submitCreate")}
           </button>
         </div>
       </form>
@@ -250,14 +318,14 @@ export default function ActivityFormPage() {
       {/* ---- Photo (édition uniquement) ---- */}
       {isEdit && (
         <section className="rounded-lg border bg-card p-5">
-          <h2 className="mb-3 font-semibold">Photo</h2>
+          <h2 className="mb-3 font-semibold">{t("admin.form.photoSection")}</h2>
           <div className="flex items-center gap-4">
             <div className="h-24 w-36 shrink-0 overflow-hidden rounded-md border bg-muted">
               {activity?.photos ? (
                 <img src={activity.photos} alt="" className="size-full object-cover" />
               ) : (
                 <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
-                  Aucune photo
+                  {t("admin.form.photoNone")}
                 </div>
               )}
             </div>
@@ -269,7 +337,11 @@ export default function ActivityFormPage() {
                 className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-50"
               >
                 <ImagePlus className="size-4" />
-                {uploadPhoto.isPending ? "Envoi…" : activity?.photos ? "Remplacer" : "Ajouter"}
+                {uploadPhoto.isPending
+                  ? t("admin.form.photoUploading")
+                  : activity?.photos
+                    ? t("admin.form.photoReplace")
+                    : t("admin.form.photoAdd")}
               </button>
               {activity?.photos && (
                 <button
@@ -278,7 +350,7 @@ export default function ActivityFormPage() {
                   className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="size-4" />
-                  Supprimer
+                  {t("admin.common.delete")}
                 </button>
               )}
             </div>
@@ -291,7 +363,7 @@ export default function ActivityFormPage() {
             />
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            JPG, PNG ou WebP — visible immédiatement sur le site client.
+            {t("admin.form.photoHint")}
           </p>
         </section>
       )}
@@ -302,7 +374,7 @@ export default function ActivityFormPage() {
           <h2 className="mb-3 font-semibold">Créneaux de disponibilité</h2>
 
           <div className="mb-4 flex flex-wrap items-end gap-2">
-            <Field label="Date">
+            <Field label={t("admin.form.slotDate")}>
               <input
                 type="date"
                 value={slotDate}
@@ -310,7 +382,7 @@ export default function ActivityFormPage() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Heure">
+            <Field label={t("admin.form.slotTime")}>
               <input
                 type="time"
                 value={slotHour}
@@ -318,7 +390,7 @@ export default function ActivityFormPage() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Places">
+            <Field label={t("admin.form.slotSeats")}>
               <input
                 type="number"
                 min={1}
@@ -335,29 +407,29 @@ export default function ActivityFormPage() {
               className="inline-flex h-[38px] items-center gap-1.5 rounded-md bg-primary px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
             >
               <Plus className="size-4" />
-              Ajouter
+              {t("admin.categories.add")}
             </button>
           </div>
 
           {(slots ?? []).length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Aucun créneau — l'activité n'est pas réservable tant qu'il n'y en a pas.
+              {t("admin.form.slotsEmpty")}
             </p>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs text-muted-foreground">
-                  <th className="py-2 font-medium">Date</th>
-                  <th className="py-2 font-medium">Heure</th>
-                  <th className="py-2 font-medium">Places restantes</th>
-                  <th className="py-2 text-right font-medium">Action</th>
+                  <th className="py-2 font-medium">{t("admin.form.slotDate")}</th>
+                  <th className="py-2 font-medium">{t("admin.form.slotTime")}</th>
+                  <th className="py-2 font-medium">{t("admin.form.slotSeatsLeft")}</th>
+                  <th className="py-2 text-right font-medium">{t("admin.form.slotAction")}</th>
                 </tr>
               </thead>
               <tbody>
                 {(slots ?? []).map((slot) => (
                   <tr key={slot.id} className="border-b last:border-0">
                     <td className="py-2">
-                      {new Date(`${slot.date}T12:00:00`).toLocaleDateString("fr-FR", {
+                      {new Date(`${slot.date}T12:00:00`).toLocaleDateString(i18n.language, {
                         weekday: "short",
                         day: "numeric",
                         month: "short",
@@ -387,12 +459,12 @@ export default function ActivityFormPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          if (window.confirm("Supprimer ce créneau ?")) {
+                          if (window.confirm(t("admin.form.slotDeleteConfirm"))) {
                             slotMutations.remove.mutate(slot.id);
                           }
                         }}
                         className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                        aria-label="Supprimer le créneau"
+                        aria-label={t("admin.form.slotDeleteAria")}
                       >
                         <Trash2 className="size-4" />
                       </button>

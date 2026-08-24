@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { useCategories, useCategoryMutations } from "@/features/catalog/hooks";
 
 export default function CategoriesPage() {
+  const { t } = useTranslation();
   const { data: categories, isLoading } = useCategories();
   const { create, rename, remove } = useCategoryMutations();
 
@@ -30,19 +32,19 @@ export default function CategoriesPage() {
   };
 
   const confirmDelete = (id: number, nom: string) => {
-    if (window.confirm(`Supprimer la catégorie « ${nom} » ?`)) remove.mutate(id);
+    if (window.confirm(t("admin.categories.deleteConfirmNamed", { name: nom }))) remove.mutate(id);
   };
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display text-2xl font-semibold">Catégories</h1>
+      <h1 className="font-display text-2xl font-semibold">{t("admin.categories.title")}</h1>
 
       {/* Ajout */}
       <form onSubmit={submitNew} className="flex max-w-md gap-2">
         <input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="Nouvelle catégorie…"
+          placeholder={t("admin.categories.placeholder")}
           className="min-w-0 flex-1 rounded-md border border-input bg-card px-3 py-2 text-sm"
         />
         <button
@@ -51,7 +53,7 @@ export default function CategoriesPage() {
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
         >
           <Plus className="size-4" />
-          Ajouter
+          {t("admin.categories.add")}
         </button>
       </form>
 
@@ -64,7 +66,7 @@ export default function CategoriesPage() {
             ))}
           </div>
         ) : (categories ?? []).length === 0 ? (
-          <p className="p-6 text-center text-sm text-muted-foreground">Aucune catégorie.</p>
+          <p className="p-6 text-center text-sm text-muted-foreground">{t("admin.categories.empty")}</p>
         ) : (
           <ul className="divide-y divide-border">
             {(categories ?? []).map((cat) => (
@@ -85,7 +87,7 @@ export default function CategoriesPage() {
                       type="button"
                       onClick={() => submitEdit(cat.id)}
                       className="rounded-md p-1.5 text-primary hover:bg-primary/10"
-                      aria-label="Valider"
+                      aria-label={t("admin.common.validate")}
                     >
                       <Check className="size-4" />
                     </button>
@@ -93,7 +95,7 @@ export default function CategoriesPage() {
                       type="button"
                       onClick={() => setEditingId(null)}
                       className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
-                      aria-label="Annuler"
+                      aria-label={t("admin.common.cancel")}
                     >
                       <X className="size-4" />
                     </button>
@@ -105,7 +107,7 @@ export default function CategoriesPage() {
                       type="button"
                       onClick={() => startEdit(cat.id, cat.nom)}
                       className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                      aria-label={`Renommer ${cat.nom}`}
+                      aria-label={t("admin.categories.rename", { name: cat.nom })}
                     >
                       <Pencil className="size-4" />
                     </button>
@@ -113,7 +115,7 @@ export default function CategoriesPage() {
                       type="button"
                       onClick={() => confirmDelete(cat.id, cat.nom)}
                       className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                      aria-label={`Supprimer ${cat.nom}`}
+                      aria-label={t("admin.categories.deleteAria", { name: cat.nom })}
                     >
                       <Trash2 className="size-4" />
                     </button>

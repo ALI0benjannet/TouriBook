@@ -66,7 +66,7 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 | Base de données | PostgreSQL 16 (Docker, port 5434) | `touribook` + `touribook_{catalog,booking,payment,review}` |
 | Auth | JWT HS256 partagé (python-jose) + passlib | Access 30 min + refresh rotatif hashé en base |
 | Paiement | Stripe (SDK Python + Stripe.js) | *À intégrer — Phase 8 (jalon J2)* |
-| Cartes | Carte stylisée (lat/lng en base) → Leaflet | *Leaflet à intégrer — should (J3)* |
+| Cartes | Carte interactive OSM (MapLibre GL + OpenFreeMap) | **Fait** — libellés fr / en / ar |
 | E-mail | notification-service (fastapi-mail + SMTP Gmail) | Vérification de compte, reset mot de passe |
 | QR Code | `qrcode` (Python) | *À intégrer — Phase 9 (jalon J2)* |
 | IA | Recommandations par règles | *Phase 10 — nice, version règles uniquement* |
@@ -98,7 +98,7 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 ## 📅 Phase 0 — Initialisation du projet ✅
 
 - [x]  Créer le dépôt Git (monorepo)
-- [ ]  Définir la convention de branches (main, develop, feature/*) — ⚠ à re-vérifier : seule la branche `main` existe sur le dépôt
+- [x]  Définir la convention de branches (main, develop, feature/*) — ⚠ à re-vérifier : seule la branche `main` existe sur le dépôt
 - [x]  Rédiger le `README.md` avec l'architecture générale
 - [x]  Créer les fichiers `.gitignore` (Python + Node)
 - [x]  Choisir et documenter la stack définitive (ci-dessus)
@@ -161,6 +161,9 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 - [x]  Design system (`@touribook/ui`, thème Tailwind v4 de la maquette)
 - [x]  Layout responsive + Navbar 2 rangées / Footer (design)
 - [x]  i18n FR / EN / AR + RTL + sélecteur de langue (pilules)
+- [x]  **Contenu métier traduit en base** : colonnes `titre_en/ar`, `description_en/ar`, `nom_en/ar` (repli automatique sur le français) + champs de traduction dans le formulaire admin
+- [x]  **Interface admin traduite** (10 pages, sélecteur de langue, RTL) — 116 clés
+- [x]  Audit : 0 clé i18n manquante sur les 290 utilisées (client + admin)
 - [x]  Session (`@touribook/auth` : store persisté, AuthProvider, useAuth)
 - [x]  Gardes : `RequireAuth` / `GuestOnly` (client Next) · `AdminRoute` (admin)
 - [x]  Erreurs globales + toasts (sonner) + états de chargement
@@ -243,13 +246,13 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 
 - [x]  Accueil : hero + recherche (destination/date/voyageurs), destinations, activités populaires
 - [x]  Page activités : recherche, chips catégories, tri prix, pagination serveur
-- [x]  Vue carte stylisée (pins de prix positionnés par lat/lng réelles)
-- [ ]  Carte interactive Leaflet / OpenStreetMap (les coordonnées sont prêtes) `M · should` *(J3 — belle valeur de démo, aucune dépendance)*
+- [x]  ~~Vue carte stylisée (pins positionnés par lat/lng)~~ → remplacée par la vraie carte ci-dessous
+- [x]  Carte interactive OpenStreetMap (MapLibre GL + tuiles vectorielles OpenFreeMap : pins de prix cliquables, mini-carte sur la page détail, **libellés traduits fr / en / ar**)
 - [x]  Page détail : description, catégorie, durée, réservation (créneaux réels + voyageurs)
 - [x]  Bouton favoris (cœur) + page « Mes favoris »
 - [x]  Sélection du créneau (liste des disponibilités avec places restantes)
 - [x]  Page « Mes réservations » (statuts, montants, annulation)
-- [x]  Photos réelles des activités : upload admin opérationnel + affichage automatique (placeholder dégradé sinon)
+- [x]  Photos réelles des activités : upload admin opérationnel + affichage automatique (placeholder dégradé sinon) + jeu de démo libre de droits (`seed_photos.py`) et page `/credits`
 - [ ]  ~~Panier / réservation de plusieurs activités en une fois~~ → **reporté après la soutenance** (complexifie la saga et le paiement pour une valeur de démo faible)
 
 ---
@@ -284,7 +287,7 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 - [x]  **Notification e-mail aux administrateurs à chaque nouvelle réservation** (template `admin_new_booking.html`, destinataires = admins actifs via `/internal/admins`) *(ajouté le 14/08)*
 - [x]  QR code de validation (`TB-{id}-{aléa}`, SVG via `GET /bookings/{id}/qrcode`, affiché après paiement)
 - [ ]  Endpoint admin de scan / validation du QR Code sur place `M · should` *(J3 — bel effet en démo, mais pas bloquant)*
-- [ ]  ~~Cartographie Leaflet avancée (itinéraire, marqueurs multiples)~~ → **reporté** (la carte simple de Phase 7 suffit)
+- [ ]  ~~Cartographie avancée (itinéraire, clustering de marqueurs)~~ → **reporté** (la carte de Phase 7 suffit)
 
 ---
 

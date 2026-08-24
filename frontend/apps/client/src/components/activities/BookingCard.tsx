@@ -158,7 +158,7 @@ export function BookingCard({ activityId, prix }: { activityId: number; prix: nu
             setPromo(null);
             setPromoError(null);
           }}
-          placeholder="BIENVENUE10"
+          placeholder={t("detail.promoPlaceholder", "BIENVENUE10")}
           className="min-w-0 flex-1 rounded-xl border border-input bg-white px-3.5 py-2.5 text-[14px] uppercase placeholder:normal-case placeholder:text-foreground/30 dark:bg-muted"
         />
         <button

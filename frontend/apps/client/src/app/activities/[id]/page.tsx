@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 
 import fr from "@touribook/i18n/locales/fr/common.json";
 
+import { ActivityContent } from "@/components/activities/ActivityContent";
+import { BackToActivities } from "@/components/activities/BackToActivities";
 import { ActivityImage } from "@/components/activities/ActivityImage";
+import { ActivityLocation } from "@/components/activities/ActivityLocation";
 import { BookingCard } from "@/components/activities/BookingCard";
 import { FavoriteButton } from "@/components/activities/FavoriteButton";
-import { formatDuration } from "@/features/catalog/format";
 import { fetchActivities, fetchActivity, fetchReviewStats } from "@/lib/server-api";
 import { SITE_URL } from "@/lib/site";
 
@@ -94,41 +96,20 @@ export default async function ActivityDetailPage({ params }: { params: Params })
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <Link
-        href="/activities"
-        className="mb-5 inline-block text-sm font-semibold text-primary hover:text-blue-600"      >
-        ← {fr.detail.back}
-      </Link>
+      <BackToActivities />
 
       {/* Image principale */}
       <div className="relative h-72 overflow-hidden rounded-3xl sm:h-96">
-        <ActivityImage src={activity.photos} label={`Photo — ${activity.localisation}`} />
+        <ActivityImage src={activity.photos} label={`Photo — ${activity.localisation}`} priority />
         <FavoriteButton activityId={activity.id} size="lg" />
       </div>
 
       <div className="mt-8 grid items-start gap-9 lg:grid-cols-[1fr_380px]">
         {/* Contenu indexable */}
         <article>
-          {activity.category && (
-            <span className="rounded-full bg-primary/10 px-3.5 py-1.5 text-[13px] font-semibold text-primary">
-              {activity.category.nom}
-            </span>
-          )}
-          <h1 className="font-display mb-2.5 mt-4 text-3xl leading-tight sm:text-4xl">
-            {activity.titre}
-          </h1>
-          <div className="mb-2 text-[15px] text-muted-foreground">
-            {activity.localisation} · {formatDuration(activity.duree)}
-          </div>
-          {stats && stats.count > 0 && (
-            <div className="mb-6 text-[15px]">
-              <span className="text-gold">★</span> <b>{stats.average.toFixed(1)}</b> ·{" "}
-              {stats.count} avis
-            </div>
-          )}
-          <p className="max-w-2xl text-base leading-relaxed text-foreground/80">
-            {activity.description}
-          </p>
+          <ActivityContent activity={activity} stats={stats} />
+
+          <ActivityLocation activity={activity} />
         </article>
 
         <BookingCard activityId={activity.id} prix={activity.prix} />

@@ -101,7 +101,8 @@
       "403": "تم رفض الوصول.",
       "404": "المورد غير موجود.",
       "500": "خطأ في الخادم. حاول لاحقًا."
-    }
+    },
+    "unexpected": "حدث خطأ غير متوقع."
   },
   "auth": {
     "errors": {
@@ -151,7 +152,13 @@
       "new_password_step": "اختر كلمة المرور الجديدة"
     },
     "checkEmail": {
-      "open_verification": "فتح صفحة التحقق"
+      "open_verification": "فتح صفحة التحقّق",
+      "title": "تحقّق من بريدك الإلكتروني",
+      "description": "لقد أرسلنا بريدًا إلكترونيًا إلى {email}.",
+      "fallback_email": "عنوان بريدك الإلكتروني",
+      "resend": "إعادة إرسال البريد",
+      "resend_wait": "إعادة الإرسال خلال {seconds} ث",
+      "back_to_login": "العودة إلى تسجيل الدخول"
     },
     "verifyEmail": {
       "title": "التحقق من البريد الإلكتروني",
@@ -207,7 +214,13 @@
       "new_password": "كلمة المرور الجديدة",
       "confirm_new_password": "تأكيد كلمة المرور الجديدة",
       "update_password": "تحديث",
-      "success": "تم تحديث الملف الشخصي."
+      "success": "تم تحديث الملف الشخصي.",
+      "delete_title": "حذف حسابي",
+      "delete_btn": "حذف",
+      "delete_done": "تم حذف الحساب. نأمل أن نراك مجددًا!",
+      "delete_confirm": "هل تريد حذف حسابك نهائيًا؟ ستتم إخفاء هوية بياناتك الشخصية ولا يمكن التراجع عن هذا الإجراء.",
+      "delete_hint": "ستتم إخفاء هوية بياناتك الشخصية وإلغاء جلساتك. لا يمكن التراجع عن ذلك.",
+      "delete_note": "راجع سياسة الخصوصية لمعرفة تفاصيل حقوقك."
     },
     "forgotPassword": {
       "title": "نسيت كلمة المرور",
@@ -251,7 +264,8 @@
     "sortDesc": "السعر تنازليًا",
     "viewGrid": "شبكة",
     "viewMap": "خريطة",
-    "mapHint": "خريطة مبسطة — اضغط على سعر لفتح النشاط",
+    "mapHint": "خريطة OpenStreetMap — اضغط على سعر لفتح النشاط",
+    "mapEmpty": "لا يوجد نشاط محدد الموقع لعوامل التصفية هذه.",
     "allCategories": "الكل",
     "categories": {
       "Culture": "ثقافة",
@@ -280,7 +294,16 @@
     "noAvailability": "لا توجد مواعيد متاحة حاليًا.",
     "noSeats": "لا توجد أماكن متبقية في هذا الموعد.",
     "seatsLeft": "{{count}} مكان متبقٍ",
-    "seatsLeft_other": "{{count}} أماكن متبقية"
+    "seatsLeft_other": "{{count}} أماكن متبقية",
+    "whereTitle": "مكان النشاط",
+    "promoLabel": "رمز الخصم",
+    "promoApply": "تطبيق",
+    "promoPlaceholder": "BIENVENUE10",
+    "promoInvalid": "رمز الخصم غير صالح أو منتهي الصلاحية.",
+    "promoApplied": "تم تطبيق الرمز {{code}}: -{{reduction}}٪",
+    "bookedPayMsg": "تم تسجيل الحجز — ادفع لتأكيده",
+    "reviewCount": "{{count}} تقييم",
+    "reviewCount_other": "{{count}} تقييمات"
   },
   "bookingsPage": {
     "subtitle": "مغامراتك القادمة، في مكان واحد.",
@@ -298,6 +321,213 @@
   "footer": {
     "discover": "اكتشف",
     "help": "مساعدة",
-    "admin": "لوحة الإدارة"
+    "admin": "لوحة الإدارة",
+    "credits": "حقوق الصور",
+    "privacy": "الخصوصية"
+  },
+  "payment": {
+    "payNow": "ادفع الآن",
+    "title": "الدفع",
+    "subtitle": "ادفع حجزك لتأكيده.",
+    "successTitle": "تم تأكيد الحجز!",
+    "successSub": "تم إرسال بريد تأكيد إليك. اعرض رمز QR هذا يوم النشاط.",
+    "cancelledTitle": "تم إلغاء الحجز",
+    "confirming": "تم استلام الدفع — جارٍ التأكيد…",
+    "reference": "المرجع",
+    "payBtn": "ادفع {{amount}}",
+    "demoBadge": "وضع العرض التجريبي",
+    "demoHint": "لم يتم ضبط مفتاح Stripe — هذا الزر يحاكي عملية دفع ناجحة (بما في ذلك webhook).",
+    "simulateBtn": "محاكاة دفع {{amount}}",
+    "showQr": "رمز QR"
+  },
+  "admin": {
+    "brand": "لوحة تحكّم TouriBook",
+    "nav": {
+      "dashboard": "لوحة التحكّم",
+      "activities": "الأنشطة",
+      "categories": "الفئات",
+      "bookings": "الحجوزات",
+      "payments": "المدفوعات",
+      "users": "المستخدمون",
+      "viewSite": "عرض الموقع",
+      "logout": "تسجيل الخروج"
+    },
+    "common": {
+      "loading": "جارٍ التحميل…",
+      "error": "خطأ غير معروف",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "validate": "تأكيد",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "actions": "إجراءات",
+      "back": "رجوع",
+      "search": "بحث",
+      "confirm": "تأكيد",
+      "yes": "نعم",
+      "no": "لا",
+      "none": "—",
+      "retry": "إعادة المحاولة",
+      "prev": "السابق",
+      "next": "التالي",
+      "loadingShort": "جارٍ التحميل…"
+    },
+    "status": {
+      "confirmed": "مؤكّد",
+      "pending": "قيد الانتظار",
+      "cancelled": "ملغى",
+      "paid": "مدفوع",
+      "failed": "فشل",
+      "refunded": "مسترَد"
+    },
+    "dashboard": {
+      "title": "لوحة التحكّم",
+      "bookings": "الحجوزات",
+      "revenue": "رقم المعاملات",
+      "clients": "العملاء",
+      "activities": "الأنشطة",
+      "latest": "آخر الحجوزات",
+      "colClient": "العميل",
+      "colActivity": "النشاط",
+      "colDate": "التاريخ",
+      "colStatus": "الحالة",
+      "colAmount": "المبلغ",
+      "empty": "لا توجد حجوزات بعد.",
+      "statsError": "تعذّر تحميل الإحصائيات"
+    },
+    "categories": {
+      "title": "الفئات",
+      "placeholder": "فئة جديدة…",
+      "empty": "لا توجد فئات.",
+      "add": "إضافة",
+      "nameFr": "الاسم (بالفرنسية)",
+      "nameEn": "الاسم (بالإنجليزية)",
+      "nameAr": "الاسم (بالعربية)",
+      "deleteConfirm": "هل تريد حذف هذه الفئة؟",
+      "rename": "إعادة تسمية {{name}}",
+      "deleteAria": "حذف {{name}}",
+      "deleteConfirmNamed": "هل تريد حذف الفئة «{{name}}»؟"
+    },
+    "activities": {
+      "title": "الأنشطة",
+      "new": "نشاط جديد",
+      "empty": "لا توجد أنشطة — أنشئ أول نشاط!",
+      "colTitle": "العنوان",
+      "colCategory": "الفئة",
+      "colPlace": "المكان",
+      "colDuration": "المدّة",
+      "colBookings": "الحجوزات",
+      "colPrice": "السعر",
+      "deleteConfirm": "هل تريد حذف هذا النشاط؟",
+      "editAria": "تعديل {{name}}",
+      "deleteAria": "حذف {{name}}",
+      "deleteConfirmNamed": "هل تريد حذف «{{name}}» نهائيًا؟",
+      "minutes": "{{count}} د"
+    },
+    "users": {
+      "title": "المستخدمون",
+      "search": "ابحث بالاسم أو البريد الإلكتروني…",
+      "empty": "لا يوجد مستخدمون.",
+      "colEmail": "البريد الإلكتروني",
+      "colRole": "الدور",
+      "colStatus": "الحالة",
+      "colSignup": "تاريخ التسجيل",
+      "disabled": "معطَّل",
+      "verified": "موثَّق",
+      "unverified": "غير موثَّق",
+      "colName": "الاسم",
+      "count": "{{count}} مستخدم",
+      "count_other": "{{count}} مستخدمين"
+    },
+    "bookings": {
+      "title": "الحجوزات",
+      "empty": "لا توجد حجوزات.",
+      "colClient": "العميل",
+      "colActivity": "النشاط",
+      "colDate": "التاريخ",
+      "colStatus": "الحالة",
+      "colAmount": "المبلغ"
+    },
+    "payments": {
+      "title": "المدفوعات",
+      "empty": "لا توجد مدفوعات.",
+      "colClient": "العميل",
+      "colBooking": "الحجز",
+      "colMethod": "طريقة الدفع",
+      "colStatus": "الحالة",
+      "colDate": "التاريخ",
+      "colAmount": "المبلغ"
+    },
+    "login": {
+      "title": "فضاء الإدارة",
+      "subtitle": "سجّل الدخول بحساب مدير TouriBook.",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "errBadCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      "errUnverified": "أكّد بريدك الإلكتروني قبل تسجيل الدخول.",
+      "errDisabled": "هذا الحساب معطَّل.",
+      "errRateLimited": "محاولات كثيرة جدًا. أعد المحاولة بعد دقيقة.",
+      "errNotAdmin": "هذا الحساب لا يملك صلاحيات الإدارة.",
+      "errGeneric": "تعذّر تسجيل الدخول. أعد المحاولة."
+    },
+    "forbidden": {
+      "title": "وصول محظور",
+      "message": "حسابك لا يملك صلاحيات الإدارة.",
+      "back": "العودة إلى تسجيل الدخول",
+      "backSite": "العودة إلى الموقع",
+      "switchAccount": "تغيير الحساب"
+    },
+    "form": {
+      "titleNew": "نشاط جديد",
+      "titleEdit": "تعديل النشاط",
+      "fieldTitle": "العنوان",
+      "fieldDescription": "الوصف",
+      "fieldPrice": "السعر (د.ت)",
+      "fieldDuration": "المدّة (بالدقائق)",
+      "fieldPlace": "المكان",
+      "fieldCategory": "الفئة",
+      "fieldLatitude": "خط العرض",
+      "fieldLongitude": "خط الطول",
+      "fieldPhoto": "الصورة",
+      "tabFr": "الفرنسية",
+      "tabEn": "الإنجليزية",
+      "tabAr": "العربية",
+      "translationHint": "اتركه فارغًا لعرض النص الفرنسي.",
+      "availabilities": "المواعيد المتاحة",
+      "addSlot": "إضافة موعد",
+      "slotDate": "التاريخ",
+      "slotTime": "الساعة",
+      "slotSeats": "المقاعد",
+      "noSlots": "لا توجد مواعيد.",
+      "uploadPhoto": "رفع صورة",
+      "removePhoto": "إزالة الصورة",
+      "saved": "تم حفظ النشاط.",
+      "created": "تم إنشاء النشاط.",
+      "backAria": "العودة إلى الأنشطة",
+      "editTitle": "تعديل — {{name}}",
+      "fieldPricePer": "السعر (د.ت / للشخص)",
+      "fieldPlaceCity": "الموقع (المدينة)",
+      "fieldLatMap": "خط العرض (الخريطة)",
+      "fieldLngMap": "خط الطول (الخريطة)",
+      "submitCreate": "إنشاء النشاط",
+      "errNoCategory": "اختر فئة",
+      "errNoDate": "اختر تاريخًا",
+      "createdToast": "تم إنشاء النشاط — أضف صورة ومواعيد",
+      "photoSection": "الصورة",
+      "photoNone": "لا توجد صورة",
+      "photoUploading": "جارٍ الرفع…",
+      "photoReplace": "استبدال",
+      "photoAdd": "إضافة",
+      "photoHint": "JPG أو PNG أو WebP — تظهر فورًا على موقع العملاء.",
+      "slotsSection": "المواعيد",
+      "slotsEmpty": "لا توجد مواعيد — لا يمكن حجز النشاط قبل إضافة موعد.",
+      "slotSeatsLeft": "المقاعد المتبقية",
+      "slotAction": "إجراء",
+      "slotDeleteConfirm": "هل تريد حذف هذا الموعد؟",
+      "slotDeleteAria": "حذف الموعد",
+      "translations": "الترجمات",
+      "translationsHint": "اترك الحقل فارغًا لعرض النص الفرنسي تلقائيًا."
+    }
   }
 }

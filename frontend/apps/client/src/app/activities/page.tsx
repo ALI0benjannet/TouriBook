@@ -2,12 +2,12 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import fr from "@touribook/i18n/locales/fr/common.json";
-
 import { ActivityCard } from "@/components/activities/ActivityCard";
+import { T } from "@/components/i18n/T";
 import { CatalogControls } from "@/components/catalog/CatalogControls";
+import { ActivityMapLoader } from "@/components/map/ActivityMapLoader";
+import type { MapPoint } from "@/components/map/ActivityMap";
 import type { Activity } from "@/features/catalog/api";
-import { formatPrice } from "@/features/catalog/format";
 import { fetchActivities, fetchCategories, fetchReviewStats } from "@/lib/server-api";
 
 export const metadata: Metadata = {
@@ -21,21 +21,19 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
-/** Positionne les activités dans la carte stylisée d'après leurs lat/lng réelles. */
-function mapPins(activities: Activity[]) {
-  const located = activities.filter((a) => a.latitude != null && a.longitude != null);
-  if (located.length === 0) return [];
-  const lats = located.map((a) => a.latitude as number);
-  const lngs = located.map((a) => a.longitude as number);
-  const [minLat, maxLat] = [Math.min(...lats), Math.max(...lats)];
-  const [minLng, maxLng] = [Math.min(...lngs), Math.max(...lngs)];
-  const norm = (v: number, min: number, max: number) =>
-    max === min ? 50 : 8 + ((v - min) / (max - min)) * 84; // marge 8-92 %
-  return located.map((a) => ({
-    activity: a,
-    left: norm(a.longitude as number, minLng, maxLng),
-    top: 100 - norm(a.latitude as number, minLat, maxLat), // nord en haut
-  }));
+/** Ne garde que les activités géolocalisées — les autres n'ont rien à faire
+ *  sur la carte (l'ancienne vue stylisée les plaçait arbitrairement). */
+function mapPoints(activities: Activity[]): MapPoint[] {
+  return activities
+    .filter((a) => a.latitude != null && a.longitude != null)
+    .map((a) => ({
+      id: a.id,
+      titre: a.titre,
+      prix: a.prix,
+      localisation: a.localisation,
+      latitude: a.latitude as number,
+      longitude: a.longitude as number,
+    }));
 }
 
 /** Catalogue — rendu côté serveur pour chaque combinaison de filtres (SEO). */
@@ -60,16 +58,17 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
 
   const stats = await fetchReviewStats(items.map((a) => a.id));
 
-  const pins = view === "map" ? mapPins(items) : [];
-  const resultLabel =
-    items.length === 1 ? "1 expérience à réserver" : `${items.length} expériences à réserver`;
+  const points = view === "map" ? mapPoints(items) : [];
+
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <div>
-          <h1 className="font-display text-4xl">{fr.nav.activities}</h1>
-          <p className="mt-2 text-muted-foreground">{resultLabel}</p>
+          <h1 className="font-display text-4xl"><T k="nav.activities" /></h1>
+          <p className="mt-2 text-muted-foreground">
+            <T k="catalog.results" values={{ count: items.length }} />
+          </p>
         </div>
         <Suspense fallback={null}>
           <CatalogControls categories={categories} />
@@ -79,12 +78,12 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
       {view === "grid" ? (
         items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-input bg-card px-5 py-16 text-center">
-            <div className="font-display mb-2 text-2xl">{fr.catalog.emptyTitle}</div>
-            <div className="mb-5 text-muted-foreground">{fr.catalog.emptySub}</div>
+            <div className="font-display mb-2 text-2xl"><T k="catalog.emptyTitle" /></div>
+            <div className="mb-5 text-muted-foreground"><T k="catalog.emptySub" /></div>
             <Link
               href="/activities"
               className="inline-block rounded-full bg-ink px-6 py-2.5 font-semibold text-background hover:bg-blue-600"            >
-              {fr.catalog.reset}
+              <T k="catalog.reset" />
             </Link>
           </div>
         ) : (
@@ -95,21 +94,23 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
           </div>
         )
       ) : (
-        <div className="relative h-[560px] overflow-hidden rounded-3xl border border-border bg-[linear-gradient(115deg,#BFDEDC_0%,#D8E6DA_30%,#EBDFC4_62%,#E3C795_100%)]">
-          <div className="absolute bottom-4 start-4 z-10 rounded-xl bg-card/90 px-4 py-2.5 text-[13px] text-foreground/70 shadow-md">
-            {fr.catalog.mapHint}
-          </div>
-          {pins.map(({ activity, left, top }) => (
-            <Link
-              key={activity.id}
-              href={`/activities/${activity.id}`}
-              style={{ left: `${left}%`, top: `${top}%` }}
-              className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-input bg-card px-3.5 py-2 text-[13px] shadow-[0_6px_16px_rgba(28,54,65,.18)] transition-transform hover:z-10 hover:scale-110"
-            >
-              <span className="font-bold">{formatPrice(activity.prix)}</span>
-              <span className="opacity-80"> · {activity.localisation}</span>
-            </Link>
-          ))}
+        <div className="relative h-[560px] overflow-hidden rounded-3xl border border-border">
+          {points.length === 0 ? (
+            <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#DCEAE6] to-[#EAD9B8] px-6 text-center text-muted-foreground">
+              <T k="catalog.mapEmpty" />
+            </div>
+          ) : (
+            <>
+              <ActivityMapLoader
+                points={points}
+                linkToActivity
+                className="size-full"
+              />
+              <div className="pointer-events-none absolute bottom-4 start-4 z-[500] rounded-xl bg-card/90 px-4 py-2.5 text-[13px] text-foreground/70 shadow-md">
+                <T k="catalog.mapHint" />
+              </div>
+            </>
+          )}
         </div>
       )}
     </main>

@@ -10,12 +10,18 @@ class ORMModel(BaseModel):
 class CategoryRead(ORMModel):
     id: int
     nom: str
+    nom_en: str | None = None
+    nom_ar: str | None = None
 
 
 class ActivityRead(ORMModel):
     id: int
     titre: str
     description: str
+    titre_en: str | None = None
+    titre_ar: str | None = None
+    description_en: str | None = None
+    description_ar: str | None = None
     prix: float
     duree: int
     localisation: str
