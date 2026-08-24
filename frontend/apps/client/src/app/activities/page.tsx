@@ -41,18 +41,31 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
   const params = await searchParams;
   const search = first(params.search) ?? "";
   const catParam = first(params.cat);
+  const cityParam = first(params.city) ?? "";
   const sort = first(params.sort) ?? "pop";
   const view = first(params.view) === "map" ? "map" : "grid";
 
-  const [data, categories] = await Promise.all([
+  const [data, categories, all] = await Promise.all([
     fetchActivities({
       search: search || undefined,
       category_id: catParam ? Number(catParam) : undefined,
     }),
     fetchCategories(),
+    // Catalogue complet : sert à alimenter la liste des villes du filtre, qui
+    // ne doit pas se réduire à mesure que l'utilisateur filtre.
+    fetchActivities({}),
   ]);
 
-  const items = [...data.items];
+  const cities = [...new Set(all.items.map((a) => a.localisation).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b, "fr"),
+  );
+
+  let items = [...data.items];
+  // Le filtre ville est appliqué ici : le catalogue n'expose pas de paramètre
+  // dédié, et la liste tient largement en mémoire à cette échelle.
+  if (cityParam) {
+    items = items.filter((a) => a.localisation === cityParam);
+  }
   if (sort === "asc") items.sort((a, b) => a.prix - b.prix);
   else if (sort === "desc") items.sort((a, b) => b.prix - a.prix);
 
@@ -71,7 +84,7 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
           </p>
         </div>
         <Suspense fallback={null}>
-          <CatalogControls categories={categories} />
+          <CatalogControls categories={categories} cities={cities} />
         </Suspense>
       </div>
 

@@ -1,16 +1,16 @@
 "use client";
 
-import { CalendarCheck, Heart, LogIn, UserRound } from "lucide-react";
+import { Heart, LogIn, ShoppingCart, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-import { SUPPORTED_LANGUAGES, type Language } from "@touribook/i18n";
 import { cn } from "@touribook/ui/lib/utils";
 import { useAuth } from "@touribook/auth/hooks/use-auth";
 
+import { LanguageMenu } from "./LanguageMenu";
+import { StickySearch } from "./StickySearch";
 import { UserMenu } from "./UserMenu";
-import { useCategories } from "@/features/catalog/hooks";
 import { useFavorites } from "@/features/favorites/hooks";
 import { useMyBookings } from "@/features/bookings/hooks";
 import { paths } from "@/routes/paths";
@@ -20,8 +20,8 @@ function Badge({ count, tone }: { count: number; tone: "accent" | "primary" }) {
   return (
     <span
       className={cn(
-        "absolute -top-1.5 start-full-translate-x-1 rounded-full px-1.5 text-[10px] font-bold text-white",
-        tone === "accent" ? "bg-blue-600" : "bg-primary",
+        "absolute -top-2 -end-2 min-w-[18px] rounded-full px-1 text-center text-[10px] font-bold leading-[18px] text-white",
+        tone === "accent" ? "bg-blue-600" : "bg-rose-500",
       )}
     >
       {count}
@@ -29,43 +29,61 @@ function Badge({ count, tone }: { count: number; tone: "accent" | "primary" }) {
   );
 }
 
+const ICON_TAB_CLASS =
+  "flex flex-col items-center gap-1 text-foreground/70 transition-colors hover:text-blue-600";
+
+/** Onglet icône + libellé de l'en-tête. Rendu en lien, ou en bouton quand
+ *  l'action n'est pas une navigation (panier à venir, sélecteur de langue). */
 function IconTab({
   href,
+  onClick,
   icon,
   label,
   badge,
+  title,
 }: {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   icon: React.ReactNode;
   label: string;
   badge?: React.ReactNode;
+  title?: string;
 }) {
-  return (
-    <Link
-      href={href}
-      className="flex flex-col items-center gap-0.5 text-foreground/70 transition-colors hover:text-blue-600"    >
+  const content = (
+    <>
       <span className="relative leading-none">
         {icon}
         {badge}
       </span>
       <span className="text-xs font-medium">{label}</span>
-    </Link>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={ICON_TAB_CLASS} title={title}>
+        {content}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={ICON_TAB_CLASS} title={title}>
+      {content}
+    </button>
   );
 }
 
 export function Navbar() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const { data: categories } = useCategories();
   const { data: favorites } = useFavorites();
   const { data: bookings } = useMyBookings();
 
-  const currentLang = (i18n.resolvedLanguage ?? "fr") as Language;
-  const activeCat = searchParams?.get("cat");
+  // La recherche n'a de sens que sur les pages qui listent des activités.
+  const showSearch = pathname === "/" || pathname === paths.activities;
 
   const tabClass = (active: boolean) =>
     cn(
@@ -87,40 +105,21 @@ export function Navbar() {
         <div className="flex items-center gap-5 sm:gap-7">
           <IconTab
             href={paths.favorites}
-            icon={<Heart className="size-[19px]" />}
-            label={t("nav.favorites")}
+            icon={<Heart className="size-[22px]" strokeWidth={1.6} />}
+            label={t("nav.favoritesShort")}
             badge={<Badge count={favorites?.length ?? 0} tone="accent" />}
           />
+
+          {/* Panier : mène aux réservations (la réservation multiple viendra
+              s'y greffer après la soutenance). */}
           <IconTab
             href={paths.bookings}
-            icon={<CalendarCheck className="size-[18px]" />}
-            label={t("nav.bookings")}
+            icon={<ShoppingCart className="size-[22px]" strokeWidth={1.6} />}
+            label={t("nav.cart")}
             badge={<Badge count={bookings?.total ?? 0} tone="primary" />}
           />
 
-          {/* Sélecteur de langue en pilules (design) */}
-          <div className="flex flex-col items-center gap-0.5">
-            <div className="inline-flex overflow-hidden rounded-lg border border-gray-200 bg-white">
-                            {SUPPORTED_LANGUAGES.map((lang) => (
-                <button
-                  key={lang}
-                  type="button"
-                  onClick={() => i18n.changeLanguage(lang)}
-                  className={cn(
-                    "px-3.5 py-1.5 text-xs font-semibold uppercase transition-all",
-                         currentLang === lang
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-foreground/70 hover:bg-gray-50 hover:text-foreground",
-                  )}
-                >
-                  {lang}
-                </button>
-              ))}
-            </div>
-            <span className="text-[11px] font-semibold text-foreground/50">
-              {currentLang.toUpperCase()} / DT
-            </span>
-          </div>
+          <LanguageMenu />
 
           {isAuthenticated ? (
             <UserMenu />
@@ -129,7 +128,7 @@ export function Navbar() {
               type="button"
               onClick={() => router.push(paths.login)}
               className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-md"
-                          >
+            >
               <LogIn className="size-4" />
               <span className="hidden sm:inline">{t("nav.login")}</span>
             </button>
@@ -137,26 +136,18 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Rangée 2 : Accueil / Activités / catégories */}
+      {/* Recherche collante : uniquement là où elle a du sens. */}
+      {showSearch && <StickySearch />}
+
+      {/* Rangée 3 : navigation principale — les catégories sont des filtres
+          de la page Activités, pas des entrées de menu. */}
       <nav className="mx-auto flex max-w-7xl gap-0.5 overflow-x-auto px-3 sm:px-6">
         <Link href={paths.home} className={tabClass(pathname === "/")}>
           {t("nav.home")}
         </Link>
-        <Link
-          href={paths.activities}
-          className={tabClass(pathname === paths.activities && !activeCat)}
-        >
+        <Link href={paths.activities} className={tabClass(pathname === paths.activities)}>
           {t("nav.activities")}
         </Link>
-        {(categories ?? []).map((cat) => (
-          <Link
-            key={cat.id}
-            href={`${paths.activities}?cat=${cat.id}`}
-            className={tabClass(pathname === paths.activities && activeCat === String(cat.id))}
-          >
-            {t(`catalog.categories.${cat.nom}`, cat.nom)}
-          </Link>
-        ))}
         {isAuthenticated && (
           <Link
             href={paths.profile}

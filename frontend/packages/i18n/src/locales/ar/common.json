@@ -52,7 +52,11 @@
     "login": "تسجيل الدخول",
     "register": "إنشاء حساب",
     "logout": "تسجيل الخروج",
-    "menu": "القائمة"
+    "menu": "القائمة",
+    "favoritesShort": "المفضلة",
+    "cart": "السلة",
+    "cartSoon": "السلة قادمة قريبًا.",
+    "switchLanguage": "تغيير اللغة"
   },
   "activities": {
     "description": "استعرض أفضل الأنشطة للحجز بالقرب منك."
@@ -279,7 +283,9 @@
     "reset": "إعادة تعيين عوامل التصفية",
     "book": "احجز",
     "perPerson": "/ للشخص",
-    "favorite": "المفضلة"
+    "favorite": "المفضلة",
+    "searchPlaceholder": "ابحث عن نشاط أو مدينة أو فئة…",
+    "allCities": "كل المدن"
   },
   "detail": {
     "back": "العودة إلى الأنشطة",

@@ -36,9 +36,16 @@ def list_activities(
         stmt = stmt.where(Activity.category_id == category_id)
     if search:
         pattern = f"%{search.lower()}%"
-        stmt = stmt.where(
+        # Recherche libre : titre (dans les trois langues), ville, et nom de la
+        # catégorie — un visiteur qui tape « désert » ou « Djerba » doit trouver.
+        stmt = stmt.join(Activity.category, isouter=True).where(
             func.lower(Activity.titre).like(pattern)
+            | func.lower(func.coalesce(Activity.titre_en, "")).like(pattern)
+            | func.lower(func.coalesce(Activity.titre_ar, "")).like(pattern)
             | func.lower(Activity.localisation).like(pattern)
+            | func.lower(func.coalesce(Category.nom, "")).like(pattern)
+            | func.lower(func.coalesce(Category.nom_en, "")).like(pattern)
+            | func.lower(func.coalesce(Category.nom_ar, "")).like(pattern)
         )
 
     total = int(db.scalar(select(func.count()).select_from(stmt.subquery())) or 0)

@@ -1,30 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { MapPin, X } from "lucide-react";
 
 import { cn } from "@touribook/ui/lib/utils";
 
 import type { Category } from "@/features/catalog/api";
+import { categoryName } from "@/features/catalog/i18n-content";
 
-/** Contrôles du catalogue (recherche, catégories, tri, vue) — écrivent dans
- *  l'URL ; la liste elle-même est re-rendue côté serveur à chaque changement. */
-export function CatalogControls({ categories }: { categories: Category[] }) {
-  const { t } = useTranslation();
+/** Contrôles du catalogue (recherche, catégories, ville, tri, vue) — écrivent
+ *  dans l'URL ; la liste elle-même est re-rendue côté serveur à chaque
+ *  changement, ce qui garde chaque combinaison de filtres partageable. */
+export function CatalogControls({
+  categories,
+  cities,
+}: {
+  categories: Category[];
+  cities: string[];
+}) {
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const search = searchParams?.get("search") ?? "";
   const cat = searchParams?.get("cat");
+  const city = searchParams?.get("city") ?? "";
   const sort = searchParams?.get("sort") ?? "pop";
   const view = searchParams?.get("view") ?? "grid";
-
-  const [searchInput, setSearchInput] = useState(search);
-  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => setSearchInput(search), [search]);
 
   const setParams = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams?.toString());
@@ -35,11 +39,7 @@ export function CatalogControls({ categories }: { categories: Category[] }) {
     router.replace(`${pathname}?${next.toString()}`, { scroll: false });
   };
 
-  const onSearchChange = (value: string) => {
-    setSearchInput(value);
-    if (debounce.current) clearTimeout(debounce.current);
-    debounce.current = setTimeout(() => setParams({ search: value || null }), 350);
-  };
+  const hasFilters = Boolean(search || cat || city);
 
   const segClass = (active: boolean) =>
     cn(
@@ -78,13 +78,39 @@ export function CatalogControls({ categories }: { categories: Category[] }) {
         </div>
       </div>
 
-      <div className="my-6 flex w-full flex-wrap items-center gap-3">
-        <input
-          value={searchInput}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t("home.searchPh")}
-          className="min-w-60 flex-1 rounded-full border border-input bg-card px-5 py-2.5 text-[15px] placeholder:text-foreground/40"
-        />
+      <div className="my-6 flex w-full flex-col gap-3">
+        {/* Recherche libre + ville */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <MapPin className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-foreground/40" />
+            <select
+              value={city}
+              onChange={(e) => setParams({ city: e.target.value || null })}
+              aria-label={t("catalog.allCities")}
+              className="appearance-none rounded-full border border-input bg-card ps-11 pe-6 py-2.5 text-sm"
+            >
+              <option value="">{t("catalog.allCities")}</option>
+              {cities.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={() => setParams({ search: null, cat: null, city: null })}
+              className="inline-flex items-center gap-1.5 rounded-full border border-input px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-blue-600 hover:text-blue-600"
+            >
+              <X className="size-4" />
+              {t("catalog.reset")}
+            </button>
+          )}
+        </div>
+
+        {/* Catégories */}
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => setParams({ cat: null })} className={chipClass(!cat)}>
             {t("catalog.allCategories")}
@@ -96,7 +122,7 @@ export function CatalogControls({ categories }: { categories: Category[] }) {
               onClick={() => setParams({ cat: String(category.id) })}
               className={chipClass(cat === String(category.id))}
             >
-              {t(`catalog.categories.${category.nom}`, category.nom)}
+              {categoryName(category, i18n.language)}
             </button>
           ))}
         </div>

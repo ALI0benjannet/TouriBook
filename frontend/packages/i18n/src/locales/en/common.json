@@ -52,7 +52,11 @@
     "login": "Log in",
     "register": "Sign up",
     "logout": "Log out",
-    "menu": "Menu"
+    "menu": "Menu",
+    "favoritesShort": "Favorites",
+    "cart": "Cart",
+    "cartSoon": "The cart is coming soon.",
+    "switchLanguage": "Change language"
   },
   "activities": {
     "description": "Browse the best activities to book near you."
@@ -279,7 +283,9 @@
     "reset": "Reset filters",
     "book": "Book",
     "perPerson": "/ person",
-    "favorite": "Favorite"
+    "favorite": "Favorite",
+    "searchPlaceholder": "Search an activity, a city, a category…",
+    "allCities": "All cities"
   },
   "detail": {
     "back": "Back to activities",

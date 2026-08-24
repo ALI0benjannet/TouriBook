@@ -52,7 +52,11 @@
     "login": "Connexion",
     "register": "Inscription",
     "logout": "Déconnexion",
-    "menu": "Menu"
+    "menu": "Menu",
+    "favoritesShort": "Favoris",
+    "cart": "Panier",
+    "cartSoon": "Le panier arrive bientôt.",
+    "switchLanguage": "Changer de langue"
   },
   "activities": {
     "description": "Découvrez les meilleures activités à réserver près de chez vous."
@@ -279,7 +283,9 @@
     "reset": "Réinitialiser les filtres",
     "book": "Réserver",
     "perPerson": "/ pers.",
-    "favorite": "Favori"
+    "favorite": "Favori",
+    "searchPlaceholder": "Rechercher une activité, une ville, une catégorie…",
+    "allCities": "Toutes les villes"
   },
   "detail": {
     "back": "Retour aux activités",
