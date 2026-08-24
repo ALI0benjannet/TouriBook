@@ -56,12 +56,18 @@ def _find_valid_promo(db: Session, code: str) -> PromoCode:
     return promo
 
 
-def _booking_dict(b: Booking, titles: dict[int, str] | None = None) -> dict:
+def _booking_dict(b: Booking, activities: dict[int, dict] | None = None) -> dict:
+    """Sérialise une réservation, enrichie des infos d'activité quand le
+    catalog-service a répondu (titre traduit et vignette)."""
+    info = (activities or {}).get(b.activity_id) or {}
     return {
         "id": b.id,
         "user_id": b.user_id,
         "activity_id": b.activity_id,
-        "activity": (titles or {}).get(b.activity_id),
+        "activity": info.get("titre"),
+        "activity_titre_en": info.get("titre_en"),
+        "activity_titre_ar": info.get("titre_ar"),
+        "activity_photo": info.get("photos"),
         "availability_id": b.availability_id,
         "statut": b.statut.value,
         "montant_total": float(b.montant_total or 0.0),
@@ -84,19 +90,19 @@ async def my_bookings(
         stmt.order_by(Booking.date_reservation.desc()).offset((page - 1) * size).limit(size)
     ).all()
 
-    # Enrichissement : titres d'activités depuis le catalog-service
-    titles: dict[int, str] = {}
+    # Enrichissement : titres et vignettes depuis le catalog-service
+    activities: dict[int, dict] = {}
     activity_ids = sorted({b.activity_id for b in rows})
     if activity_ids:
         try:
             data = await catalog.get(
                 "/internal/activities/batch", params={"ids": ",".join(map(str, activity_ids))}
             )
-            titles = {item["id"]: item["titre"] for item in data}
+            activities = {item["id"]: item for item in data}
         except httpx.HTTPError:
-            logger.warning("catalog-service injoignable — titres non enrichis")
+            logger.warning("catalog-service injoignable — activités non enrichies")
 
-    return paginate(total, page, size, [_booking_dict(b, titles) for b in rows])
+    return paginate(total, page, size, [_booking_dict(b, activities) for b in rows])
 
 
 @public_router.post("/validate-promo")
@@ -194,7 +200,7 @@ async def create_booking(
     # Notification des administrateurs (tache de fond, sans impact sur la reponse)
     background.add_task(_notify_admins_new_booking, booking.id)
 
-    return _booking_dict(booking, {activity["id"]: activity["titre"]})
+    return _booking_dict(booking, {activity["id"]: activity})
 
 
 @public_router.get("/{booking_id}")
@@ -208,15 +214,15 @@ async def get_booking(
     if not booking or (booking.user_id != identity.user_id and not identity.is_admin):
         raise HTTPException(status_code=404, detail="Réservation introuvable")
 
-    titles: dict[int, str] = {}
+    activities: dict[int, dict] = {}
     try:
         data = await catalog.get(
             "/internal/activities/batch", params={"ids": str(booking.activity_id)}
         )
-        titles = {item["id"]: item["titre"] for item in data}
+        activities = {item["id"]: item for item in data}
     except httpx.HTTPError:
         pass
-    return _booking_dict(booking, titles)
+    return _booking_dict(booking, activities)
 
 
 @public_router.get("/{booking_id}/qrcode")

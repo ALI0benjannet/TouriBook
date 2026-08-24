@@ -130,7 +130,7 @@ def internal_list_activities(
 
 @internal_router.get("/activities/batch")
 def activities_batch(ids: str = Query(...), db: Session = Depends(get_db)):
-    """Résolution en masse d'activités (id → titre, prix)."""
+    """Résolution en masse d'activités (id → titre, prix, photo)."""
     try:
         id_list = [int(x) for x in ids.split(",") if x.strip()]
     except ValueError:
@@ -139,7 +139,16 @@ def activities_batch(ids: str = Query(...), db: Session = Depends(get_db)):
         return []
     activities = db.scalars(select(Activity).where(Activity.id.in_(id_list[:200]))).all()
     return [
-        {"id": a.id, "titre": a.titre, "prix": float(a.prix or 0.0)}
+        {
+            "id": a.id,
+            "titre": a.titre,
+            "titre_en": a.titre_en,
+            "titre_ar": a.titre_ar,
+            "prix": float(a.prix or 0.0),
+            # `photos` permet aux autres services (réservations) d'afficher la
+            # vignette sans un second appel au catalogue.
+            "photos": a.photos,
+        }
         for a in activities
     ]
 

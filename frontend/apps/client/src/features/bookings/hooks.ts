@@ -11,6 +11,10 @@ export interface BookingItem {
   user_id: number;
   activity_id: number;
   activity: string | null;
+  /** Enrichis par le booking-service depuis le catalogue (titre traduit + vignette). */
+  activity_titre_en?: string | null;
+  activity_titre_ar?: string | null;
+  activity_photo?: string | null;
   availability_id: number;
   statut: "pending" | "confirmed" | "cancelled";
   montant_total: number;

@@ -16,6 +16,15 @@ const STATUS_STYLES: Record<BookingItem["statut"], string> = {
   cancelled: "bg-destructive/10 text-destructive",
 };
 
+/** Titre de l'activité réservée dans la langue active, avec repli sur le
+ *  français puis sur l'identifiant si le catalogue n'a pas répondu. */
+function bookingTitle(booking: BookingItem, lang?: string): string {
+  const base = lang?.split("-")[0];
+  if (base === "en" && booking.activity_titre_en?.trim()) return booking.activity_titre_en;
+  if (base === "ar" && booking.activity_titre_ar?.trim()) return booking.activity_titre_ar;
+  return booking.activity ?? `#${booking.activity_id}`;
+}
+
 export default function BookingsPage() {
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -71,15 +80,21 @@ export default function BookingsPage() {
               key={booking.id}
               className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-shadow hover:shadow-[0_10px_26px_rgba(28,54,65,.1)]"
             >
-              <div className="relative hidden h-20 w-28 shrink-0 overflow-hidden rounded-xl sm:block">
-                <ActivityImage label="Photo" />
-              </div>
+              <Link
+                href={`/activities/${booking.activity_id}`}
+                className="relative hidden h-20 w-28 shrink-0 overflow-hidden rounded-xl sm:block"
+              >
+                <ActivityImage
+                  src={booking.activity_photo}
+                  label={bookingTitle(booking, i18n.language)}
+                />
+              </Link>
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/activities/${booking.activity_id}`}
                   className="font-display text-lg hover:text-blue-600"
                 >
-                  {booking.activity ?? `#${booking.activity_id}`}
+                  {bookingTitle(booking, i18n.language)}
                 </Link>
                 <div className="mt-1 text-[13px] text-muted-foreground">
                   {formatDate(booking.date_reservation)} ·{" "}
