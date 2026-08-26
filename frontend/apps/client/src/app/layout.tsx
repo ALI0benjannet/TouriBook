@@ -42,7 +42,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${albertSans.variable} ${marcellus.variable}`}>
+    /* `suppressHydrationWarning` : le module i18n ajuste `lang` et `dir` sur
+       <html> dès son chargement (RTL en arabe), donc avant l'hydratation. */
+    <html
+      lang="fr"
+      className={`${albertSans.variable} ${marcellus.variable}`}
+      suppressHydrationWarning
+    >
       <body className="flex min-h-dvh flex-col antialiased">
         <Providers>
           <Suspense fallback={null}>

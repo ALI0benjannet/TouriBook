@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
 
 import { ActivityImage } from "@/components/activities/ActivityImage";
 import { FavoriteButton } from "@/components/activities/FavoriteButton";
 import type { Activity } from "@/features/catalog/api";
 import { formatDuration, formatPrice } from "@/features/catalog/format";
 import { activityTitle, categoryName } from "@/features/catalog/i18n-content";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 export type Rating = { average: number; count: number };
 
@@ -17,8 +17,8 @@ export type Rating = { average: number; count: number };
  * les libellés d'interface passent par i18next.
  */
 export function ActivityCard({ activity, rating }: { activity: Activity; rating?: Rating }) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  // Langue figée sur le français jusqu'à l'hydratation (cohérence SSR/client).
+  const { t, language: lang } = useHydratedTranslation();
   const detailPath = `/activities/${activity.id}`;
   const title = activityTitle(activity, lang);
 
@@ -32,7 +32,7 @@ export function ActivityCard({ activity, rating }: { activity: Activity; rating?
         <span className="sr-only">{title}</span>
       </Link>
 
-      <div className="relative h-44">
+      <div className="pointer-events-none relative h-44">
         <ActivityImage src={activity.photos} label={`Photo — ${activity.localisation}`} />
         <FavoriteButton activityId={activity.id} />
         {activity.category && (

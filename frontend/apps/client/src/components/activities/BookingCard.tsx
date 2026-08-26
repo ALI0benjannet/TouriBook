@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Minus, Plus } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 import { api, getAuthErrorCode, toApiError } from "@touribook/api";
 import { endpoints } from "@touribook/api/endpoints";
@@ -14,10 +13,11 @@ import { formatPrice } from "@/features/catalog/format";
 import { useAvailabilities } from "@/features/catalog/hooks";
 import { useCreateBooking } from "@/features/bookings/hooks";
 import { paths } from "@/routes/paths";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Carte de réservation (page détail) — créneaux réels + voyageurs + saga booking. */
 export function BookingCard({ activityId, prix }: { activityId: number; prix: number }) {
-  const { t, i18n } = useTranslation();
+  const { t, language } = useHydratedTranslation();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
@@ -63,7 +63,7 @@ export function BookingCard({ activityId, prix }: { activityId: number; prix: nu
 
   const formatSlot = (date: string, seats: number) => {
     const label = new Date(`${date}T12:00:00`).toLocaleDateString(
-      i18n.resolvedLanguage === "en" ? "en-GB" : i18n.resolvedLanguage === "ar" ? "ar-TN" : "fr-FR",
+      language === "en" ? "en-GB" : language === "ar" ? "ar-TN" : "fr-FR",
       { weekday: "short", day: "numeric", month: "short" },
     );
     return `${label} · ${t("detail.seatsLeft", { count: seats })}`;

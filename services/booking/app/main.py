@@ -1,4 +1,6 @@
+import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
@@ -7,10 +9,36 @@ from touribook_common.logging import setup_logging
 
 from app.config import settings
 from app.database import Base, engine
+from app.expiry import expiry_sweeper
 from app.routers import internal_router, public_router
 
 setup_logging(settings.SERVICE_NAME)
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """Cycle de vie du service : démarre le balayage des réservations expirées.
+
+    La tâche est annulée proprement à l'arrêt, sinon uvicorn attendrait
+    indéfiniment une boucle qui ne se termine jamais.
+    """
+    sweeper: asyncio.Task | None = None
+    if settings.BOOKING_EXPIRY_ENABLED:
+        sweeper = asyncio.create_task(expiry_sweeper())
+    else:
+        logger.warning("Expiration des reservations DESACTIVEE (BOOKING_EXPIRY_ENABLED=false)")
+
+    try:
+        yield
+    finally:
+        if sweeper is not None:
+            sweeper.cancel()
+            # `CancelledError` est attendue ici : c'est la façon normale de
+            # terminer la boucle.
+            await asyncio.gather(sweeper, return_exceptions=True)
+            logger.info("Balayage des reservations expirees arrete")
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -19,6 +47,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url=None,
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
+    lifespan=lifespan,
 )
 
 register_exception_handlers(app)

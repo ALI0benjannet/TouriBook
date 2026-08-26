@@ -2,13 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
 
 import { paths } from "@/routes/paths";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Barre de recherche du hero — îlot client de la page d'accueil (serveur). */
 export function HeroSearch() {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const router = useRouter();
 
   const [search, setSearch] = useState("");

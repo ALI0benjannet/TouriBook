@@ -1,15 +1,14 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
-
 import { ActivityMapLoader } from "@/components/map/ActivityMapLoader";
 import type { Activity } from "@/features/catalog/api";
 import { activityTitle } from "@/features/catalog/i18n-content";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Section « Où se déroule l'activité » — titre traduit et mini-carte.
  *  Rendue uniquement quand l'activité est géolocalisée. */
 export function ActivityLocation({ activity }: { activity: Activity }) {
-  const { t, i18n } = useTranslation();
+  const { t, language } = useHydratedTranslation();
 
   if (activity.latitude == null || activity.longitude == null) return null;
 
@@ -23,7 +22,7 @@ export function ActivityLocation({ activity }: { activity: Activity }) {
           points={[
             {
               id: activity.id,
-              titre: activityTitle(activity, i18n.language),
+              titre: activityTitle(activity, language),
               prix: activity.prix,
               localisation: activity.localisation,
               latitude: activity.latitude,

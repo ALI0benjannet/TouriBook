@@ -8,7 +8,18 @@ par appel API (catalog-service) au moment de la réservation.
 import enum
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    func,
+    text,
+)
 from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -35,6 +46,22 @@ class PromoCode(Base):
 
 class Booking(Base):
     __tablename__ = "bookings"
+
+    # Anti-doublon : un même utilisateur ne peut pas avoir deux réservations
+    # actives sur le même créneau. La contrainte est posée en base (et non
+    # vérifiée en Python) car elle seule résiste à deux requêtes simultanées :
+    # un double-clic, ou un client qui rejoue sa requête sur timeout.
+    # `postgresql_where` la limite aux réservations non annulées, pour qu'un
+    # utilisateur puisse re-réserver après une annulation.
+    __table_args__ = (
+        Index(
+            "uq_booking_active_user_slot",
+            "user_id",
+            "availability_id",
+            unique=True,
+            postgresql_where=text("statut <> 'cancelled'"),
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, index=True)          # ref auth-service

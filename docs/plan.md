@@ -222,7 +222,11 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 - [x]  Historique du touriste (`GET /bookings`, titres enrichis via catalog)
 - [x]  Statuts (pending / confirmed / cancelled) + annulation avec libération des places
 - [x]  Passage `pending → confirmed` déclenché par le paiement (webhook/simulation → confirm interne)
-- [ ]  **Expiration des réservations `pending` non payées** (libération automatique des places après N minutes — sinon une réservation jamais payée bloque des places indéfiniment) `M · must` *(J3 — tâche ajoutée, voir architecture.md §12)*
+- [x]  **Concurrence durcie** (3 correctifs, validés par tests à 8 threads simultanés) :
+    - Annulation : transition `→ cancelled` par UPDATE conditionnel — évitait 8 libérations pour une seule annulation (places fantômes)
+    - Confirmation : transition `pending → confirmed` atomique — un seul e-mail même si Stripe rejoue le webhook
+    - Anti-doublon : index unique partiel `uq_booking_active_user_slot` — un double-clic renvoie la réservation existante au lieu d'en créer deux
+- [x]  **Expiration des réservations `pending` non payées** : tâche de fond (`app/expiry.py`) qui annule après **3 h** et rend les places au catalogue. Transition par UPDATE conditionnel → un paiement en cours gagne toujours la course, et des balayages répétés ne libèrent jamais deux fois. Réglable (`BOOKING_EXPIRY_MINUTES`), déclenchable à la demande (`POST /internal/bookings/expire-pending`). *(3/3 tests de concurrence)*
 
 ### Codes promo
 

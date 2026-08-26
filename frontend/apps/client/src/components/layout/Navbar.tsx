@@ -1,7 +1,6 @@
 "use client";
 
 import { Heart, LogIn, ShoppingCart, UserRound } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -14,6 +13,7 @@ import { UserMenu } from "./UserMenu";
 import { useFavorites } from "@/features/favorites/hooks";
 import { useMyBookings } from "@/features/bookings/hooks";
 import { paths } from "@/routes/paths";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 function Badge({ count, tone }: { count: number; tone: "accent" | "primary" }) {
   if (!count) return null;
@@ -74,7 +74,7 @@ function IconTab({
 }
 
 export function Navbar() {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();

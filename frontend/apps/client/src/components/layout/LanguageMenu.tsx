@@ -7,6 +7,8 @@ import { Check, Globe } from "lucide-react";
 import { SUPPORTED_LANGUAGES, type Language } from "@touribook/i18n";
 import { cn } from "@touribook/ui/lib/utils";
 
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
+
 /** Nom de chaque langue dans sa propre écriture — reconnaissable quelle que
  *  soit la langue actuellement affichée. */
 const LANGUAGE_NAMES: Record<Language, string> = {
@@ -18,11 +20,14 @@ const LANGUAGE_NAMES: Record<Language, string> = {
 /** Sélecteur de langue : ouvre la liste et laisse choisir, plutôt que de
  *  basculer directement — un clic involontaire ne change plus la langue. */
 export function LanguageMenu() {
-  const { t, i18n } = useTranslation();
+  // `i18n` sert uniquement à `changeLanguage` ; tout ce qui est *rendu* (libellé
+  // et attribut `title`) passe par la version figée jusqu'à l'hydratation, sinon
+  // le serveur écrit « Changer de langue » et le client « Change language ».
+  const { i18n } = useTranslation();
+  const { t, language: resolved } = useHydratedTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const resolved = i18n.resolvedLanguage ?? i18n.language ?? "fr";
   const current = (SUPPORTED_LANGUAGES.includes(resolved as Language) ? resolved : "fr") as Language;
 
   // Referme au clic extérieur et à la touche Échap.

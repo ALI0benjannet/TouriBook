@@ -1,14 +1,14 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
 import Link from "next/link";
 
 import { env } from "@touribook/api/env";
 
 import { paths } from "@/routes/paths";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
 
   return (
     <footer className="mt-auto bg-ink text-ink-foreground">

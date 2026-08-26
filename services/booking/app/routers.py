@@ -7,7 +7,8 @@ import qrcode
 import qrcode.image.svg
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from touribook_common.auth import TokenIdentity, get_current_identity
@@ -54,6 +55,35 @@ def _find_valid_promo(db: Session, code: str) -> PromoCode:
     if promo.date_expiration < date_type.today():
         raise HTTPException(status_code=410, detail="Code promo expire")
     return promo
+
+
+async def _release_seats(availability_id: int, seats: int, *, reason: str) -> bool:
+    """Rend des places au catalogue (compensation de saga).
+
+    Ne lève jamais : l'appelant est déjà en train de traiter une erreur, et
+    échouer ici masquerait la cause d'origine. Un échec est journalisé en
+    `error` avec toutes les données nécessaires pour rejouer l'opération
+    manuellement — sans quoi les places resteraient bloquées indéfiniment.
+
+    Retourne True si les places ont bien été libérées.
+    """
+    try:
+        await catalog.post(
+            f"/internal/availabilities/{availability_id}/release",
+            params={"seats": seats},
+        )
+        return True
+    except httpx.HTTPError:
+        logger.error(
+            "COMPENSATION ECHOUEE (%s) : %s place(s) non liberee(s) sur "
+            "availability_id=%s — rejouer : POST /internal/availabilities/%s/release?seats=%s",
+            reason,
+            seats,
+            availability_id,
+            availability_id,
+            seats,
+        )
+        return False
 
 
 def _booking_dict(b: Booking, activities: dict[int, dict] | None = None) -> dict:
@@ -183,18 +213,34 @@ async def create_booking(
         db.add(booking)
         db.commit()
         db.refresh(booking)
+    except IntegrityError:
+        # L'index `uq_booking_active_user_slot` a rejeté un doublon : cet
+        # utilisateur a déjà une réservation active sur ce créneau (double-clic
+        # ou requête rejouée). On rend les places prises à l'étape 2 et on
+        # renvoie la réservation existante — la requête reste idempotente.
+        db.rollback()
+        await _release_seats(payload.availability_id, guests, reason="doublon")
+
+        existing = db.scalar(
+            select(Booking).where(
+                Booking.user_id == identity.user_id,
+                Booking.availability_id == payload.availability_id,
+                Booking.statut != BookingStatus.cancelled,
+            )
+        )
+        if existing is None:
+            # Cas très improbable : le doublon a été annulé entre-temps.
+            raise HTTPException(status_code=409, detail="Réservation en double détectée")
+        logger.info(
+            "Doublon evite (user=%s, availability=%s) -> reservation #%s",
+            identity.user_id,
+            payload.availability_id,
+            existing.id,
+        )
+        return _booking_dict(existing, {activity["id"]: activity})
     except Exception:
         db.rollback()
-        try:
-            await catalog.post(
-                f"/internal/availabilities/{payload.availability_id}/release",
-                params={"seats": guests},
-            )
-        except httpx.HTTPError:
-            logger.error(
-                "Compensation échouée : place non libérée (availability_id=%s)",
-                payload.availability_id,
-            )
+        await _release_seats(payload.availability_id, guests, reason="echec creation")
         raise
 
     # Notification des administrateurs (tache de fond, sans impact sur la reponse)
@@ -252,23 +298,36 @@ async def cancel_booking(
     identity: TokenIdentity = Depends(get_current_identity),
     db: Session = Depends(get_db),
 ):
+    """Annule une réservation et rend les places au catalogue.
+
+    Concurrence : lire le statut puis l'écrire laisserait une fenêtre pendant
+    laquelle deux requêtes simultanées (double-clic, requête rejouée) se
+    croiseraient — chacune verrait `pending` et chacune libérerait les places,
+    créant des places fantômes. La transition est donc faite par un UPDATE
+    conditionnel : la base ne l'accorde qu'à un seul appelant.
+    """
     booking = db.get(Booking, booking_id)
     if not booking or booking.user_id != identity.user_id:
         raise HTTPException(status_code=404, detail="Réservation introuvable")
-    if booking.statut == BookingStatus.cancelled:
-        return {"message": "Réservation déjà annulée"}
 
-    booking.statut = BookingStatus.cancelled
+    seats = int(booking.nb_places or 1)
+    availability_id = booking.availability_id
+
+    # Transition atomique pending|confirmed -> cancelled. `rowcount` vaut 1 pour
+    # le seul appelant qui a effectivement opéré le changement d'état.
+    result = db.execute(
+        update(Booking)
+        .where(Booking.id == booking_id, Booking.statut != BookingStatus.cancelled)
+        .values(statut=BookingStatus.cancelled)
+    )
     db.commit()
 
-    # Compensation : on libère les places côté catalogue
-    try:
-        await catalog.post(
-            f"/internal/availabilities/{booking.availability_id}/release",
-            params={"seats": int(getattr(booking, "nb_places", 1) or 1)},
-        )
-    except httpx.HTTPError:
-        logger.error("Place non libérée pour la réservation %s", booking_id)
+    if result.rowcount == 0:
+        # Un autre appel a déjà annulé : ne pas libérer les places une 2e fois.
+        return {"message": "Réservation déjà annulée"}
+
+    # Compensation : on libère les places côté catalogue — exactement une fois.
+    await _release_seats(availability_id, seats, reason=f"annulation booking #{booking_id}")
 
     return {"message": "Réservation annulée"}
 
@@ -455,6 +514,11 @@ def confirm_booking(
 
     Idempotent : une reservation deja confirmee renvoie son etat sans effet.
     Genere le code QR de verification et declenche l'e-mail de confirmation.
+
+    Concurrence : Stripe peut rejouer un webhook, et le payment-service peut
+    retenter son appel. La transition pending -> confirmed passe donc par un
+    UPDATE conditionnel : un seul appelant l'obtient, donc un seul e-mail de
+    confirmation part, meme si dix requetes arrivent en meme temps.
     """
     booking = db.get(Booking, booking_id)
     if not booking:
@@ -462,19 +526,51 @@ def confirm_booking(
     if booking.statut == BookingStatus.cancelled:
         raise HTTPException(status_code=409, detail="Réservation annulée — confirmation impossible")
 
-    already = booking.statut == BookingStatus.confirmed
-    if not already:
-        booking.statut = BookingStatus.confirmed
-        if not booking.qr_code:
-            booking.qr_code = f"TB-{booking.id}-{uuid.uuid4().hex[:12].upper()}"
-        db.commit()
-        background.add_task(_send_confirmation_email, booking.id)
+    # Le QR est genere ici : il doit etre pose par la meme requete atomique que
+    # le changement de statut, sinon deux appels concurrents produiraient deux
+    # codes differents pour la meme reservation.
+    qr_code = booking.qr_code or f"TB-{booking_id}-{uuid.uuid4().hex[:12].upper()}"
+
+    result = db.execute(
+        update(Booking)
+        .where(Booking.id == booking_id, Booking.statut == BookingStatus.pending)
+        .values(statut=BookingStatus.confirmed, qr_code=qr_code)
+    )
+    db.commit()
+
+    transitioned = result.rowcount == 1
+    if transitioned:
+        background.add_task(_send_confirmation_email, booking_id)
+    else:
+        # Deja confirmee (ou annulee entre-temps) : on relit l'etat reel.
+        db.refresh(booking)
+        if booking.statut == BookingStatus.cancelled:
+            raise HTTPException(
+                status_code=409, detail="Réservation annulée — confirmation impossible"
+            )
+        qr_code = booking.qr_code
 
     return {
-        "booking_id": booking.id,
-        "statut": booking.statut.value,
-        "qr_code": booking.qr_code,
-        "already_confirmed": already,
+        "booking_id": booking_id,
+        "statut": BookingStatus.confirmed.value,
+        "qr_code": qr_code,
+        "already_confirmed": not transitioned,
+    }
+
+
+@internal_router.post("/bookings/expire-pending")
+async def expire_pending_now():
+    """Déclenche immédiatement le balayage des réservations abandonnées.
+
+    La tâche de fond s'en charge automatiquement ; cet endpoint permet de la
+    forcer — démonstration, exploitation, ou après un incident.
+    """
+    from app.expiry import expire_pending_bookings
+
+    report = await expire_pending_bookings()
+    return {
+        "expiry_minutes": settings.BOOKING_EXPIRY_MINUTES,
+        **report,
     }
 
 

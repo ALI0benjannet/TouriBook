@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 
 import { paths } from "@/routes/paths";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Recherche intégrée à l'en-tête fixe : elle reste accessible quel que soit
  *  le défilement, sur l'accueil et le catalogue.
@@ -13,7 +13,7 @@ import { paths } from "@/routes/paths";
  *  Sur `/activities`, la saisie écrit directement dans l'URL (la liste est
  *  re-rendue côté serveur) ; ailleurs, la validation envoie vers le catalogue. */
 export function StickySearch() {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

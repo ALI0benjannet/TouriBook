@@ -1,13 +1,13 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTranslation } from "react-i18next";
 import { MapPin, X } from "lucide-react";
 
 import { cn } from "@touribook/ui/lib/utils";
 
 import type { Category } from "@/features/catalog/api";
 import { categoryName } from "@/features/catalog/i18n-content";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Contrôles du catalogue (recherche, catégories, ville, tri, vue) — écrivent
  *  dans l'URL ; la liste elle-même est re-rendue côté serveur à chaque
@@ -19,7 +19,7 @@ export function CatalogControls({
   categories: Category[];
   cities: string[];
 }) {
-  const { t, i18n } = useTranslation();
+  const { t, language } = useHydratedTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -122,7 +122,7 @@ export function CatalogControls({
               onClick={() => setParams({ cat: String(category.id) })}
               className={chipClass(cat === String(category.id))}
             >
-              {categoryName(category, i18n.language)}
+              {categoryName(category, language)}
             </button>
           ))}
         </div>

@@ -1,7 +1,5 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
-
 import type { Activity } from "@/features/catalog/api";
 import {
   activityDescription,
@@ -9,6 +7,7 @@ import {
   categoryName,
 } from "@/features/catalog/i18n-content";
 import { formatDuration } from "@/features/catalog/format";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Titre, catégorie et description de l'activité, dans la langue de l'interface.
  *
@@ -23,8 +22,7 @@ export function ActivityContent({
   activity: Activity;
   stats?: { average: number; count: number };
 }) {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const { t, language: lang } = useHydratedTranslation();
 
   return (
     <>

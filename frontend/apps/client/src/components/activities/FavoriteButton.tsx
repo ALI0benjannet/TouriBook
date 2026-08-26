@@ -1,11 +1,11 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 import { cn } from "@touribook/ui/lib/utils";
 
 import { useToggleFavorite } from "@/features/favorites/hooks";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 /** Îlot client : cœur favori posé sur les cartes/pages rendues côté serveur. */
 export function FavoriteButton({
@@ -16,7 +16,7 @@ export function FavoriteButton({
   size?: "sm" | "lg";
 }) {
   const { isFavorite, toggle } = useToggleFavorite();
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const fav = isFavorite(activityId);
 
   return (
@@ -31,7 +31,7 @@ export function FavoriteButton({
       }}
       className={cn(
         // `z-10` : passe au-dessus du lien étalé des cartes d'activité.
-        "absolute end-3 top-3 z-10 flex items-center justify-center rounded-full bg-card/95 shadow-md transition-transform hover:scale-105",
+        "pointer-events-auto absolute end-3 top-3 z-10 flex items-center justify-center rounded-full bg-card/95 shadow-md transition-transform hover:scale-105",
         size === "lg" ? "size-11" : "size-9",
         fav ? "text-blue-600" : "text-foreground/30",
       )}

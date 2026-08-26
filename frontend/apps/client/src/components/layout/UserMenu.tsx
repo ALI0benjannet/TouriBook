@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
 import { CalendarCheck, Heart, LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react";
 
 import { Avatar } from "@touribook/ui/components/ui/avatar";
@@ -16,9 +15,10 @@ import { useAuth } from "@touribook/auth/hooks/use-auth";
 import { env } from "@touribook/api/env";
 
 import { paths } from "@/routes/paths";
+import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
 export function UserMenu() {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const { user, logout } = useAuth();
   const router = useRouter();
 
