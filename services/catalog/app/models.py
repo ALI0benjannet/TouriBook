@@ -55,6 +55,12 @@ class Availability(Base):
     activity_id: Mapped[int] = mapped_column(ForeignKey("activities.id"))
     date: Mapped[date] = mapped_column(Date)
     heure: Mapped[time] = mapped_column(Time)
+    # Compteur décrémenté à chaque réservation (UPDATE conditionnel atomique).
     places_disponibles: Mapped[int] = mapped_column(Integer, default=0)
+    # Capacité d'origine, figée à la création du créneau. Sans elle,
+    # `places_disponibles` n'est qu'un nombre : impossible de vérifier qu'il
+    # correspond aux réservations réellement enregistrées. Sert de référence au
+    # script de réconciliation (voir architecture.md §12 n° 3).
+    places_totales: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     activity = relationship("Activity", back_populates="availabilities")

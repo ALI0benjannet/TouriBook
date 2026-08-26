@@ -38,3 +38,5 @@ class AvailabilityRead(ORMModel):
     date: date
     heure: time
     places_disponibles: int
+    # Capacité d'origine : permet au client d'afficher « 6 places sur 8 ».
+    places_totales: int = 0

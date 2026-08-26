@@ -209,7 +209,9 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 
 - [x]  Modèle `Availability` (date, heure, places) + `GET /activities/{id}/availabilities`
 - [x]  Vérification + **décrément atomique** des places à la réservation (`/internal/…/reserve|release`)
-- [x]  CRUD admin des créneaux (création/modification/suppression)
+- [x]  CRUD admin des créneaux (création/modification/suppression) — modifier « places » ajuste la **capacité** : le delta est reporté sur les places restantes, les réservations déjà prises restent décomptées
+- [x]  `places_totales` : capacité d'origine figée à la création, exposée par l'API (« 6 places sur 8 ») et référence du contrôle de cohérence
+- [x]  **Réconciliation catalog ↔ booking** (`booking/scripts/reconcile_seats.py`) : détecte places fantômes, places en trop et réservations orphelines ; `--fix` réaligne. Validé sur incohérences injectées (−3 et +4 places)
 
 ### Favoris ✅
 
@@ -246,7 +248,7 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 
 ---
 
-## 🖼️ Phase 7 — Frontend : catalogue & découverte — EN COURS
+## 🖼️ Phase 7 — Frontend : catalogue & découverte ✅ *(périmètre retenu terminé ; panier volontairement reporté)*
 
 - [x]  Accueil : hero + recherche (destination/date/voyageurs), destinations, activités populaires
 - [x]  Page activités : recherche, chips catégories, tri prix, pagination serveur
@@ -329,7 +331,7 @@ Les tâches jugées **surdimensionnées pour un PFE solo** ont été déplacées
 - [x]  Tests pytest du parcours auth (isolation par transaction, 5 tests)
 - [x]  Tests unitaires frontend (vitest — redirections post-login)
 - [x]  Typecheck strict TypeScript sur les 2 apps + packages (0 erreur)
-- [ ]  Tests pytest catalog + booking : **saga nominale, compensation, concurrence sur les places** (2 réservations simultanées sur le dernier créneau) `M · must`
+- [ ]  Tests pytest catalog + booking : **saga nominale, compensation, concurrence sur les places** (2 réservations simultanées sur le dernier créneau) `M · must` *(logique déjà validée hors pytest : 8 threads simultanés sur annulation / confirmation / doublon + expiration + réconciliation, tous verts — reste à formaliser en suite pytest rejouable en CI)*
 - [ ]  Tests pytest payment : webhook (signature valide/invalide, idempotence) `S · must`
 - [ ]  Tests pytest admin : agrégation BFF (services mockés) `S · should`
 - [ ]  Test end-to-end (Playwright) du parcours nominal : inscription → confirmation → réservation → paiement test → QR `M · must` *(un seul parcours E2E solide vaut mieux que dix fragiles)*

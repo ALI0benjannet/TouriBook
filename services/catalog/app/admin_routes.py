@@ -251,7 +251,12 @@ def delete_activity_photo(activity_id: int, db: Session = Depends(get_db)):
 )
 def create_availability(payload: AvailabilityIn, db: Session = Depends(get_db)):
     _get_or_404(db, Activity, payload.activity_id, "Activité")
-    availability = Availability(**payload.model_dump())
+    # À la création, la capacité d'origine est le nombre de places saisi :
+    # `places_totales` sert ensuite de référence fixe à la réconciliation.
+    availability = Availability(
+        **payload.model_dump(),
+        places_totales=payload.places_disponibles,
+    )
     db.add(availability)
     db.commit()
     db.refresh(availability)
@@ -263,7 +268,21 @@ def update_availability(
     availability_id: int, payload: AvailabilityUpdate, db: Session = Depends(get_db)
 ):
     availability = _get_or_404(db, Availability, availability_id, "Créneau")
-    for key, value in payload.model_dump(exclude_unset=True).items():
+    updates = payload.model_dump(exclude_unset=True)
+
+    # L'admin qui modifie « places » ajuste la CAPACITÉ du créneau, pas le
+    # compteur de restantes : passer 8 -> 10 alors que 2 sont déjà réservées
+    # doit donner 8 restantes, pas 10. On applique donc le delta aux deux
+    # colonnes, en gardant les restantes dans [0, capacité].
+    if "places_disponibles" in updates:
+        nouvelle_capacite = updates.pop("places_disponibles")
+        delta = nouvelle_capacite - (availability.places_totales or 0)
+        availability.places_totales = nouvelle_capacite
+        availability.places_disponibles = max(
+            0, min(nouvelle_capacite, (availability.places_disponibles or 0) + delta)
+        )
+
+    for key, value in updates.items():
         setattr(availability, key, value)
     db.commit()
     db.refresh(availability)
