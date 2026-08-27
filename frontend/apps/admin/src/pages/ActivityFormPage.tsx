@@ -46,7 +46,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full rounded-md border border-input bg-white px-3 py-2 text-sm dark:bg-muted";
+  "w-full rounded-md border border-input bg-card px-3 py-2 text-sm focus:border-primary focus:outline-none";
 
 /** Création (/activities/new) et édition (/activities/:id/edit) d'une activité. */
 export default function ActivityFormPage() {
@@ -148,7 +148,7 @@ export default function ActivityFormPage() {
   };
 
   if (isEdit && isLoading) {
-    return <div className="h-64 animate-pulse rounded-lg bg-muted" />;
+    return <div className="bg-muted h-64 animate-pulse rounded-lg" />;
   }
 
   return (
@@ -156,7 +156,7 @@ export default function ActivityFormPage() {
       <div className="flex items-center gap-3">
         <Link
           to="/activities"
-          className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md p-1.5"
           aria-label={t("admin.form.backAria")}
         >
           <ArrowLeft className="size-5" />
@@ -169,7 +169,7 @@ export default function ActivityFormPage() {
       </div>
 
       {/* ---- Informations ---- */}
-      <form onSubmit={submit} className="space-y-4 rounded-lg border bg-card p-5">
+      <form onSubmit={submit} className="bg-card space-y-4 rounded-lg border p-5">
         <Field label={t("admin.form.fieldTitle")}>
           <input
             required
@@ -191,13 +191,9 @@ export default function ActivityFormPage() {
         </Field>
 
         {/* ---- Traductions (facultatives : repli automatique sur le français) ---- */}
-        <fieldset className="rounded-lg border border-input p-4">
-          <legend className="px-1 text-[13px] font-semibold">
-            {t("admin.form.translations")}
-          </legend>
-          <p className="mb-3 text-xs text-muted-foreground">
-            {t("admin.form.translationsHint")}
-          </p>
+        <fieldset className="border-input rounded-lg border p-4">
+          <legend className="px-1 text-[13px] font-semibold">{t("admin.form.translations")}</legend>
+          <p className="text-muted-foreground mb-3 text-xs">{t("admin.form.translationsHint")}</p>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={`${t("admin.form.fieldTitle")} — ${t("admin.form.tabEn")}`}>
@@ -289,7 +285,9 @@ export default function ActivityFormPage() {
               type="number"
               step="any"
               value={form.latitude ?? ""}
-              onChange={(e) => set("latitude", e.target.value === "" ? null : Number(e.target.value))}
+              onChange={(e) =>
+                set("latitude", e.target.value === "" ? null : Number(e.target.value))
+              }
               className={inputClass}
             />
           </Field>
@@ -298,7 +296,9 @@ export default function ActivityFormPage() {
               type="number"
               step="any"
               value={form.longitude ?? ""}
-              onChange={(e) => set("longitude", e.target.value === "" ? null : Number(e.target.value))}
+              onChange={(e) =>
+                set("longitude", e.target.value === "" ? null : Number(e.target.value))
+              }
               className={inputClass}
             />
           </Field>
@@ -307,7 +307,7 @@ export default function ActivityFormPage() {
           <button
             type="submit"
             disabled={create.isPending || update.isPending}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            className="bg-primary inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
           >
             <Save className="size-4" />
             {isEdit ? t("admin.common.save") : t("admin.form.submitCreate")}
@@ -317,14 +317,14 @@ export default function ActivityFormPage() {
 
       {/* ---- Photo (édition uniquement) ---- */}
       {isEdit && (
-        <section className="rounded-lg border bg-card p-5">
+        <section className="bg-card rounded-lg border p-5">
           <h2 className="mb-3 font-semibold">{t("admin.form.photoSection")}</h2>
           <div className="flex items-center gap-4">
-            <div className="h-24 w-36 shrink-0 overflow-hidden rounded-md border bg-muted">
+            <div className="bg-muted h-24 w-36 shrink-0 overflow-hidden rounded-md border">
               {activity?.photos ? (
                 <img src={activity.photos} alt="" className="size-full object-cover" />
               ) : (
-                <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
+                <div className="text-muted-foreground flex size-full items-center justify-center text-xs">
                   {t("admin.form.photoNone")}
                 </div>
               )}
@@ -334,7 +334,7 @@ export default function ActivityFormPage() {
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploadPhoto.isPending}
-                className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary disabled:opacity-50"
+                className="border-input hover:border-primary hover:text-primary inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-semibold disabled:opacity-50"
               >
                 <ImagePlus className="size-4" />
                 {uploadPhoto.isPending
@@ -347,7 +347,7 @@ export default function ActivityFormPage() {
                 <button
                   type="button"
                   onClick={() => deletePhoto.mutate(activityId)}
-                  className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
+                  className="text-destructive hover:bg-destructive/10 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold"
                 >
                   <Trash2 className="size-4" />
                   {t("admin.common.delete")}
@@ -362,15 +362,13 @@ export default function ActivityFormPage() {
               onChange={(e) => onPhotoPicked(e.target.files?.[0])}
             />
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            {t("admin.form.photoHint")}
-          </p>
+          <p className="text-muted-foreground mt-2 text-xs">{t("admin.form.photoHint")}</p>
         </section>
       )}
 
       {/* ---- Créneaux (édition uniquement) ---- */}
       {isEdit && (
-        <section className="rounded-lg border bg-card p-5">
+        <section className="bg-card rounded-lg border p-5">
           <h2 className="mb-3 font-semibold">Créneaux de disponibilité</h2>
 
           <div className="mb-4 flex flex-wrap items-end gap-2">
@@ -404,7 +402,7 @@ export default function ActivityFormPage() {
               type="button"
               onClick={addSlot}
               disabled={slotMutations.create.isPending}
-              className="inline-flex h-[38px] items-center gap-1.5 rounded-md bg-primary px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              className="bg-primary inline-flex h-[38px] items-center gap-1.5 rounded-md px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
             >
               <Plus className="size-4" />
               {t("admin.categories.add")}
@@ -412,13 +410,11 @@ export default function ActivityFormPage() {
           </div>
 
           {(slots ?? []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t("admin.form.slotsEmpty")}
-            </p>
+            <p className="text-muted-foreground text-sm">{t("admin.form.slotsEmpty")}</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left text-xs text-muted-foreground">
+                <tr className="text-muted-foreground border-b text-left text-xs">
                   <th className="py-2 font-medium">{t("admin.form.slotDate")}</th>
                   <th className="py-2 font-medium">{t("admin.form.slotTime")}</th>
                   <th className="py-2 font-medium">{t("admin.form.slotSeatsLeft")}</th>
@@ -452,7 +448,7 @@ export default function ActivityFormPage() {
                             });
                           }
                         }}
-                        className="w-20 rounded-md border border-input bg-white px-2 py-1 text-sm dark:bg-muted"
+                        className="border-input bg-card focus:border-primary w-20 rounded-md border px-2 py-1 text-sm focus:outline-none"
                       />
                     </td>
                     <td className="py-2 text-right">
@@ -463,7 +459,7 @@ export default function ActivityFormPage() {
                             slotMutations.remove.mutate(slot.id);
                           }
                         }}
-                        className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md p-1.5"
                         aria-label={t("admin.form.slotDeleteAria")}
                       >
                         <Trash2 className="size-4" />

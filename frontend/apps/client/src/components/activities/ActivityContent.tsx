@@ -1,11 +1,7 @@
 "use client";
 
 import type { Activity } from "@/features/catalog/api";
-import {
-  activityDescription,
-  activityTitle,
-  categoryName,
-} from "@/features/catalog/i18n-content";
+import { activityDescription, activityTitle, categoryName } from "@/features/catalog/i18n-content";
 import { formatDuration } from "@/features/catalog/format";
 import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
@@ -27,23 +23,31 @@ export function ActivityContent({
   return (
     <>
       {activity.category && (
-        <span className="rounded-full bg-primary/10 px-3.5 py-1.5 text-[13px] font-semibold text-primary">
+        // Terracotta en aplat léger : cohérent avec le badge des cartes.
+        <span className="bg-accent/12 text-accent-hover inline-block rounded-full px-3.5 py-1.5 text-[13px] font-semibold">
           {categoryName(activity.category, lang)}
         </span>
       )}
-      <h1 className="font-display mb-2.5 mt-4 text-3xl leading-tight sm:text-4xl">
+      <h1 className="font-display text-primary-hover mt-4 mb-2.5 text-3xl leading-tight sm:text-4xl">
         {activityTitle(activity, lang)}
       </h1>
-      <div className="mb-2 text-[15px] text-muted-foreground">
-        {activity.localisation} · {formatDuration(activity.duree, lang)}
+      <div className="text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[15px]">
+        <span>{activity.localisation}</span>
+        <span aria-hidden className="bg-gold size-1 rounded-full" />
+        <span>{formatDuration(activity.duree, lang)}</span>
       </div>
       {stats && stats.count > 0 && (
-        <div className="mb-6 text-[15px]">
-          <span className="text-gold">★</span> <b>{stats.average.toFixed(1)}</b> ·{" "}
-          {t("detail.reviewCount", { count: stats.count })}
+        <div className="mb-6 flex items-center gap-1.5 text-[15px]">
+          {/* `gold-ink` : l'or vif tombe à 2:1 sur fond clair, illisible ici. */}
+          <span className="text-gold-ink">★</span>
+          <b>{stats.average.toFixed(1)}</b>
+          <span className="text-muted-foreground">
+            · {t("detail.reviewCount", { count: stats.count })}
+          </span>
         </div>
       )}
-      <p className="max-w-2xl text-base leading-relaxed text-foreground/80">
+      {/* Filet doré vertical : marque la description comme un bloc éditorial. */}
+      <p className="border-gold/40 text-foreground/80 max-w-2xl border-s-2 ps-4 text-base leading-relaxed">
         {activityDescription(activity, lang)}
       </p>
     </>

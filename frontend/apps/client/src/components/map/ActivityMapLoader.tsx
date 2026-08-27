@@ -12,7 +12,7 @@ const ActivityMap = dynamic(() => import("./ActivityMap").then((m) => m.Activity
   loading: () => (
     <div
       aria-hidden
-      className="size-full animate-pulse bg-gradient-to-br from-[#DCEAE6] to-[#EAD9B8]"
+      className="from-background to-secondary size-full animate-pulse bg-gradient-to-br"
     />
   ),
 });

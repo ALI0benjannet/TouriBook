@@ -36,7 +36,7 @@ export default function BookingsPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">{t("admin.bookings.title")}</h1>
 
-      <div className="rounded-lg border bg-card">
+      <div className="bg-card rounded-lg border">
         <DataTable
           columns={columns}
           rows={data?.items}

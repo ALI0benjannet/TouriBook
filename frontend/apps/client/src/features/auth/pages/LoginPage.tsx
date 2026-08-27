@@ -31,14 +31,19 @@ export default function LoginPage() {
           {t("login.no_account")}{" "}
           <Link
             href={paths.register}
-            className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+            className="text-foreground decoration-input hover:decoration-primary font-medium underline underline-offset-4 transition"
           >
             {t("login.register")}
           </Link>
         </>
       }
     >
-      <form noValidate onSubmit={handleSubmit(onSubmit)} aria-busy={isSubmitting} className="space-y-5">
+      <form
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+        aria-busy={isSubmitting}
+        className="space-y-5"
+      >
         {serverError && <Alert>{t(serverError, { defaultValue: serverError })}</Alert>}
 
         <fieldset disabled={isSubmitting} className="space-y-5 border-0 p-0">
@@ -54,10 +59,10 @@ export default function LoginPage() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-4">
-              <span className="text-sm font-medium text-slate-700">{t("login.password")}</span>
+              <span className="text-foreground/85 text-sm font-medium">{t("login.password")}</span>
               <Link
                 href={paths.forgotPassword}
-                className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+                className="text-muted-foreground hover:text-foreground text-sm font-medium transition"
               >
                 {t("auth.forgotPassword.title")}
               </Link>
@@ -75,8 +80,12 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? t("login.hide_password", "Masquer") : t("login.show_password", "Afficher")}
-                className="absolute end-3 top-2.5 rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                aria-label={
+                  showPassword
+                    ? t("login.hide_password", "Masquer")
+                    : t("login.show_password", "Afficher")
+                }
+                className="text-foreground/45 hover:bg-muted hover:text-foreground/85 absolute end-3 top-2.5 rounded-lg p-1.5 transition"
               >
                 {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>

@@ -1,5 +1,5 @@
 import { cn } from "@touribook/ui/lib/utils";
 
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("animate-pulse rounded-xl bg-slate-200", className)} {...props} />;
+  return <div className={cn("bg-input animate-pulse rounded-xl", className)} {...props} />;
 }

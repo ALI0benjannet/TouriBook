@@ -61,14 +61,17 @@ export default function LoginPage() {
   return (
     <AuthCard
       icon={
-        <span className="flex size-9 items-center justify-center rounded-lg bg-white p-1">
+        <span className="bg-card flex size-9 items-center justify-center rounded-lg p-1">
           <img src="/admin/logo.png" alt="" className="size-full object-contain" />
         </span>
       }
       title={t("admin.login.title")}
       subtitle={t("admin.login.subtitle")}
       footer={
-        <a href={env.VITE_CLIENT_URL} className="text-slate-600 underline-offset-4 hover:underline">
+        <a
+          href={env.VITE_CLIENT_URL}
+          className="text-muted-foreground underline-offset-4 hover:underline"
+        >
           ← Retour au site
         </a>
       }

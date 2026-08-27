@@ -28,11 +28,24 @@ export default function AdminActivitiesPage() {
 
   const columns: Column<AdminActivityRow>[] = [
     { key: "titre", header: t("admin.activities.colTitle"), render: (a) => a.titre },
-    { key: "category", header: t("admin.activities.colCategory"), render: (a) => a.category ?? "—" },
+    {
+      key: "category",
+      header: t("admin.activities.colCategory"),
+      render: (a) => a.category ?? "—",
+    },
     { key: "localisation", header: t("admin.activities.colPlace"), render: (a) => a.localisation },
-    { key: "duree", header: t("admin.activities.colDuration"), render: (a) => t("admin.activities.minutes", { count: a.duree }) },
+    {
+      key: "duree",
+      header: t("admin.activities.colDuration"),
+      render: (a) => t("admin.activities.minutes", { count: a.duree }),
+    },
     { key: "bookings", header: t("admin.activities.colBookings"), render: (a) => a.bookings_count },
-    { key: "prix", header: t("admin.activities.colPrice"), align: "end", render: (a) => formatCurrency(a.prix) },
+    {
+      key: "prix",
+      header: t("admin.activities.colPrice"),
+      align: "end",
+      render: (a) => formatCurrency(a.prix),
+    },
     {
       key: "actions",
       header: t("admin.common.actions"),
@@ -41,7 +54,7 @@ export default function AdminActivitiesPage() {
         <span className="inline-flex gap-1">
           <Link
             to={`/activities/${a.id}/edit`}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md p-1.5"
             aria-label={t("admin.activities.editAria", { name: a.titre })}
           >
             <Pencil className="size-4" />
@@ -49,7 +62,7 @@ export default function AdminActivitiesPage() {
           <button
             type="button"
             onClick={() => confirmDelete(a)}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md p-1.5"
             aria-label={t("admin.activities.deleteAria", { name: a.titre })}
           >
             <Trash2 className="size-4" />
@@ -65,14 +78,14 @@ export default function AdminActivitiesPage() {
         <h1 className="font-display text-2xl font-semibold">{t("admin.activities.title")}</h1>
         <Link
           to="/activities/new"
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+          className="bg-primary inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
         >
           <Plus className="size-4" />
           {t("admin.activities.new")}
         </Link>
       </div>
 
-      <div className="rounded-lg border bg-card">
+      <div className="bg-card rounded-lg border">
         <DataTable
           columns={columns}
           rows={data?.items}

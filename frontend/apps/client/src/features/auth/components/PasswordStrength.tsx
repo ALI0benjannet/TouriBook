@@ -39,23 +39,25 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
             ? criteria.score <= 1
               ? "bg-red-500"
               : criteria.score <= 3
-                ? "bg-amber-500"
+                ? "bg-gold"
                 : criteria.score <= 4
-                  ? "bg-emerald-500"
+                  ? "bg-primary"
                   : "bg-green-600"
-            : "bg-slate-200";
+            : "bg-input";
 
           return <div key={segment} className={`h-2 flex-1 rounded-full ${tone}`} />;
         })}
       </div>
-      <p className="text-sm text-slate-600">{t(`auth.password_strength.${criteria.levelKey}`)}</p>
-      <ul className="space-y-2 text-sm text-slate-600">
+      <p className="text-muted-foreground text-sm">
+        {t(`auth.password_strength.${criteria.levelKey}`)}
+      </p>
+      <ul className="text-muted-foreground space-y-2 text-sm">
         {criteria.checks.map((criterion) => (
           <li key={criterion.label} className="flex items-center gap-2">
             {criterion.passed ? (
-              <Check aria-hidden="true" className="size-4 text-emerald-600" />
+              <Check aria-hidden="true" className="text-primary size-4" />
             ) : (
-              <X aria-hidden="true" className="size-4 text-slate-400" />
+              <X aria-hidden="true" className="text-foreground/45 size-4" />
             )}
             <span>{criterion.label}</span>
           </li>

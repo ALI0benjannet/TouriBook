@@ -98,9 +98,17 @@ export default async function ActivityDetailPage({ params }: { params: Params })
 
       <BackToActivities />
 
-      {/* Image principale */}
-      <div className="relative h-72 overflow-hidden rounded-3xl sm:h-96">
+      {/* Image principale — cadrage seul, le fichier n'est pas modifié. */}
+      <div
+        className="border-border relative h-72 overflow-hidden rounded-2xl border sm:h-96"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <ActivityImage src={activity.photos} label={`Photo — ${activity.localisation}`} priority />
+        {/* Dégradé bas : détache le cœur de la photo quelle qu'elle soit. */}
+        <div
+          aria-hidden
+          className="from-ink/25 pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t to-transparent"
+        />
         <FavoriteButton activityId={activity.id} size="lg" />
       </div>
 

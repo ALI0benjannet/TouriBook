@@ -11,16 +11,16 @@ export function Footer() {
   const { t } = useHydratedTranslation();
 
   return (
-    <footer className="mt-auto bg-ink text-ink-foreground">
+    <footer className="bg-ink text-ink-foreground mt-auto">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-8 md:grid-cols-3">
         <div>
-          <div className="mb-2.5 font-display text-2xl text-background">TouriBook</div>
-          <p className="max-w-xs text-sm leading-relaxed text-ink-foreground/70">
+          <div className="font-display text-background mb-2.5 text-2xl">TouriBook</div>
+          <p className="text-ink-foreground/70 max-w-xs text-sm leading-relaxed">
             {t("app.tagline")}
           </p>
         </div>
         <div>
-          <div className="mb-3.5 text-[13px] font-bold uppercase tracking-widest text-gold">
+          <div className="text-gold mb-3.5 text-[13px] font-bold tracking-widest uppercase">
             {t("footer.discover")}
           </div>
           <div className="flex flex-col gap-2 text-sm">
@@ -36,7 +36,7 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <div className="mb-3.5 text-[13px] font-bold uppercase tracking-widest text-gold">
+          <div className="text-gold mb-3.5 text-[13px] font-bold tracking-widest uppercase">
             {t("footer.help")}
           </div>
           <div className="flex flex-col gap-2 text-sm">
@@ -58,8 +58,8 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-ink-foreground/15">
-        <div className="mx-auto max-w-7xl px-4 py-4 text-[13px] text-ink-foreground/50 sm:px-8">
+      <div className="border-ink-foreground/15 border-t">
+        <div className="text-ink-foreground/50 mx-auto max-w-7xl px-4 py-4 text-[13px] sm:px-8">
           © {new Date().getFullYear()} TouriBook
         </div>
       </div>

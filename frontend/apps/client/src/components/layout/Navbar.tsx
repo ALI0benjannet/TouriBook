@@ -21,8 +21,8 @@ function Badge({ count, tone }: { count: number; tone: "accent" | "primary" }) {
   return (
     <span
       className={cn(
-        "absolute -top-2 -end-2 min-w-[18px] rounded-full px-1 text-center text-[10px] font-bold leading-[18px] text-white",
-        tone === "accent" ? "bg-blue-600" : "bg-rose-500",
+        "absolute -end-2 -top-2 min-w-[18px] rounded-full px-1 text-center text-[10px] leading-[18px] font-bold text-white",
+        tone === "accent" ? "bg-primary" : "bg-accent",
       )}
     >
       {count}
@@ -31,7 +31,7 @@ function Badge({ count, tone }: { count: number; tone: "accent" | "primary" }) {
 }
 
 const ICON_TAB_CLASS =
-  "flex flex-col items-center gap-1 text-foreground/70 transition-colors hover:text-blue-600";
+  "flex flex-col items-center gap-1 text-foreground/70 transition-colors hover:text-primary";
 
 /** Onglet icône + libellé de l'en-tête. Rendu en lien, ou en bouton quand
  *  l'action n'est pas une navigation (panier à venir, sélecteur de langue). */
@@ -91,17 +91,17 @@ export function Navbar() {
     cn(
       "shrink-0 border-b-2 px-3 pb-2.5 pt-1 text-[15px] font-semibold transition-colors",
       active
-        ? "border-blue-600 text-blue-600"
+        ? "border-primary text-primary"
         : "border-transparent text-foreground/70 hover:border-border hover:text-foreground",
     );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white shadow-sm">
+    <header className="border-border bg-card sticky top-0 z-50 border-b shadow-sm">
       {/* Rangée 1 : logo — recherche (une fois condensé) — actions du compte. */}
       <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-6 px-4 sm:px-8">
         <Link
           href={paths.home}
-          className="flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          className="focus-visible:ring-primary flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:ring-2 focus-visible:outline-none"
         >
           <img src="/logo.png" alt="TouriBook" className="size-10 object-contain" />
           {/* Le libellé s'efface en mode condensé : seul le logo reste, comme
@@ -143,7 +143,7 @@ export function Navbar() {
           <LanguageMenu />
 
           {/* Séparateur : distingue les raccourcis du bloc identité. */}
-          <span aria-hidden className="hidden h-8 w-px bg-border sm:block" />
+          <span aria-hidden className="bg-border hidden h-8 w-px sm:block" />
 
           {isAuthenticated ? (
             <UserMenu />
@@ -151,7 +151,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => router.push(paths.login)}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+              className="bg-primary text-primary-foreground hover:bg-primary-hover focus-visible:ring-primary flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               <LogIn className="size-4" />
               <span className="hidden sm:inline">{t("nav.login")}</span>

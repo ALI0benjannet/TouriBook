@@ -30,7 +30,7 @@ export default function CheckEmailPage() {
       footer={
         <Link
           href={paths.login}
-          className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+          className="text-foreground decoration-input hover:decoration-primary font-medium underline underline-offset-4 transition"
         >
           {t("auth.checkEmail.back_to_login")}
         </Link>

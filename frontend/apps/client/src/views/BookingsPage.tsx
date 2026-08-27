@@ -42,16 +42,16 @@ export default function BookingsPage() {
   return (
     <main className="mx-auto max-w-4xl px-4 py-10 sm:px-8">
       <h1 className="font-display mb-2 text-4xl">{t("nav.bookings")}</h1>
-      <p className="mb-8 text-muted-foreground">{t("bookingsPage.subtitle")}</p>
+      <p className="text-muted-foreground mb-8">{t("bookingsPage.subtitle")}</p>
 
       {!isAuthenticated ? (
-        <div className="rounded-2xl border border-dashed border-input bg-card px-5 py-20 text-center">
-          <CalendarCheck className="mx-auto mb-3 size-10 text-primary/40" />
+        <div className="border-input bg-card rounded-2xl border border-dashed px-5 py-20 text-center">
+          <CalendarCheck className="text-primary/40 mx-auto mb-3 size-10" />
           <div className="font-display mb-2 text-2xl">{t("bookingsPage.loginTitle")}</div>
-          <div className="mb-6 text-muted-foreground">{t("bookingsPage.loginSub")}</div>
+          <div className="text-muted-foreground mb-6">{t("bookingsPage.loginSub")}</div>
           <Link
             href={paths.login}
-            className="rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover rounded-full px-6 py-3 font-semibold transition-colors"
           >
             {t("nav.login")}
           </Link>
@@ -59,16 +59,16 @@ export default function BookingsPage() {
       ) : isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted" />
+            <div key={i} className="bg-muted h-28 animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : bookings.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-input bg-card px-5 py-20 text-center">
+        <div className="border-input bg-card rounded-2xl border border-dashed px-5 py-20 text-center">
           <div className="font-display mb-2 text-2xl">{t("bookingsPage.emptyTitle")}</div>
-          <div className="mb-6 text-muted-foreground">{t("bookingsPage.emptySub")}</div>
+          <div className="text-muted-foreground mb-6">{t("bookingsPage.emptySub")}</div>
           <Link
             href={paths.activities}
-            className="rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover rounded-full px-6 py-3 font-semibold transition-colors"
           >
             {t("favorites.cta")}
           </Link>
@@ -78,7 +78,7 @@ export default function BookingsPage() {
           {bookings.map((booking) => (
             <div
               key={booking.id}
-              className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-shadow hover:shadow-[0_10px_26px_rgba(28,54,65,.1)]"
+              className="border-border bg-card flex items-center gap-4 rounded-2xl border p-4 transition-shadow hover:shadow-[0_10px_26px_rgba(28,54,65,.1)]"
             >
               <Link
                 href={`/activities/${booking.activity_id}`}
@@ -92,11 +92,11 @@ export default function BookingsPage() {
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/activities/${booking.activity_id}`}
-                  className="font-display text-lg hover:text-blue-600"
+                  className="font-display hover:text-primary-hover text-lg"
                 >
                   {bookingTitle(booking, i18n.language)}
                 </Link>
-                <div className="mt-1 text-[13px] text-muted-foreground">
+                <div className="text-muted-foreground mt-1 text-[13px]">
                   {formatDate(booking.date_reservation)} ·{" "}
                   {t("bookingsPage.guests", { count: booking.nb_places })}
                 </div>
@@ -114,7 +114,7 @@ export default function BookingsPage() {
                 {booking.statut === "pending" && (
                   <Link
                     href={`/bookings/${booking.id}/pay`}
-                    className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+                    className="bg-primary text-primary-foreground hover:bg-primary-hover rounded-full px-4 py-1.5 text-xs font-bold transition-colors"
                   >
                     {t("payment.payNow", "Payer maintenant")}
                   </Link>
@@ -122,7 +122,7 @@ export default function BookingsPage() {
                 {booking.statut === "confirmed" && (
                   <Link
                     href={`/bookings/${booking.id}/pay`}
-                    className="rounded-full border border-primary px-4 py-1.5 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+                    className="border-primary text-primary hover:bg-primary rounded-full border px-4 py-1.5 text-xs font-bold transition-colors hover:text-white"
                   >
                     {t("payment.showQr", "QR code")}
                   </Link>
@@ -132,7 +132,7 @@ export default function BookingsPage() {
                     type="button"
                     onClick={() => cancelBooking.mutate(booking.id)}
                     disabled={cancelBooking.isPending}
-                    className="text-xs font-semibold text-muted-foreground underline-offset-2 hover:text-destructive hover:underline disabled:opacity-50"
+                    className="text-muted-foreground hover:text-destructive text-xs font-semibold underline-offset-2 hover:underline disabled:opacity-50"
                   >
                     {t("actions.cancel")}
                   </button>

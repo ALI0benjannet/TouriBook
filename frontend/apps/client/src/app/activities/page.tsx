@@ -73,13 +73,16 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
 
   const points = view === "map" ? mapPoints(items) : [];
 
-
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <div>
-          <h1 className="font-display text-4xl"><T k="nav.activities" /></h1>
-          <p className="mt-2 text-muted-foreground">
+          <h1 className="font-display text-primary-hover text-4xl">
+            <T k="nav.activities" />
+          </h1>
+          {/* Filet doré : rappel du zellige, marque le titre sans lourdeur. */}
+          <div aria-hidden className="bg-gold mt-2 h-px w-14" />
+          <p className="text-muted-foreground mt-2">
             <T k="catalog.results" values={{ count: items.length }} />
           </p>
         </div>
@@ -90,36 +93,46 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: S
 
       {view === "grid" ? (
         items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-input bg-card px-5 py-16 text-center">
-            <div className="font-display mb-2 text-2xl"><T k="catalog.emptyTitle" /></div>
-            <div className="mb-5 text-muted-foreground"><T k="catalog.emptySub" /></div>
+          <div className="border-input bg-card rounded-2xl border border-dashed px-5 py-16 text-center">
+            {/* Losange zellige : signale l'absence de résultat sans illustration. */}
+            <div
+              aria-hidden
+              className="border-gold-ink/50 mx-auto mb-5 size-3.5 rotate-45 rounded-[3px] border-2"
+            />
+            <div className="font-display text-primary-hover mb-2 text-2xl">
+              <T k="catalog.emptyTitle" />
+            </div>
+            <div className="text-muted-foreground mb-5">
+              <T k="catalog.emptySub" />
+            </div>
             <Link
               href="/activities"
-              className="inline-block rounded-full bg-ink px-6 py-2.5 font-semibold text-background hover:bg-blue-600"            >
+              className="bg-primary text-primary-foreground hover:bg-primary-hover inline-block rounded-full px-6 py-3 font-semibold transition-colors"
+            >
               <T k="catalog.reset" />
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
             {items.map((activity) => (
-              <ActivityCard key={activity.id} activity={activity} rating={stats[String(activity.id)]} />
+              <ActivityCard
+                key={activity.id}
+                activity={activity}
+                rating={stats[String(activity.id)]}
+              />
             ))}
           </div>
         )
       ) : (
-        <div className="relative h-[560px] overflow-hidden rounded-3xl border border-border">
+        <div className="border-border relative h-[560px] overflow-hidden rounded-3xl border">
           {points.length === 0 ? (
-            <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#DCEAE6] to-[#EAD9B8] px-6 text-center text-muted-foreground">
+            <div className="from-background to-secondary text-muted-foreground flex size-full items-center justify-center bg-gradient-to-br px-6 text-center">
               <T k="catalog.mapEmpty" />
             </div>
           ) : (
             <>
-              <ActivityMapLoader
-                points={points}
-                linkToActivity
-                className="size-full"
-              />
-              <div className="pointer-events-none absolute bottom-4 start-4 z-[500] rounded-xl bg-card/90 px-4 py-2.5 text-[13px] text-foreground/70 shadow-md">
+              <ActivityMapLoader points={points} linkToActivity className="size-full" />
+              <div className="bg-card/90 text-foreground/70 pointer-events-none absolute start-4 bottom-4 z-[500] rounded-xl px-4 py-2.5 text-[13px] shadow-md">
                 <T k="catalog.mapHint" />
               </div>
             </>

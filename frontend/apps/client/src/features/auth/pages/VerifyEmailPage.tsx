@@ -42,7 +42,9 @@ export default function VerifyEmailPage() {
       await authApi.resendVerification({ email: emailParam });
       toast.success(t("auth.verifyEmail.resend_success", "Un nouveau code a été envoyé."));
     } catch {
-      toast.error(t("auth.verifyEmail.resend_error", "Impossible de renvoyer le code pour le moment."));
+      toast.error(
+        t("auth.verifyEmail.resend_error", "Impossible de renvoyer le code pour le moment."),
+      );
     } finally {
       setIsResending(false);
     }
@@ -84,7 +86,12 @@ export default function VerifyEmailPage() {
         "Saisissez votre e-mail et le code à 4 chiffres reçu par e-mail.",
       )}
     >
-      <form noValidate onSubmit={handleSubmit(onSubmit)} aria-busy={isSubmitting} className="space-y-5">
+      <form
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+        aria-busy={isSubmitting}
+        className="space-y-5"
+      >
         <fieldset disabled={isSubmitting} className="space-y-5 border-0 p-0">
           <TextField
             {...register("email")}
@@ -92,7 +99,11 @@ export default function VerifyEmailPage() {
             inputMode="email"
             autoComplete="email"
             label={t("auth.verifyEmail.email", "Adresse e-mail")}
-            error={errors.email?.message ? t(errors.email.message, { defaultValue: errors.email.message }) : undefined}
+            error={
+              errors.email?.message
+                ? t(errors.email.message, { defaultValue: errors.email.message })
+                : undefined
+            }
           />
           <TextField
             {...register("token")}
@@ -103,7 +114,11 @@ export default function VerifyEmailPage() {
             label={t("auth.verifyEmail.code", "Code de vérification")}
             hint={t("auth.verifyEmail.code_hint", "4 chiffres reçus par e-mail")}
             className="text-center text-lg tracking-[0.5em]"
-            error={errors.token?.message ? t(errors.token.message, { defaultValue: errors.token.message }) : undefined}
+            error={
+              errors.token?.message
+                ? t(errors.token.message, { defaultValue: errors.token.message })
+                : undefined
+            }
           />
         </fieldset>
 

@@ -24,7 +24,9 @@ export function RouteError() {
       <h1 className="text-2xl font-semibold">Oups…</h1>
       <p className="text-muted-foreground">{message}</p>
       <div className="flex gap-2">
-        <Button variant="secondary" onClick={handleBack}>{t("actions.back")}</Button>
+        <Button variant="secondary" onClick={handleBack}>
+          {t("actions.back")}
+        </Button>
         <Button onClick={() => window.location.reload()}>{t("actions.retry")}</Button>
       </div>
     </div>

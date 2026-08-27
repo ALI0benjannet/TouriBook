@@ -7,7 +7,8 @@ export default function NotFound() {
       <p className="text-muted-foreground">Cette page n'existe pas ou a été déplacée.</p>
       <Link
         href="/"
-              className="inline-block rounded-full bg-ink px-6 py-2.5 font-semibold text-background hover:bg-blue-600"      >
+        className="bg-ink text-background hover:bg-primary inline-block rounded-full px-6 py-2.5 font-semibold"
+      >
         Retour à l'accueil
       </Link>
     </main>

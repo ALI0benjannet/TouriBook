@@ -27,13 +27,18 @@ export default function ForgotPasswordPage() {
       footer={
         <Link
           href={paths.login}
-          className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+          className="text-foreground decoration-input hover:decoration-primary font-medium underline underline-offset-4 transition"
         >
           {t("auth.forgotPassword.back_to_login")}
         </Link>
       }
     >
-      <form noValidate onSubmit={handleSubmit(onSubmit)} aria-busy={isSubmitting} className="space-y-5">
+      <form
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+        aria-busy={isSubmitting}
+        className="space-y-5"
+      >
         {serverError && <Alert>{t(serverError, { defaultValue: serverError })}</Alert>}
 
         <fieldset disabled={isSubmitting} className="space-y-5 border-0 p-0">

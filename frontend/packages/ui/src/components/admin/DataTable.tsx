@@ -26,21 +26,21 @@ export function DataTable<T>({
     return (
       <div className="space-y-2 p-4">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="h-10 animate-pulse rounded bg-muted" />
+          <div key={index} className="bg-muted h-10 animate-pulse rounded" />
         ))}
       </div>
     );
   }
 
   if (!rows || rows.length === 0) {
-    return <p className="p-6 text-center text-sm text-muted-foreground">{emptyLabel}</p>;
+    return <p className="text-muted-foreground p-6 text-center text-sm">{emptyLabel}</p>;
   }
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b text-xs text-muted-foreground">
+          <tr className="text-muted-foreground border-b text-xs">
             {columns.map((column) => (
               <th
                 key={column.key}
@@ -60,10 +60,7 @@ export function DataTable<T>({
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className={cn(
-                    "px-4 py-3",
-                    column.align === "end" ? "text-right" : "text-left",
-                  )}
+                  className={cn("px-4 py-3", column.align === "end" ? "text-right" : "text-left")}
                 >
                   {column.render(row)}
                 </td>

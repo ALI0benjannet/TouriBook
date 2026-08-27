@@ -35,11 +35,11 @@ export function ActivityImage({
     <div
       aria-hidden
       className={cn(
-        "flex size-full items-center justify-center bg-gradient-to-br from-[#DCEAE6] to-[#EAD9B8]",
+        "from-background to-secondary flex size-full items-center justify-center bg-gradient-to-br",
         className,
       )}
     >
-      <span className="px-4 text-center text-sm font-medium text-foreground/40">{label}</span>
+      <span className="text-foreground/40 px-4 text-center text-sm font-medium">{label}</span>
     </div>
   );
 }

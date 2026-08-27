@@ -24,7 +24,7 @@ export function Avatar({ src, name, email, size = "md", className }: AvatarProps
     <span
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full",
-        "bg-gradient-to-br from-slate-200 to-slate-300 font-semibold text-slate-700 ring-1 ring-slate-900/5",
+        "from-secondary to-muted text-foreground/85 ring-ring/5 bg-gradient-to-br font-semibold ring-1",
         sizes[size],
         className,
       )}

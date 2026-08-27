@@ -4,10 +4,9 @@ import { cn } from "@touribook/ui/lib/utils";
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
   return (
     <section
-      className={cn(
-        "rounded-3xl border border-slate-200/80 bg-white/80 shadow-[0_8px_30px_-12px_rgba(15,23,42,.25)] backdrop-blur",
-        className,
-      )}
+      // `card-elevated` centralise l'ombre et l'élévation au survol : une
+      // seule définition dans `styles.css`, réutilisée par toutes les cartes.
+      className={cn("card-elevated border-border bg-card rounded-2xl border", className)}
     >
       {children}
     </section>
@@ -24,10 +23,10 @@ export function CardHeader({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-6">
+    <div className="border-border flex items-start justify-between gap-4 border-b p-6">
       <div className="space-y-1">
-        <h2 className="text-lg font-semibold tracking-tight text-slate-900">{title}</h2>
-        {description && <p className="text-sm text-slate-500">{description}</p>}
+        <h2 className="text-foreground text-lg font-semibold tracking-tight">{title}</h2>
+        {description && <p className="text-muted-foreground text-sm">{description}</p>}
       </div>
       {action}
     </div>

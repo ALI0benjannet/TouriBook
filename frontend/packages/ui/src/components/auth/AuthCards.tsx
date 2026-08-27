@@ -20,26 +20,28 @@ export function AuthCard({ icon, title, subtitle, children, footer, className }:
       />
       <div
         className={cn(
-          "w-full max-w-md space-y-6 rounded-3xl border border-slate-200/80 bg-white/80 p-8",
+          "border-border bg-card/90 w-full max-w-md space-y-6 rounded-3xl border p-8",
           "shadow-[0_20px_60px_-25px_rgba(15,23,42,.45)] backdrop-blur-xl",
           className,
         )}
       >
         <header className="space-y-4">
           {icon && (
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-900 to-slate-700 text-white shadow-sm">
+            <div className="bg-primary flex size-12 items-center justify-center rounded-2xl text-white shadow-sm">
               {icon}
             </div>
           )}
           <div className="space-y-1.5">
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
-            {subtitle && <p className="text-sm leading-relaxed text-slate-500">{subtitle}</p>}
+            <h1 className="text-foreground text-2xl font-semibold tracking-tight">{title}</h1>
+            {subtitle && (
+              <p className="text-muted-foreground text-sm leading-relaxed">{subtitle}</p>
+            )}
           </div>
         </header>
 
         {children}
 
-        {footer && <div className="pt-1 text-center text-sm text-slate-600">{footer}</div>}
+        {footer && <div className="text-muted-foreground pt-1 text-center text-sm">{footer}</div>}
       </div>
     </main>
   );

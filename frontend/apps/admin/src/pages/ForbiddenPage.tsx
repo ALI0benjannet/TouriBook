@@ -11,11 +11,9 @@ export default function ForbiddenPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
-      <ShieldAlert className="size-12 text-destructive" />
+      <ShieldAlert className="text-destructive size-12" />
       <h1 className="text-2xl font-semibold">{t("admin.forbidden.title")}</h1>
-      <p className="text-muted-foreground">
-        {t("admin.forbidden.message")}
-      </p>
+      <p className="text-muted-foreground">{t("admin.forbidden.message")}</p>
       <div className="flex gap-2">
         <Button variant="secondary" onClick={() => window.location.assign(env.VITE_CLIENT_URL)}>
           {t("admin.forbidden.backSite")}

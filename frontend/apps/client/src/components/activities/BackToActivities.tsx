@@ -13,7 +13,7 @@ export function BackToActivities() {
   return (
     <Link
       href="/activities"
-      className="mb-5 inline-block text-sm font-semibold text-primary hover:text-blue-600"
+      className="text-primary hover:text-primary-hover mb-5 inline-block text-sm font-semibold transition-colors"
     >
       {isRtl ? "→" : "←"} {t("detail.back")}
     </Link>

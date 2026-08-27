@@ -50,7 +50,7 @@ export default function UsersPage() {
         className="w-full max-w-sm rounded-md border px-3 py-2 text-sm"
       />
 
-      <div className="rounded-lg border bg-card">
+      <div className="bg-card rounded-lg border">
         <DataTable
           columns={columns}
           rows={data?.items}
@@ -60,7 +60,7 @@ export default function UsersPage() {
         />
       </div>
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
+      <div className="text-muted-foreground flex items-center justify-between text-sm">
         {t("admin.users.count", { count: data?.total ?? 0 })}
         <div className="flex gap-2">
           <button

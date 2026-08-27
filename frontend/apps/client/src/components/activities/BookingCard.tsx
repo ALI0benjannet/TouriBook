@@ -58,8 +58,7 @@ export function BookingCard({ activityId, prix }: { activityId: number; prix: nu
     () => (availabilities ?? []).filter((slot) => slot.places_disponibles > 0),
     [availabilities],
   );
-  const selectedSlot =
-    openSlots.find((slot) => slot.id === availabilityId) ?? openSlots[0] ?? null;
+  const selectedSlot = openSlots.find((slot) => slot.id === availabilityId) ?? openSlots[0] ?? null;
 
   const formatSlot = (date: string, seats: number) => {
     const label = new Date(`${date}T12:00:00`).toLocaleDateString(
@@ -97,138 +96,153 @@ export function BookingCard({ activityId, prix }: { activityId: number; prix: nu
   };
 
   return (
-    <aside className="rounded-3xl border border-border bg-card p-6 shadow-[0_14px_36px_rgba(28,54,65,.1)] lg:sticky lg:top-32">
-      <div className="mb-5 flex items-baseline gap-1.5">
-        <span className="text-3xl font-bold">{formatPrice(prix)}</span>
-        <span className="text-sm text-muted-foreground">{t("catalog.perPerson")}</span>
-      </div>
-
-      <label className="mb-1.5 block text-[13px] font-semibold">{t("detail.dateL")}</label>
-      {openSlots.length === 0 ? (
-        <div className="mb-4 rounded-xl border border-dashed border-input px-4 py-3 text-sm text-muted-foreground">
-          {t("detail.noAvailability")}
+    <aside
+      className="border-border bg-card overflow-hidden rounded-2xl border lg:sticky lg:top-32"
+      style={{ boxShadow: "var(--shadow-card-hover)" }}
+    >
+      {/* Bandeau prix : détache l'information décisive du reste du formulaire. */}
+      <div className="border-border bg-secondary/50 border-b px-6 py-5">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-primary-hover text-3xl font-bold">{formatPrice(prix)}</span>
+          <span className="text-muted-foreground text-sm">{t("catalog.perPerson")}</span>
         </div>
-      ) : (
-        <select
-          value={selectedSlot?.id ?? ""}
-          onChange={(e) => setAvailabilityId(Number(e.target.value))}
-          className="mb-4 w-full rounded-xl border border-input bg-white px-3.5 py-3 text-[15px] dark:bg-muted"
-        >
-          {openSlots.map((slot) => (
-            <option key={slot.id} value={slot.id}>
-              {formatSlot(slot.date, slot.places_disponibles)}
-            </option>
-          ))}
-        </select>
-      )}
-
-      <label className="mb-1.5 block text-[13px] font-semibold">{t("detail.guestsL")}</label>
-      <div className="mb-5 flex items-center gap-3.5 rounded-xl border border-input px-3 py-2">
-        <button
-          type="button"
-          aria-label="-"
-          onClick={() => {
-            setGuests((g) => Math.max(1, g - 1));
-            setBooked(false);
-          }}
-          className="flex size-8 items-center justify-center rounded-full border border-input bg-white hover:border-blue-600 hover:text-blue-600 dark:bg-muted"        >
-          <Minus className="size-4" />
-        </button>
-        <span className="flex-1 text-center text-lg font-bold">{guests}</span>
-        <button
-          type="button"
-          aria-label="+"
-          onClick={() => {
-            setGuests((g) => Math.min(8, selectedSlot?.places_disponibles ?? 8, g + 1));
-            setBooked(false);
-          }}
-          className="flex size-8 items-center justify-center rounded-full border border-input bg-white hover:border-blue-600 hover:text-blue-600 dark:bg-muted"        >
-          <Plus className="size-4" />
-        </button>
       </div>
 
-      <label className="mb-1.5 block text-[13px] font-semibold">
-        {t("detail.promoLabel", "Code promo")}
-      </label>
-      <div className="mb-1 flex gap-2">
-        <input
-          value={promoInput}
-          onChange={(e) => {
-            setPromoInput(e.target.value);
-            setPromo(null);
-            setPromoError(null);
-          }}
-          placeholder={t("detail.promoPlaceholder", "BIENVENUE10")}
-          className="min-w-0 flex-1 rounded-xl border border-input bg-white px-3.5 py-2.5 text-[14px] uppercase placeholder:normal-case placeholder:text-foreground/30 dark:bg-muted"
-        />
-        <button
-          type="button"
-          onClick={applyPromo}
-          disabled={promoChecking || !promoInput.trim()}
-          className="rounded-xl border border-input px-4 text-[13px] font-semibold hover:border-blue-600 hover:text-blue-600 disabled:opacity-50"        >
-          {t("detail.promoApply", "Appliquer")}
-        </button>
-      </div>
-      {promoError && <p className="mb-2 text-[13px] font-medium text-destructive">{promoError}</p>}
-      {promo && (
-        <p className="mb-2 text-[13px] font-semibold text-primary">
-          {t("detail.promoApplied", "Code {{code}} appliqué : -{{reduction}} %", {
-            code: promo.code,
-            reduction: promo.reduction,
-          })}
-        </p>
-      )}
-
-      <div className="mb-4 flex justify-between border-t border-border py-3.5">
-        <span className="font-semibold">{t("detail.total")}</span>
-        <span className="text-end">
-          {promo && (
-            <span className="me-2 text-sm text-muted-foreground line-through">
-              {formatPrice(baseTotal)}
-            </span>
-          )}
-          <span className="text-lg font-bold">{formatPrice(total)}</span>
-        </span>
-      </div>
-
-      {error && (
-        <div className="mb-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive">
-          {error}
-        </div>
-      )}
-
-      {booked ? (
-        <>
-          <div className="mb-3 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3.5 text-center font-semibold text-primary">
-            {t("detail.bookedPayMsg", "Réservation enregistrée — payez pour la confirmer")}
+      <div className="p-6">
+        <label className="mb-1.5 block text-[13px] font-semibold">{t("detail.dateL")}</label>
+        {openSlots.length === 0 ? (
+          <div className="border-input text-muted-foreground mb-4 rounded-xl border border-dashed px-4 py-3 text-sm">
+            {t("detail.noAvailability")}
           </div>
-          <Link
-            href={`/bookings/${bookedId}/pay`}
-            className="mb-2 block w-full rounded-full bg-blue-600 py-3.5 text-center text-[15px] font-semibold text-white transition-colors hover:bg-blue-700"          >
-            {t("payment.payNow", "Payer maintenant")}
-          </Link>
-          <Link
-            href={paths.bookings}
-            className="block w-full rounded-full border border-input py-3 text-center text-[14px] font-semibold transition-colors hover:border-primary hover:text-primary"
+        ) : (
+          <select
+            value={selectedSlot?.id ?? ""}
+            onChange={(e) => setAvailabilityId(Number(e.target.value))}
+            className="border-input bg-card focus:border-primary mb-4 w-full rounded-xl border px-3.5 py-3 text-[15px] focus:outline-none"
           >
-            {t("detail.seeBookings")}
-          </Link>
-        </>
-      ) : (
-        <button
-          type="button"
-          onClick={confirm}
-          disabled={createBooking.isPending || openSlots.length === 0}
-          className="w-full rounded-full bg-blue-600 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"        >
-          {createBooking.isPending
-            ? t("states.loading")
-            : isAuthenticated
-              ? t("detail.confirm")
-              : t("detail.loginToBook")}
-        </button>
-      )}
-      <div className="mt-3.5 text-center text-[13px] text-muted-foreground">
-        {t("detail.freeCancel")}
+            {openSlots.map((slot) => (
+              <option key={slot.id} value={slot.id}>
+                {formatSlot(slot.date, slot.places_disponibles)}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <label className="mb-1.5 block text-[13px] font-semibold">{t("detail.guestsL")}</label>
+        <div className="border-input mb-5 flex items-center gap-3.5 rounded-xl border px-3 py-2">
+          <button
+            type="button"
+            aria-label="-"
+            onClick={() => {
+              setGuests((g) => Math.max(1, g - 1));
+              setBooked(false);
+            }}
+            className="border-input bg-card hover:border-primary hover:text-primary flex size-10 items-center justify-center rounded-full border transition-colors"
+          >
+            <Minus className="size-4" />
+          </button>
+          <span className="flex-1 text-center text-lg font-bold">{guests}</span>
+          <button
+            type="button"
+            aria-label="+"
+            onClick={() => {
+              setGuests((g) => Math.min(8, selectedSlot?.places_disponibles ?? 8, g + 1));
+              setBooked(false);
+            }}
+            className="border-input bg-card hover:border-primary hover:text-primary flex size-10 items-center justify-center rounded-full border transition-colors"
+          >
+            <Plus className="size-4" />
+          </button>
+        </div>
+
+        <label className="mb-1.5 block text-[13px] font-semibold">
+          {t("detail.promoLabel", "Code promo")}
+        </label>
+        <div className="mb-1 flex gap-2">
+          <input
+            value={promoInput}
+            onChange={(e) => {
+              setPromoInput(e.target.value);
+              setPromo(null);
+              setPromoError(null);
+            }}
+            placeholder={t("detail.promoPlaceholder", "BIENVENUE10")}
+            className="border-input bg-card placeholder:text-foreground/40 focus:border-primary min-w-0 flex-1 rounded-xl border px-3.5 py-2.5 text-[14px] uppercase placeholder:normal-case focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={applyPromo}
+            disabled={promoChecking || !promoInput.trim()}
+            className="border-input hover:border-primary hover:text-primary rounded-xl border px-4 text-[13px] font-semibold disabled:opacity-50"
+          >
+            {t("detail.promoApply", "Appliquer")}
+          </button>
+        </div>
+        {promoError && (
+          <p className="text-destructive mb-2 text-[13px] font-medium">{promoError}</p>
+        )}
+        {promo && (
+          <p className="text-primary mb-2 text-[13px] font-semibold">
+            {t("detail.promoApplied", "Code {{code}} appliqué : -{{reduction}} %", {
+              code: promo.code,
+              reduction: promo.reduction,
+            })}
+          </p>
+        )}
+
+        <div className="border-border mb-4 flex justify-between border-t py-3.5">
+          <span className="font-semibold">{t("detail.total")}</span>
+          <span className="text-end">
+            {promo && (
+              <span className="text-muted-foreground me-2 text-sm line-through">
+                {formatPrice(baseTotal)}
+              </span>
+            )}
+            <span className="text-lg font-bold">{formatPrice(total)}</span>
+          </span>
+        </div>
+
+        {error && (
+          <div className="border-destructive/30 bg-destructive/5 text-destructive mb-3 rounded-xl border px-4 py-3 text-sm font-medium">
+            {error}
+          </div>
+        )}
+
+        {booked ? (
+          <>
+            <div className="border-primary/30 bg-primary/10 text-primary mb-3 rounded-xl border px-4 py-3.5 text-center font-semibold">
+              {t("detail.bookedPayMsg", "Réservation enregistrée — payez pour la confirmer")}
+            </div>
+            <Link
+              href={`/bookings/${bookedId}/pay`}
+              className="bg-primary text-primary-foreground hover:bg-primary-hover mb-2 block w-full rounded-full py-3.5 text-center text-[15px] font-semibold transition-colors"
+            >
+              {t("payment.payNow", "Payer maintenant")}
+            </Link>
+            <Link
+              href={paths.bookings}
+              className="border-input hover:border-primary hover:text-primary block w-full rounded-full border py-3 text-center text-[14px] font-semibold transition-colors"
+            >
+              {t("detail.seeBookings")}
+            </Link>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={confirm}
+            disabled={createBooking.isPending || openSlots.length === 0}
+            className="bg-primary text-primary-foreground hover:bg-primary-hover w-full rounded-full py-3.5 text-[15px] font-semibold transition-colors disabled:opacity-50"
+          >
+            {createBooking.isPending
+              ? t("states.loading")
+              : isAuthenticated
+                ? t("detail.confirm")
+                : t("detail.loginToBook")}
+          </button>
+        )}
+        <div className="text-muted-foreground mt-3.5 text-center text-[13px]">
+          {t("detail.freeCancel")}
+        </div>
       </div>
     </aside>
   );

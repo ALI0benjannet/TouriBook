@@ -2,7 +2,10 @@ import { Globe, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@touribook/ui/components/ui/button";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@touribook/ui/components/ui/dropdown-menu";
 import { SUPPORTED_LANGUAGES, type Language } from "@touribook/i18n";
 

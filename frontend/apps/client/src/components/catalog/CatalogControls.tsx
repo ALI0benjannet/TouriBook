@@ -51,8 +51,8 @@ export function CatalogControls({
     cn(
       "rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
       active
-        ? "border-blue-600 bg-blue-600 text-white"
-        : "border-input bg-card text-foreground/75 hover:border-blue-600 hover:text-blue-600",
+        ? "border-primary bg-primary text-primary-foreground shadow-sm"
+        : "border-input bg-card text-foreground/75 hover:border-primary hover:bg-primary/5 hover:text-primary",
     );
 
   return (
@@ -62,17 +62,25 @@ export function CatalogControls({
           value={sort}
           onChange={(e) => setParams({ sort: e.target.value === "pop" ? null : e.target.value })}
           aria-label={t("catalog.sortPop")}
-          className="rounded-full border border-input bg-card px-4 py-2 text-sm"
+          className="border-input bg-card rounded-full border px-4 py-2 text-sm"
         >
           <option value="pop">{t("catalog.sortPop")}</option>
           <option value="asc">{t("catalog.sortAsc")}</option>
           <option value="desc">{t("catalog.sortDesc")}</option>
         </select>
-        <div className="flex overflow-hidden rounded-full border border-input">
-          <button type="button" onClick={() => setParams({ view: null })} className={segClass(view === "grid")}>
+        <div className="border-input flex overflow-hidden rounded-full border">
+          <button
+            type="button"
+            onClick={() => setParams({ view: null })}
+            className={segClass(view === "grid")}
+          >
             {t("catalog.viewGrid")}
           </button>
-          <button type="button" onClick={() => setParams({ view: "map" })} className={segClass(view === "map")}>
+          <button
+            type="button"
+            onClick={() => setParams({ view: "map" })}
+            className={segClass(view === "map")}
+          >
             {t("catalog.viewMap")}
           </button>
         </div>
@@ -82,12 +90,12 @@ export function CatalogControls({
         {/* Recherche libre + ville */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
-            <MapPin className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-foreground/40" />
+            <MapPin className="text-foreground/40 pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2" />
             <select
               value={city}
               onChange={(e) => setParams({ city: e.target.value || null })}
               aria-label={t("catalog.allCities")}
-              className="appearance-none rounded-full border border-input bg-card ps-11 pe-6 py-2.5 text-sm"
+              className="border-input bg-card appearance-none rounded-full border py-2.5 ps-11 pe-6 text-sm"
             >
               <option value="">{t("catalog.allCities")}</option>
               {cities.map((name) => (
@@ -102,7 +110,7 @@ export function CatalogControls({
             <button
               type="button"
               onClick={() => setParams({ search: null, cat: null, city: null })}
-              className="inline-flex items-center gap-1.5 rounded-full border border-input px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:border-blue-600 hover:text-blue-600"
+              className="border-input text-muted-foreground hover:border-primary hover:bg-primary/5 hover:text-primary inline-flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors"
             >
               <X className="size-4" />
               {t("catalog.reset")}
@@ -112,7 +120,11 @@ export function CatalogControls({
 
         {/* Catégories */}
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => setParams({ cat: null })} className={chipClass(!cat)}>
+          <button
+            type="button"
+            onClick={() => setParams({ cat: null })}
+            className={chipClass(!cat)}
+          >
             {t("catalog.allCategories")}
           </button>
           {categories.map((category) => (

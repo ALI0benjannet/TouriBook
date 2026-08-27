@@ -16,28 +16,32 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   rightIcon?: ReactNode;
 };
 
+// Les variantes s'appuient sur les tokens de `styles.css` : changer la palette
+// suffit à répercuter l'identité partout, sans toucher aux composants.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-2xl font-medium " +
+  "inline-flex items-center justify-center gap-2 rounded-xl font-semibold " +
   "transition-all duration-200 select-none " +
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/70 focus-visible:ring-offset-2 " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
   "disabled:pointer-events-none disabled:opacity-55";
 
 const variants: Record<Variant, string> = {
+  // Bleu Sidi Bou Saïd, aplat franc : plus lisible qu'un dégradé et fidèle
+  // aux façades de la médina.
   primary:
-    "bg-gradient-to-br from-slate-900 to-slate-700 text-white shadow-sm hover:shadow-md hover:shadow-slate-900/15 active:scale-[.985]",
-  secondary:
-    "bg-slate-100 text-slate-900 hover:bg-slate-200 active:scale-[.985]",
+    "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover hover:shadow-md active:scale-[.985]",
+  secondary: "bg-secondary text-secondary-foreground hover:brightness-97 active:scale-[.985]",
   outline:
-    "border border-slate-300 bg-white text-slate-900 hover:bg-slate-50 active:scale-[.985]",
-  ghost: "bg-transparent text-slate-700 hover:bg-slate-100",
-  danger: "bg-red-600 text-white hover:bg-red-700 active:scale-[.985]",
+    "border border-input bg-card text-foreground hover:border-primary hover:text-primary active:scale-[.985]",
+  ghost: "bg-transparent text-foreground/75 hover:bg-muted hover:text-foreground",
+  danger: "bg-destructive text-white hover:brightness-110 active:scale-[.985]",
 };
 
+// Hauteurs alignées sur la cible tactile recommandée (44 px à partir de `md`).
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm",
-  md: "h-11 px-4 text-sm",
-  lg: "h-12 px-5 text-base",
-  icon: "size-10 p-0",
+  sm: "h-9 px-3.5 text-sm",
+  md: "h-11 px-5 text-sm",
+  lg: "h-12 px-6 text-base",
+  icon: "size-11 p-0",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(

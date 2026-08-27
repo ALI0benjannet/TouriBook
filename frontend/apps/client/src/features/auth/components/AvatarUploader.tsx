@@ -23,7 +23,12 @@ export function AvatarUploader({ currentUrl, name, email, onUpload, onRemove }: 
   const [busy, setBusy] = useState(false);
 
   // libère l'URL objet pour éviter les fuites mémoire
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
+  useEffect(
+    () => () => {
+      if (preview) URL.revokeObjectURL(preview);
+    },
+    [preview],
+  );
 
   const handleFile = async (file?: File) => {
     if (!file) return;
@@ -71,23 +76,29 @@ export function AvatarUploader({ currentUrl, name, email, onUpload, onRemove }: 
   return (
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
       <div className="relative">
-        <Avatar src={src} name={name} email={email} size="xl" className="ring-4 ring-white shadow-lg" />
+        <Avatar
+          src={src}
+          name={name}
+          email={email}
+          size="xl"
+          className="shadow-lg ring-4 ring-white"
+        />
         <button
           type="button"
           disabled={busy}
           onClick={() => inputRef.current?.click()}
           aria-label={t("auth.profile.change_photo", "Changer la photo")}
-          className="absolute -bottom-1 -end-1 grid size-9 place-items-center rounded-full bg-slate-900 text-white shadow-md transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 disabled:opacity-60"
+          className="bg-primary hover:bg-primary-hover focus-visible:ring-ring absolute -end-1 -bottom-1 grid size-9 place-items-center rounded-full text-white shadow-md transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
         >
           <Camera aria-hidden className="size-4" />
         </button>
       </div>
 
       <div className="space-y-2 text-center sm:text-start">
-        <p className="text-sm font-medium text-slate-900">
+        <p className="text-foreground text-sm font-medium">
           {t("auth.profile.photo", "Photo de profil")}
         </p>
-        <p className="text-xs text-slate-500">
+        <p className="text-muted-foreground text-xs">
           {t("auth.profile.photo_hint", "JPG, PNG ou WebP — 2 Mo maximum.")}
         </p>
 

@@ -23,7 +23,7 @@ export function ActivityCard({ activity, rating }: { activity: Activity; rating?
   const title = activityTitle(activity, lang);
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(28,54,65,0.13)]">
+    <article className="card-elevated group border-border bg-card focus-within:ring-primary relative flex flex-col overflow-hidden rounded-2xl border focus-within:ring-2 focus-within:ring-offset-2">
       {/* Lien étalé sur toute la carte : un clic n'importe où ouvre l'activité.
           Un seul lien porte le titre accessible — imbriquer des <a> serait
           invalide, et les autres éléments cliquables (cœur, bouton) repassent
@@ -36,34 +36,37 @@ export function ActivityCard({ activity, rating }: { activity: Activity; rating?
         <ActivityImage src={activity.photos} label={`Photo — ${activity.localisation}`} />
         <FavoriteButton activityId={activity.id} />
         {activity.category && (
-          <span className="absolute bottom-3 start-3 rounded-full bg-ink/80 px-3 py-1 text-xs font-semibold text-white">
+          // Terracotta : identifie la catégorie sans concurrencer le bleu des
+          // actions. Blanc sur ce fond = 4.6:1, conforme AA.
+          <span className="bg-accent/95 text-accent-foreground absolute start-3 bottom-3 rounded-full px-3 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm">
             {categoryName(activity.category, lang)}
           </span>
         )}
       </div>
 
       <div className="pointer-events-none relative z-10 flex flex-1 flex-col gap-1.5 p-4">
-        <h3 className="font-display text-lg leading-snug text-foreground transition-colors group-hover:text-blue-600">
+        <h3 className="font-display text-foreground group-hover:text-primary text-lg leading-snug transition-colors">
           {title}
         </h3>
-        <div className="text-[13px] text-muted-foreground">
+        <div className="text-muted-foreground text-[13px]">
           {activity.localisation} · {formatDuration(activity.duree, lang)}
         </div>
         {rating && rating.count > 0 && (
-          <div className="text-[13px] text-foreground/75">
-            <span className="text-gold">★</span> <b>{rating.average.toFixed(1)}</b> ({rating.count})
+          <div className="text-foreground/75 text-[13px]">
+            <span className="text-gold-ink">★</span> <b>{rating.average.toFixed(1)}</b> (
+            {rating.count})
           </div>
         )}
         <div className="mt-auto flex items-center justify-between pt-2">
           <div>
             <span className="text-lg font-bold">{formatPrice(activity.prix)}</span>
-            <span className="text-xs text-muted-foreground"> {t("catalog.perPerson")}</span>
+            <span className="text-muted-foreground text-xs"> {t("catalog.perPerson")}</span>
           </div>
           <Link
             href={detailPath}
             tabIndex={-1}
             aria-hidden
-            className="pointer-events-auto relative z-10 rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-background transition-colors hover:bg-blue-600"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover pointer-events-auto relative z-10 rounded-full px-4 py-2 text-[13px] font-semibold transition-colors"
           >
             {t("catalog.book")}
           </Link>

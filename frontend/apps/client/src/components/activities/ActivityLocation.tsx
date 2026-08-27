@@ -17,7 +17,7 @@ export function ActivityLocation({ activity }: { activity: Activity }) {
   return (
     <section className="mt-9 max-w-2xl">
       <h2 className="font-display mb-3 text-2xl">{title}</h2>
-      <div className="h-72 overflow-hidden rounded-2xl border border-border">
+      <div className="border-border h-72 overflow-hidden rounded-2xl border">
         <ActivityMapLoader
           points={[
             {
@@ -33,7 +33,7 @@ export function ActivityLocation({ activity }: { activity: Activity }) {
           className="size-full"
         />
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{activity.localisation}</p>
+      <p className="text-muted-foreground mt-2 text-sm">{activity.localisation}</p>
     </section>
   );
 }

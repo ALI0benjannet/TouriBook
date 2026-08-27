@@ -63,10 +63,10 @@ export default function ProfilePage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-8 space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-foreground text-3xl font-semibold tracking-tight">
           {t("auth.profile.title")}
         </h1>
-        <p className="text-sm text-slate-500">{t("auth.profile.subtitle")}</p>
+        <p className="text-muted-foreground text-sm">{t("auth.profile.subtitle")}</p>
       </header>
 
       <div className="space-y-6">
@@ -88,11 +88,14 @@ export default function ProfilePage() {
           <CardHeader
             title={
               <span className="inline-flex items-center gap-2">
-                <UserRound aria-hidden className="size-4 text-slate-400" />
+                <UserRound aria-hidden className="text-foreground/45 size-4" />
                 {t("auth.profile.personal_info")}
               </span>
             }
-            description={t("auth.profile.personal_info_hint", "Ces informations apparaissent sur votre compte.")}
+            description={t(
+              "auth.profile.personal_info_hint",
+              "Ces informations apparaissent sur votre compte.",
+            )}
           />
           <CardBody>
             <form
@@ -101,12 +104,17 @@ export default function ProfilePage() {
               aria-busy={isProfileSubmitting}
               className="space-y-5"
             >
-              <fieldset disabled={isProfileSubmitting} className="grid gap-5 border-0 p-0 sm:grid-cols-2">
+              <fieldset
+                disabled={isProfileSubmitting}
+                className="grid gap-5 border-0 p-0 sm:grid-cols-2"
+              >
                 <TextField
                   {...registerProfile("prenom")}
                   autoComplete="given-name"
                   label={t("auth.profile.first_name")}
-                  error={profileErrors.prenom?.message ? t(profileErrors.prenom.message) : undefined}
+                  error={
+                    profileErrors.prenom?.message ? t(profileErrors.prenom.message) : undefined
+                  }
                 />
                 <TextField
                   {...registerProfile("nom")}
@@ -117,7 +125,11 @@ export default function ProfilePage() {
               </fieldset>
 
               <div className="flex justify-end">
-                <Button type="submit" loading={isProfileSubmitting} leftIcon={<Save className="size-4" />}>
+                <Button
+                  type="submit"
+                  loading={isProfileSubmitting}
+                  leftIcon={<Save className="size-4" />}
+                >
                   {t("auth.profile.save")}
                 </Button>
               </div>
@@ -130,11 +142,14 @@ export default function ProfilePage() {
           <CardHeader
             title={
               <span className="inline-flex items-center gap-2">
-                <KeyRound aria-hidden className="size-4 text-slate-400" />
+                <KeyRound aria-hidden className="text-foreground/45 size-4" />
                 {t("auth.profile.password")}
               </span>
             }
-            description={t("auth.profile.password_hint", "Utilisez au moins 8 caractères, avec chiffres et symboles.")}
+            description={t(
+              "auth.profile.password_hint",
+              "Utilisez au moins 8 caractères, avec chiffres et symboles.",
+            )}
           />
           <CardBody>
             <form
@@ -149,7 +164,11 @@ export default function ProfilePage() {
                   type="password"
                   autoComplete="current-password"
                   label={t("auth.profile.old_password")}
-                  error={passwordErrors.old_password?.message ? t(passwordErrors.old_password.message) : undefined}
+                  error={
+                    passwordErrors.old_password?.message
+                      ? t(passwordErrors.old_password.message)
+                      : undefined
+                  }
                 />
                 <div className="grid gap-5 sm:grid-cols-2">
                   <TextField
@@ -157,7 +176,11 @@ export default function ProfilePage() {
                     type="password"
                     autoComplete="new-password"
                     label={t("auth.profile.new_password")}
-                    error={passwordErrors.new_password?.message ? t(passwordErrors.new_password.message) : undefined}
+                    error={
+                      passwordErrors.new_password?.message
+                        ? t(passwordErrors.new_password.message)
+                        : undefined
+                    }
                   />
                   <TextField
                     {...registerPassword("confirm_new_password")}
@@ -174,7 +197,11 @@ export default function ProfilePage() {
               </fieldset>
 
               <div className="flex justify-end">
-                <Button type="submit" loading={isPasswordSubmitting} leftIcon={<KeyRound className="size-4" />}>
+                <Button
+                  type="submit"
+                  loading={isPasswordSubmitting}
+                  leftIcon={<KeyRound className="size-4" />}
+                >
                   {t("auth.profile.update_password")}
                 </Button>
               </div>
@@ -186,7 +213,7 @@ export default function ProfilePage() {
         <Card className="border-destructive/30">
           <CardHeader
             title={
-              <span className="inline-flex items-center gap-2 text-destructive">
+              <span className="text-destructive inline-flex items-center gap-2">
                 <Trash2 aria-hidden className="size-4" />
                 {t("auth.profile.delete_title", "Supprimer mon compte")}
               </span>
@@ -198,7 +225,7 @@ export default function ProfilePage() {
           />
           <CardBody>
             <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-slate-500">
+              <p className="text-muted-foreground text-sm">
                 {t(
                   "auth.profile.delete_note",
                   "Consultez notre politique de confidentialité pour le détail de vos droits.",

@@ -114,7 +114,7 @@ export function HeroSearch({ variant = "hero" }: { variant?: "hero" | "compact" 
       onSubmit={submit}
       role="search"
       className={cn(
-        "flex items-stretch gap-1 border border-border bg-card text-start",
+        "border-border bg-card flex items-stretch gap-1 border text-start",
         compact
           ? "w-full rounded-full p-1 shadow-sm"
           : "mx-auto max-w-3xl rounded-3xl p-2 shadow-[0_18px_44px_rgba(28,54,65,.14)] sm:rounded-full",
@@ -133,28 +133,28 @@ export function HeroSearch({ variant = "hero" }: { variant?: "hero" | "compact" 
         placeholder={t("home.searchPh")}
         aria-label={t("home.searchPh")}
         className={cn(
-          "min-w-0 flex-[2] bg-transparent text-foreground placeholder:text-foreground/40 focus:outline-none",
+          "text-foreground placeholder:text-foreground/40 min-w-0 flex-[2] bg-transparent focus:outline-none",
           compact ? "px-4 py-2 text-sm" : "px-5 py-3.5 text-base",
         )}
       />
-      <div className={cn("hidden w-px bg-border sm:block", compact ? "my-1.5" : "my-2")} />
+      <div className={cn("bg-border hidden w-px sm:block", compact ? "my-1.5" : "my-2")} />
       <input
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
         aria-label={t("detail.dateL")}
         className={cn(
-          "hidden min-w-0 flex-1 bg-transparent text-foreground focus:outline-none md:block",
+          "text-foreground hidden min-w-0 flex-1 bg-transparent focus:outline-none md:block",
           compact ? "px-2 py-2 text-sm" : "px-3 py-3.5 text-[15px]",
         )}
       />
-      <div className={cn("hidden w-px bg-border md:block", compact ? "my-1.5" : "my-2")} />
+      <div className={cn("bg-border hidden w-px md:block", compact ? "my-1.5" : "my-2")} />
       <select
         value={guests}
         onChange={(e) => setGuests(Number(e.target.value))}
         aria-label={t("detail.guestsL")}
         className={cn(
-          "hidden min-w-0 flex-1 bg-transparent text-foreground focus:outline-none sm:block",
+          "text-foreground hidden min-w-0 flex-1 bg-transparent focus:outline-none sm:block",
           compact ? "px-2 py-2 text-sm" : "px-2 py-3.5 text-[15px]",
         )}
       >
@@ -167,7 +167,7 @@ export function HeroSearch({ variant = "hero" }: { variant?: "hero" | "compact" 
       <button
         type="submit"
         className={cn(
-          "shrink-0 rounded-full bg-blue-700 font-semibold text-white transition-colors hover:bg-blue-600",
+          "bg-primary text-primary-foreground hover:bg-primary-hover shrink-0 rounded-full font-semibold transition-colors",
           compact ? "px-5 text-sm" : "px-6 text-base sm:px-8",
         )}
       >

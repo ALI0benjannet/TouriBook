@@ -28,7 +28,9 @@ export function LanguageMenu() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const current = (SUPPORTED_LANGUAGES.includes(resolved as Language) ? resolved : "fr") as Language;
+  const current = (
+    SUPPORTED_LANGUAGES.includes(resolved as Language) ? resolved : "fr"
+  ) as Language;
 
   // Referme au clic extérieur et à la touche Échap.
   useEffect(() => {
@@ -55,7 +57,7 @@ export function LanguageMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         title={t("nav.switchLanguage")}
-        className="flex flex-col items-center gap-1 text-foreground/70 transition-colors hover:text-blue-600"
+        className="text-foreground/70 hover:text-primary flex flex-col items-center gap-1 transition-colors"
       >
         <Globe className="size-[22px]" strokeWidth={1.6} />
         <span className="text-xs font-medium">{current.toUpperCase()} / DT</span>
@@ -64,7 +66,7 @@ export function LanguageMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute end-0 top-full z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-border bg-card py-1 shadow-lg"
+          className="border-border bg-card absolute end-0 top-full z-50 mt-2 min-w-44 overflow-hidden rounded-xl border py-1 shadow-lg"
         >
           {SUPPORTED_LANGUAGES.map((lang) => (
             <button
@@ -77,8 +79,8 @@ export function LanguageMenu() {
                 setOpen(false);
               }}
               className={cn(
-                "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-muted",
-                current === lang ? "font-semibold text-blue-600" : "text-foreground/80",
+                "hover:bg-muted flex w-full items-center justify-between gap-3 px-4 py-2.5 text-sm transition-colors",
+                current === lang ? "text-primary font-semibold" : "text-foreground/80",
               )}
             >
               <span>{LANGUAGE_NAMES[lang]}</span>

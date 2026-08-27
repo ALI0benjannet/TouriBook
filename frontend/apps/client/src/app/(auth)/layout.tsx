@@ -17,9 +17,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <img src="/logo.png" alt="" className="size-9 object-contain" />
             <span className="font-display text-xl">{t("app.name")}</span>
           </Link>
-          <p className="text-sm text-muted-foreground">{t("app.tagline")}</p>
+          <p className="text-muted-foreground text-sm">{t("app.tagline")}</p>
         </div>
-        <div className="rounded-lg border bg-card p-6 shadow-sm sm:p-8">
+        <div className="bg-card rounded-lg border p-6 shadow-sm sm:p-8">
           <Suspense fallback={null}>{children}</Suspense>
         </div>
       </div>

@@ -45,12 +45,12 @@ export default function CategoriesPage() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder={t("admin.categories.placeholder")}
-          className="min-w-0 flex-1 rounded-md border border-input bg-card px-3 py-2 text-sm"
+          className="border-input bg-card min-w-0 flex-1 rounded-md border px-3 py-2 text-sm"
         />
         <button
           type="submit"
           disabled={create.isPending || newName.trim().length < 2}
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+          className="bg-primary inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
         >
           <Plus className="size-4" />
           {t("admin.categories.add")}
@@ -58,17 +58,19 @@ export default function CategoriesPage() {
       </form>
 
       {/* Liste */}
-      <div className="max-w-2xl rounded-lg border bg-card">
+      <div className="bg-card max-w-2xl rounded-lg border">
         {isLoading ? (
           <div className="space-y-2 p-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-10 animate-pulse rounded bg-muted" />
+              <div key={i} className="bg-muted h-10 animate-pulse rounded" />
             ))}
           </div>
         ) : (categories ?? []).length === 0 ? (
-          <p className="p-6 text-center text-sm text-muted-foreground">{t("admin.categories.empty")}</p>
+          <p className="text-muted-foreground p-6 text-center text-sm">
+            {t("admin.categories.empty")}
+          </p>
         ) : (
-          <ul className="divide-y divide-border">
+          <ul className="divide-border divide-y">
             {(categories ?? []).map((cat) => (
               <li key={cat.id} className="flex items-center gap-3 px-4 py-2.5">
                 {editingId === cat.id ? (
@@ -81,12 +83,12 @@ export default function CategoriesPage() {
                         if (e.key === "Enter") submitEdit(cat.id);
                         if (e.key === "Escape") setEditingId(null);
                       }}
-                      className="min-w-0 flex-1 rounded-md border border-input bg-white px-3 py-1.5 text-sm"
+                      className="border-input bg-card focus:border-primary min-w-0 flex-1 rounded-md border px-3 py-1.5 text-sm focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => submitEdit(cat.id)}
-                      className="rounded-md p-1.5 text-primary hover:bg-primary/10"
+                      className="text-primary hover:bg-primary/10 rounded-md p-1.5"
                       aria-label={t("admin.common.validate")}
                     >
                       <Check className="size-4" />
@@ -94,7 +96,7 @@ export default function CategoriesPage() {
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
-                      className="rounded-md p-1.5 text-muted-foreground hover:bg-muted"
+                      className="text-muted-foreground hover:bg-muted rounded-md p-1.5"
                       aria-label={t("admin.common.cancel")}
                     >
                       <X className="size-4" />
@@ -106,7 +108,7 @@ export default function CategoriesPage() {
                     <button
                       type="button"
                       onClick={() => startEdit(cat.id, cat.nom)}
-                      className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md p-1.5"
                       aria-label={t("admin.categories.rename", { name: cat.nom })}
                     >
                       <Pencil className="size-4" />
@@ -114,7 +116,7 @@ export default function CategoriesPage() {
                     <button
                       type="button"
                       onClick={() => confirmDelete(cat.id, cat.nom)}
-                      className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-md p-1.5"
                       aria-label={t("admin.categories.deleteAria", { name: cat.nom })}
                     >
                       <Trash2 className="size-4" />
@@ -127,7 +129,7 @@ export default function CategoriesPage() {
         )}
       </div>
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         Une catégorie utilisée par des activités ne peut pas être supprimée.
       </p>
     </div>

@@ -36,13 +36,13 @@ function SuccessView({ bookingId }: { bookingId: number }) {
 
   return (
     <div className="mx-auto max-w-md text-center">
-      <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="bg-primary/10 text-primary mx-auto mb-4 flex size-14 items-center justify-center rounded-full">
         <ShieldCheck className="size-7" />
       </div>
       <h1 className="font-display mb-2 text-3xl">
         {t("payment.successTitle", "Réservation confirmée !")}
       </h1>
-      <p className="mb-6 text-muted-foreground">
+      <p className="text-muted-foreground mb-6">
         {t(
           "payment.successSub",
           "Un e-mail de confirmation vous a été envoyé. Présentez ce QR code le jour de l'activité.",
@@ -50,13 +50,15 @@ function SuccessView({ bookingId }: { bookingId: number }) {
       </p>
 
       {booking && (
-        <div className="mb-6 rounded-2xl border border-border bg-card p-5 text-start">
-          <div className="font-display text-lg">{booking.activity ?? `#${booking.activity_id}`}</div>
-          <div className="mt-1 text-sm text-muted-foreground">
+        <div className="border-border bg-card mb-6 rounded-2xl border p-5 text-start">
+          <div className="font-display text-lg">
+            {booking.activity ?? `#${booking.activity_id}`}
+          </div>
+          <div className="text-muted-foreground mt-1 text-sm">
             {t("bookingsPage.guests", { count: booking.nb_places })} ·{" "}
             <b className="text-foreground">{formatPrice(booking.montant_total)}</b>
           </div>
-          <div className="mt-1 text-xs text-muted-foreground">
+          <div className="text-muted-foreground mt-1 text-xs">
             {t("payment.reference", "Référence")} : {booking.qr_code}
           </div>
         </div>
@@ -64,14 +66,14 @@ function SuccessView({ bookingId }: { bookingId: number }) {
 
       {qrSvg && (
         <div
-          className="mx-auto mb-6 w-52 rounded-2xl border border-border bg-white p-4 [&_svg]:h-auto [&_svg]:w-full"
+          className="border-border bg-card mx-auto mb-6 w-52 rounded-2xl border p-4 [&_svg]:h-auto [&_svg]:w-full"
           dangerouslySetInnerHTML={{ __html: qrSvg }}
         />
       )}
 
       <Link
         href={paths.bookings}
-        className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-semibold text-background transition-colors hover:bg-blue-600"
+        className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors"
       >
         <CalendarCheck className="size-4" />
         {t("detail.seeBookings")}
@@ -107,7 +109,7 @@ function StripeForm({ bookingId, amount }: { bookingId: number; amount: number }
     <div className="space-y-4">
       <PaymentElement />
       {error && (
-        <p className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive">
+        <p className="border-destructive/30 bg-destructive/5 text-destructive rounded-xl border px-4 py-3 text-sm font-medium">
           {error}
         </p>
       )}
@@ -115,7 +117,7 @@ function StripeForm({ bookingId, amount }: { bookingId: number; amount: number }
         type="button"
         onClick={pay}
         disabled={submitting || !stripe}
-        className="w-full rounded-full bg-blue-600 py-3.5 font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+        className="bg-primary text-primary-foreground hover:bg-primary-hover w-full rounded-full py-3.5 font-semibold transition-colors disabled:opacity-50"
       >
         {submitting
           ? t("states.loading")
@@ -134,9 +136,10 @@ export default function PayBookingPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   // Après un paiement Stripe avec redirection, on revient avec redirect_status
-  const [stripeReturned] = useState(() =>
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("redirect_status") === "succeeded",
+  const [stripeReturned] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("redirect_status") === "succeeded",
   );
 
   // Poll tant que le webhook n'a pas confirmé
@@ -182,7 +185,7 @@ export default function PayBookingPage() {
     return (
       <main className="mx-auto max-w-md px-4 py-24 text-center">
         <h1 className="font-display mb-3 text-2xl">{t("errors.http.404")}</h1>
-          <Link href={paths.bookings} className="font-semibold text-primary hover:text-blue-600">
+        <Link href={paths.bookings} className="text-primary hover:text-primary-hover font-semibold">
           ← {t("nav.bookings")}
         </Link>
       </main>
@@ -198,7 +201,10 @@ export default function PayBookingPage() {
           <h1 className="font-display mb-3 text-3xl">
             {t("payment.cancelledTitle", "Réservation annulée")}
           </h1>
-          <Link href={paths.activities} className="font-semibold text-primary hover:text-blue-600">
+          <Link
+            href={paths.activities}
+            className="text-primary hover:text-primary-hover font-semibold"
+          >
             {t("favorites.cta")}
           </Link>
         </div>
@@ -212,17 +218,17 @@ export default function PayBookingPage() {
       ) : (
         <>
           <h1 className="font-display mb-2 text-3xl">{t("payment.title", "Paiement")}</h1>
-          <p className="mb-8 text-muted-foreground">
+          <p className="text-muted-foreground mb-8">
             {t("payment.subtitle", "Réglez votre réservation pour la confirmer.")}
           </p>
 
           {/* Récapitulatif */}
-          <div className="mb-6 rounded-2xl border border-border bg-card p-5">
+          <div className="border-border bg-card mb-6 rounded-2xl border p-5">
             <div className="font-display text-lg">
               {booking.activity ?? `#${booking.activity_id}`}
             </div>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 {t("bookingsPage.guests", { count: booking.nb_places })}
               </span>
               <span className="text-2xl font-bold">{formatPrice(booking.montant_total)}</span>
@@ -230,7 +236,7 @@ export default function PayBookingPage() {
           </div>
 
           {intentError && (
-            <p className="mb-4 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive">
+            <p className="border-destructive/30 bg-destructive/5 text-destructive mb-4 rounded-xl border px-4 py-3 text-sm font-medium">
               {intentError}
             </p>
           )}
@@ -246,11 +252,11 @@ export default function PayBookingPage() {
             </Elements>
           ) : (
             /* ---- Mode simulation (aucune clé Stripe configurée) ---- */
-            <div className="rounded-2xl border border-dashed border-gold bg-gold/10 p-5 text-center">
-              <p className="mb-1 text-sm font-bold uppercase tracking-wide text-[#9A6E14]">
+            <div className="border-gold bg-gold/10 rounded-2xl border border-dashed p-5 text-center">
+              <p className="mb-1 text-sm font-bold tracking-wide text-[#9A6E14] uppercase">
                 {t("payment.demoBadge", "Mode démonstration")}
               </p>
-              <p className="mb-4 text-sm text-foreground/70">
+              <p className="text-foreground/70 mb-4 text-sm">
                 {t(
                   "payment.demoHint",
                   "Aucune clé Stripe configurée — ce bouton simule un paiement réussi (webhook inclus).",
@@ -260,7 +266,7 @@ export default function PayBookingPage() {
                 type="button"
                 onClick={simulate}
                 disabled={simulating}
-                className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3.5 font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-semibold transition-colors disabled:opacity-50"
               >
                 <CreditCard className="size-4" />
                 {simulating
@@ -272,7 +278,7 @@ export default function PayBookingPage() {
             </div>
           )}
 
-          <p className="mt-5 text-center text-[13px] text-muted-foreground">
+          <p className="text-muted-foreground mt-5 text-center text-[13px]">
             {t("detail.freeCancel")}
           </p>
         </>
