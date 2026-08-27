@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, LogIn, ShoppingCart, UserRound } from "lucide-react";
+import { Heart, LogIn, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -8,10 +8,11 @@ import { cn } from "@touribook/ui/lib/utils";
 import { useAuth } from "@touribook/auth/hooks/use-auth";
 
 import { LanguageMenu } from "./LanguageMenu";
-import { StickySearch } from "./StickySearch";
 import { UserMenu } from "./UserMenu";
+import { HeroSearch } from "@/components/home/HeroSearch";
 import { useFavorites } from "@/features/favorites/hooks";
 import { useMyBookings } from "@/features/bookings/hooks";
+import { useCondensedHeader } from "@/features/layout/use-condensed-header";
 import { paths } from "@/routes/paths";
 import { useHydratedTranslation } from "@/features/i18n/use-hydrated-language";
 
@@ -82,30 +83,50 @@ export function Navbar() {
   const { data: favorites } = useFavorites();
   const { data: bookings } = useMyBookings();
 
-  // La recherche n'a de sens que sur les pages qui listent des activités.
-  const showSearch = pathname === "/" || pathname === paths.activities;
+  // L'en-tête se condense au défilement : logo + recherche + icônes sur une
+  // seule ligne, les onglets s'effacent.
+  const { condensed, showSearch, showTabs } = useCondensedHeader();
 
   const tabClass = (active: boolean) =>
     cn(
-      "shrink-0 border-b-[3px] px-3.5 pb-3 pt-2.5 text-sm font-semibold transition-colors",
+      "shrink-0 border-b-2 px-3 pb-2.5 pt-1 text-[15px] font-semibold transition-colors",
       active
         ? "border-blue-600 text-blue-600"
-        : "border-transparent text-foreground/75 hover:text-foreground",
+        : "border-transparent text-foreground/70 hover:border-border hover:text-foreground",
     );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white shadow-sm">   
-       {/* Rangée 1 : logo + favoris/réservations/langues/profil */}
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 pb-1 pt-3 sm:px-8">
-        <Link href={paths.home} className="flex items-center gap-2.5">
+    <header className="sticky top-0 z-50 border-b border-border bg-white shadow-sm">
+      {/* Rangée 1 : logo — recherche (une fois condensé) — actions du compte. */}
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-6 px-4 sm:px-8">
+        <Link
+          href={paths.home}
+          className="flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+        >
           <img src="/logo.png" alt="TouriBook" className="size-10 object-contain" />
-          <span className="font-display text-[22px] tracking-wide">TouriBook</span>
+          {/* Le libellé s'efface en mode condensé : seul le logo reste, comme
+              sur les grands sites de réservation. */}
+          <span
+            className={cn(
+              "font-display text-[22px] leading-none tracking-wide transition-opacity",
+              condensed ? "hidden lg:inline" : "inline",
+            )}
+          >
+            TouriBook
+          </span>
         </Link>
 
-        <div className="flex items-center gap-5 sm:gap-7">
+        {/* Recherche centrée : n'occupe l'espace que lorsqu'elle est visible. */}
+        {showSearch && (
+          <div className="mx-auto hidden w-full max-w-xl md:block">
+            <HeroSearch variant="compact" />
+          </div>
+        )}
+
+        <div className={cn("flex items-center gap-4 sm:gap-6", !showSearch && "ms-auto")}>
           <IconTab
             href={paths.favorites}
-            icon={<Heart className="size-[22px]" strokeWidth={1.6} />}
+            icon={<Heart className="size-[21px]" strokeWidth={1.7} />}
             label={t("nav.favoritesShort")}
             badge={<Badge count={favorites?.length ?? 0} tone="accent" />}
           />
@@ -114,12 +135,15 @@ export function Navbar() {
               s'y greffer après la soutenance). */}
           <IconTab
             href={paths.bookings}
-            icon={<ShoppingCart className="size-[22px]" strokeWidth={1.6} />}
+            icon={<ShoppingCart className="size-[21px]" strokeWidth={1.7} />}
             label={t("nav.cart")}
             badge={<Badge count={bookings?.total ?? 0} tone="primary" />}
           />
 
           <LanguageMenu />
+
+          {/* Séparateur : distingue les raccourcis du bloc identité. */}
+          <span aria-hidden className="hidden h-8 w-px bg-border sm:block" />
 
           {isAuthenticated ? (
             <UserMenu />
@@ -127,7 +151,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => router.push(paths.login)}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-md"
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
             >
               <LogIn className="size-4" />
               <span className="hidden sm:inline">{t("nav.login")}</span>
@@ -136,30 +160,27 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Recherche collante : uniquement là où elle a du sens. */}
-      {showSearch && <StickySearch />}
+      {/* Recherche repliée sous le logo sur petits écrans : la rangée 1 n'y a
+          pas la place de l'accueillir au centre. */}
+      {showSearch && (
+        <div className="mx-auto max-w-7xl px-4 pb-3 md:hidden">
+          <HeroSearch variant="compact" />
+        </div>
+      )}
 
-      {/* Rangée 3 : navigation principale — les catégories sont des filtres
-          de la page Activités, pas des entrées de menu. */}
-      <nav className="mx-auto flex max-w-7xl gap-0.5 overflow-x-auto px-3 sm:px-6">
-        <Link href={paths.home} className={tabClass(pathname === "/")}>
-          {t("nav.home")}
-        </Link>
-        <Link href={paths.activities} className={tabClass(pathname === paths.activities)}>
-          {t("nav.activities")}
-        </Link>
-        {isAuthenticated && (
-          <Link
-            href={paths.profile}
-            className={cn(tabClass(pathname === paths.profile), "ms-auto hidden sm:block")}
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <UserRound className="size-3.5" />
-              {t("nav.profile")}
-            </span>
+      {/* Rangée 2 : navigation principale, masquée une fois l'en-tête condensé.
+          Les catégories sont des filtres de la page Activités, pas des entrées
+          de menu ; le profil vit dans le menu du compte (un seul point d'accès). */}
+      {showTabs && (
+        <nav className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-4 sm:px-8">
+          <Link href={paths.home} className={tabClass(pathname === "/")}>
+            {t("nav.home")}
           </Link>
-        )}
-      </nav>
+          <Link href={paths.activities} className={tabClass(pathname === paths.activities)}>
+            {t("nav.activities")}
+          </Link>
+        </nav>
+      )}
     </header>
   );
 }

@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useState,
   type ReactNode,
 } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -52,7 +53,17 @@ export function AuthProvider({ children, loginUrl = "/login" }: AuthProviderProp
 
   // Abonnement réactif au store : re-render dès que le token change.
   const accessToken = authStore((state) => state.accessToken);
-  const hasToken = Boolean(accessToken);
+
+  // Le token est restauré depuis `localStorage` (zustand/persist), auquel le
+  // serveur n'a pas accès : le SSR rend donc toujours l'état « déconnecté ».
+  // Si le premier rendu client utilisait le token restauré, React comparerait
+  // deux arbres différents (badge de favoris, menu du compte…) et invaliderait
+  // la page. On attend donc l'hydratation avant de considérer l'utilisateur
+  // connecté — l'écart ne dure qu'un rendu.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+
+  const hasToken = hydrated && Boolean(accessToken);
 
   // Restauration de session au rechargement de la page
   const { data: user, isLoading } = useQuery<User | null>({

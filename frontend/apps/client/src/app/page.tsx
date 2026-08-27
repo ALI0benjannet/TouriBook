@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -72,7 +73,11 @@ export default async function HomePage() {
           </h1>
           <p className="jost mx-auto mb-10 w-full text-center text-lg font-normal leading-relaxed tracking-wide text-white/90 sm:whitespace-nowrap">            <T k="home.heroSub" />
           </p>
-          <HeroSearch />
+          {/* `HeroSearch` lit `useSearchParams` : la page étant prérendue,
+              Next exige une limite Suspense (sinon le build échoue). */}
+          <Suspense fallback={<div className="mx-auto h-[68px] max-w-3xl" />}>
+            <HeroSearch />
+          </Suspense>
         </div>
       </section>
 

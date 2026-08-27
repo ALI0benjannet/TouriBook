@@ -18,9 +18,21 @@ function useDropdownMenu() {
   return context
 }
 
-export function DropdownMenu({ children }: { children: ReactNode }) {
+export function DropdownMenu({
+  children,
+  openOnHover = false,
+  hoverCloseDelay = 180,
+}: {
+  children: ReactNode
+  /** Ouvre le menu au survol (le clic reste actif : tactile et clavier). */
+  openOnHover?: boolean
+  /** Délai de grâce avant fermeture, le temps de traverser l'espace
+   *  entre le déclencheur et le menu sans qu'il disparaisse. */
+  hoverCloseDelay?: number
+}) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement | null>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const onClickOutside = (event: Event) => {
@@ -44,6 +56,16 @@ export function DropdownMenu({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // Évite qu'un minuteur en attente ferme un menu déjà démonté.
+  useEffect(() => () => void (closeTimer.current && clearTimeout(closeTimer.current)), [])
+
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+  }
+
   const value = useMemo(
     () => ({
       open,
@@ -53,9 +75,34 @@ export function DropdownMenu({ children }: { children: ReactNode }) {
     [open],
   )
 
+  // Le survol n'a de sens qu'avec une souris : sur mobile, `mouseenter` est
+  // émis au tap et rendrait le menu impossible à fermer.
+  const hoverHandlers = openOnHover
+    ? {
+        onMouseEnter: () => {
+          cancelClose()
+          setOpen(true)
+        },
+        onMouseLeave: () => {
+          cancelClose()
+          closeTimer.current = setTimeout(() => setOpen(false), hoverCloseDelay)
+        },
+        // Ouvre aussi à la tabulation, et ferme quand le focus quitte le menu.
+        onFocus: () => {
+          cancelClose()
+          setOpen(true)
+        },
+        onBlur: (event: import('react').FocusEvent<HTMLDivElement>) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+            setOpen(false)
+          }
+        },
+      }
+    : {}
+
   return (
     <DropdownMenuContext.Provider value={value}>
-      <div ref={ref} className="relative inline-block text-left">
+      <div ref={ref} className="relative inline-block text-left" {...hoverHandlers}>
         {children}
       </div>
     </DropdownMenuContext.Provider>
@@ -89,11 +136,11 @@ export function DropdownMenuContent({ children, align = 'end' }: { children: Rea
 
   return (
     <div
-      className={`absolute z-20 mt-2 w-56 rounded-2xl border bg-white p-2 shadow-lg ${
-        align === 'end' ? 'right-0' : 'left-0'
-      }`}
+      className={`absolute top-full z-20 w-56 pt-2 ${align === 'end' ? 'right-0' : 'left-0'}`}
     >
-      {children}
+      {/* Le `pt-2` du conteneur fait pont : sans lui, l'espace entre le
+          déclencheur et le panneau coupe le survol et le menu se referme. */}
+      <div className="rounded-2xl border bg-white p-2 shadow-lg">{children}</div>
     </div>
   )
 }

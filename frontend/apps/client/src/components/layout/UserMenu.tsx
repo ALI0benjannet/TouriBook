@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CalendarCheck, Heart, LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react";
+import {
+  CalendarCheck,
+  ChevronDown,
+  Heart,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  UserRound,
+} from "lucide-react";
 
 import { Avatar } from "@touribook/ui/components/ui/avatar";
 import {
@@ -28,12 +36,15 @@ export function UserMenu() {
   };
 
   return (
-    <DropdownMenu>
+    // `openOnHover` : le menu s'ouvre au survol, sans clic ni changement de page.
+    // Le clic reste opérationnel pour le tactile et le clavier.
+    <DropdownMenu openOnHover>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
           aria-label={t("nav.account", "Mon compte")}
-          className="group inline-flex items-center gap-2 rounded-full p-0.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-haspopup="menu"
+          className="group inline-flex items-center gap-2.5 rounded-full py-1 pe-2.5 ps-1 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Avatar
             src={user?.avatar_url}
@@ -42,9 +53,13 @@ export function UserMenu() {
             size="md"
             className="ring-2 ring-transparent transition group-hover:ring-primary/30"
           />
-          <span className="me-1 hidden max-w-[10rem] truncate text-sm font-medium text-foreground lg:inline">
+          <span className="hidden max-w-[10rem] truncate text-sm font-medium text-foreground lg:inline">
             {user?.full_name ?? user?.email}
           </span>
+          <ChevronDown
+            className="hidden size-4 text-foreground/40 transition-transform group-hover:text-foreground/70 lg:inline"
+            strokeWidth={2}
+          />
         </button>
       </DropdownMenuTrigger>
 
