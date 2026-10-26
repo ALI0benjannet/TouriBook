@@ -11,6 +11,7 @@ from app.admin_routes import admin_router
 from app.config import settings
 from app.database import Base, engine
 from app.routers import internal_router, public_router
+from app.travel_routes import travel_router
 
 setup_logging(settings.SERVICE_NAME)
 logger = logging.getLogger(__name__)
@@ -46,4 +47,5 @@ def health():
 
 app.include_router(public_router, prefix=settings.API_V1_PREFIX)
 app.include_router(admin_router, prefix=settings.API_V1_PREFIX)
+app.include_router(travel_router, prefix=settings.API_V1_PREFIX)
 app.include_router(internal_router)

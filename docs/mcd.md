@@ -88,6 +88,71 @@ erDiagram
     ACTIVITIES ||--o{ AVAILABILITIES : "propose"
 ```
 
+### Offres de voyage (tables préparées, API à venir)
+
+Onglets Séjours, Vols, Voitures de location et Transferts de la navbar. Tables
+indépendantes, sans relation entre elles ni avec les activités.
+
+```mermaid
+erDiagram
+    STAYS {
+        int id PK
+        string nom
+        string type "hotel | riad | maison_hotes | appartement"
+        text description
+        string localisation
+        float latitude "nullable"
+        float longitude "nullable"
+        int etoiles "nullable, 1 a 5"
+        float prix_nuit
+        int capacite "voyageurs max"
+        text equipements "nullable"
+        text photos "nullable"
+        bool actif
+    }
+    FLIGHTS {
+        int id PK
+        string compagnie
+        string numero_vol "index"
+        string aeroport_depart "IATA"
+        string aeroport_arrivee "IATA"
+        string ville_depart
+        string ville_arrivee
+        datetime depart_le
+        datetime arrivee_le
+        string classe "economy | business"
+        float prix
+        int places_disponibles
+        int places_totales
+    }
+    CAR_RENTALS {
+        int id PK
+        string marque
+        string modele
+        string categorie "economique | compacte | suv | van"
+        string transmission "manuelle | automatique"
+        string carburant
+        int nb_places
+        string agence
+        string localisation "prise en charge"
+        float prix_jour
+        text photos "nullable"
+        bool disponible
+    }
+    TRANSFERS {
+        int id PK
+        string depart
+        string arrivee
+        string type_vehicule "taxi | grand_taxi | berline | van | minibus"
+        int capacite
+        int bagages
+        int duree "minutes"
+        float prix "par vehicule"
+        text description "nullable"
+        bool actif
+    }
+```
+
 ## 3. Base `touribook_booking` — booking-service
 
 ```mermaid

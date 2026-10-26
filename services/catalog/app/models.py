@@ -1,12 +1,13 @@
-"""Modèles du domaine Catalogue : catégories, activités, disponibilités.
+"""Modèles du domaine Catalogue : catégories, activités, disponibilités,
+et offres de voyage (séjours, vols, voitures de location, transferts).
 
 NOTE microservices : plus de relations vers bookings/reviews — ces données
 appartiennent à d'autres services et référencent activity_id par simple entier.
 """
 
-from datetime import date, time
+from datetime import date, datetime, time
 
-from sqlalchemy import Date, Float, ForeignKey, Integer, String, Text, Time
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -64,3 +65,91 @@ class Availability(Base):
     places_totales: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     activity = relationship("Activity", back_populates="availabilities")
+
+
+# ---------------------------------------------------------------------------
+# Offres de voyage (onglets Séjours, Vols, Voitures de location, Transferts).
+# Tables posées en avance : pas encore d'API ni de réservation branchée.
+# Créées au démarrage par `create_all` (AUTO_CREATE_TABLES) comme les autres.
+# ---------------------------------------------------------------------------
+
+
+class Stay(Base):
+    """Hébergement : hôtel, riad, maison d'hôtes, appartement…"""
+
+    __tablename__ = "stays"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nom: Mapped[str] = mapped_column(String(200))
+    type: Mapped[str] = mapped_column(String(50))  # hotel | riad | maison_hotes | appartement
+    description: Mapped[str] = mapped_column(Text)
+    nom_en: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    nom_ar: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    description_en: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description_ar: Mapped[str | None] = mapped_column(Text, nullable=True)
+    localisation: Mapped[str] = mapped_column(String(255))
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    etoiles: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 1 à 5
+    prix_nuit: Mapped[float] = mapped_column(Float)
+    capacite: Mapped[int] = mapped_column(Integer)  # voyageurs max
+    equipements: Mapped[str | None] = mapped_column(Text, nullable=True)  # « wifi,piscine,… »
+    photos: Mapped[str | None] = mapped_column(Text, nullable=True)
+    actif: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+
+
+class Flight(Base):
+    """Vol régulier, une ligne par départ (date + heure)."""
+
+    __tablename__ = "flights"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    compagnie: Mapped[str] = mapped_column(String(100))
+    numero_vol: Mapped[str] = mapped_column(String(20), index=True)
+    aeroport_depart: Mapped[str] = mapped_column(String(3))  # code IATA, ex. TUN
+    aeroport_arrivee: Mapped[str] = mapped_column(String(3))
+    ville_depart: Mapped[str] = mapped_column(String(100))
+    ville_arrivee: Mapped[str] = mapped_column(String(100))
+    depart_le: Mapped[datetime] = mapped_column(DateTime)
+    arrivee_le: Mapped[datetime] = mapped_column(DateTime)
+    classe: Mapped[str] = mapped_column(String(20), default="economy")  # economy | business
+    prix: Mapped[float] = mapped_column(Float)
+    # Même logique que les créneaux d'activité : compteur + capacité d'origine.
+    places_disponibles: Mapped[int] = mapped_column(Integer, default=0)
+    places_totales: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+
+class CarRental(Base):
+    """Voiture proposée à la location par une agence."""
+
+    __tablename__ = "car_rentals"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    marque: Mapped[str] = mapped_column(String(100))
+    modele: Mapped[str] = mapped_column(String(100))
+    categorie: Mapped[str] = mapped_column(String(50))  # economique | compacte | suv | van
+    transmission: Mapped[str] = mapped_column(String(20))  # manuelle | automatique
+    carburant: Mapped[str] = mapped_column(String(20))  # essence | diesel | hybride | electrique
+    nb_places: Mapped[int] = mapped_column(Integer)
+    agence: Mapped[str] = mapped_column(String(150))
+    localisation: Mapped[str] = mapped_column(String(255))  # lieu de prise en charge
+    prix_jour: Mapped[float] = mapped_column(Float)
+    photos: Mapped[str | None] = mapped_column(Text, nullable=True)
+    disponible: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+
+
+class Transfer(Base):
+    """Trajet avec chauffeur, typiquement aéroport ↔ hôtel."""
+
+    __tablename__ = "transfers"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    depart: Mapped[str] = mapped_column(String(255))  # ex. « Aéroport Tunis-Carthage »
+    arrivee: Mapped[str] = mapped_column(String(255))
+    type_vehicule: Mapped[str] = mapped_column(String(50))  # taxi | grand_taxi | berline | van | minibus
+    capacite: Mapped[int] = mapped_column(Integer)  # passagers max
+    bagages: Mapped[int] = mapped_column(Integer, default=0)
+    duree: Mapped[int] = mapped_column(Integer)  # minutes
+    prix: Mapped[float] = mapped_column(Float)  # par véhicule, pas par passager
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    actif: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")

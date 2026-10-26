@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { AdminLayout } from "@/components/AdminLayout";
+import type { TravelResource } from "@/features/travel/config";
 import { AdminRoute } from "@touribook/auth/guards/AdminRoute";
 import { RouteError } from "@touribook/ui/components/feedback/RouteError";
 import { FullPageLoader } from "@touribook/ui/components/feedback/FullPageLoader";
@@ -15,6 +16,14 @@ const ActivityFormPage = lazy(() => import("@/pages/ActivityFormPage"));
 const CategoriesPage = lazy(() => import("@/pages/CategoriesPage"));
 const PaymentsPage = lazy(() => import("@/pages/PaymentsPage"));
 const ForbiddenPage = lazy(() => import("@/pages/ForbiddenPage"));
+const TravelOffersPage = lazy(() => import("@/pages/TravelOffersPage"));
+
+const TRAVEL_ROUTES: [string, TravelResource][] = [
+  ["/stays", "stays"],
+  ["/flights", "flights"],
+  ["/car-rentals", "carRentals"],
+  ["/transfers", "transfers"],
+];
 
 const withSuspense = (node: React.ReactNode) => (
   <Suspense fallback={<FullPageLoader />}>{node}</Suspense>
@@ -43,6 +52,12 @@ export const router = createBrowserRouter(
                 { path: "/activities/:id/edit", element: withSuspense(<ActivityFormPage />) },
                 { path: "/categories", element: withSuspense(<CategoriesPage />) },
                 { path: "/payments", element: withSuspense(<PaymentsPage />) },
+                // Même composant pour les 4 offres : `key` remet son état à zéro
+                // quand on passe de l'une à l'autre.
+                ...TRAVEL_ROUTES.map(([path, resource]) => ({
+                  path,
+                  element: withSuspense(<TravelOffersPage key={resource} resource={resource} />),
+                })),
               ],
             },
           ],

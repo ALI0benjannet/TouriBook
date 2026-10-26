@@ -56,7 +56,11 @@
     "favoritesShort": "Favoris",
     "cart": "Panier",
     "cartSoon": "Le panier arrive bientôt.",
-    "switchLanguage": "Changer de langue"
+    "switchLanguage": "Changer de langue",
+    "stays": "Séjours",
+    "flights": "Vols",
+    "carRentals": "Voitures de location",
+    "transfers": "Transferts"
   },
   "activities": {
     "description": "Découvrez les meilleures activités à réserver près de chez vous."
@@ -356,7 +360,11 @@
       "payments": "Paiements",
       "users": "Utilisateurs",
       "viewSite": "Voir le site",
-      "logout": "Déconnexion"
+      "logout": "Déconnexion",
+      "stays": "Séjours",
+      "flights": "Vols",
+      "carRentals": "Voitures de location",
+      "transfers": "Transferts"
     },
     "common": {
       "loading": "Chargement…",
@@ -534,6 +542,116 @@
       "slotDeleteAria": "Supprimer le créneau",
       "translations": "Traductions",
       "translationsHint": "Laissez un champ vide pour afficher automatiquement le texte français."
+    },
+    "travel": {
+      "editTitle": "Modifier",
+      "requiredHint": "Les champs marqués * sont obligatoires.",
+      "deleteConfirm": "Supprimer « {{name}} » ?",
+      "stays": {
+        "title": "Séjours",
+        "new": "Nouveau séjour",
+        "empty": "Aucun séjour.",
+        "fields": {
+          "nom": "Nom",
+          "type": "Type",
+          "description": "Description",
+          "localisation": "Localisation",
+          "etoiles": "Étoiles",
+          "prix_nuit": "Prix / nuit",
+          "capacite": "Capacité (voyageurs)",
+          "latitude": "Latitude",
+          "longitude": "Longitude",
+          "equipements": "Équipements (séparés par des virgules)",
+          "nom_en": "Nom (anglais)",
+          "nom_ar": "Nom (arabe)",
+          "description_en": "Description (anglais)",
+          "description_ar": "Description (arabe)",
+          "actif": "Actif (visible sur le site)"
+        }
+      },
+      "flights": {
+        "title": "Vols",
+        "new": "Nouveau vol",
+        "empty": "Aucun vol.",
+        "fields": {
+          "compagnie": "Compagnie",
+          "numero_vol": "N° de vol",
+          "ville_depart": "Ville de départ",
+          "aeroport_depart": "Aéroport de départ (IATA)",
+          "ville_arrivee": "Ville d'arrivée",
+          "aeroport_arrivee": "Aéroport d'arrivée (IATA)",
+          "depart_le": "Départ",
+          "arrivee_le": "Arrivée",
+          "classe": "Classe",
+          "prix": "Prix",
+          "places_totales": "Capacité (sièges)",
+          "places_disponibles": "Places restantes"
+        }
+      },
+      "carRentals": {
+        "title": "Voitures de location",
+        "new": "Nouvelle voiture",
+        "empty": "Aucune voiture.",
+        "fields": {
+          "marque": "Marque",
+          "modele": "Modèle",
+          "categorie": "Catégorie",
+          "transmission": "Boîte",
+          "carburant": "Carburant",
+          "nb_places": "Places",
+          "agence": "Agence",
+          "localisation": "Lieu de prise en charge",
+          "prix_jour": "Prix / jour",
+          "disponible": "Disponible"
+        }
+      },
+      "transfers": {
+        "title": "Transferts",
+        "new": "Nouveau transfert",
+        "empty": "Aucun transfert.",
+        "fields": {
+          "depart": "Départ",
+          "arrivee": "Arrivée",
+          "type_vehicule": "Véhicule",
+          "capacite": "Passagers max",
+          "bagages": "Bagages max",
+          "duree": "Durée (min)",
+          "prix": "Prix (par véhicule)",
+          "description": "Description",
+          "actif": "Actif (visible sur le site)"
+        }
+      },
+      "options": {
+        "hotel": "Hôtel",
+        "riad": "Riad",
+        "maison_hotes": "Maison d'hôtes",
+        "appartement": "Appartement",
+        "economy": "Économique",
+        "business": "Affaires",
+        "economique": "Économique",
+        "compacte": "Compacte",
+        "suv": "SUV",
+        "van": "Van",
+        "manuelle": "Manuelle",
+        "automatique": "Automatique",
+        "essence": "Essence",
+        "diesel": "Diesel",
+        "hybride": "Hybride",
+        "electrique": "Électrique",
+        "taxi": "Taxi",
+        "grand_taxi": "Grand taxi",
+        "berline": "Berline",
+        "minibus": "Minibus"
+      }
     }
+  },
+  "comingSoon": {
+    "badge": "Bientôt disponible",
+    "body": "Nous préparons cette rubrique. En attendant, découvrez nos activités.",
+    "cta": "Voir les activités",
+    "stays": "Hôtels, riads et maisons d'hôtes partout en Tunisie.",
+    "flights": "Vols vers et depuis la Tunisie.",
+    "carRentals": "Louez une voiture et partez à votre rythme.",
+    "transfers": "Trajets avec chauffeur entre l'aéroport et votre hôtel."
   }
 }

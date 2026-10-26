@@ -56,7 +56,11 @@
     "favoritesShort": "المفضلة",
     "cart": "السلة",
     "cartSoon": "السلة قادمة قريبًا.",
-    "switchLanguage": "تغيير اللغة"
+    "switchLanguage": "تغيير اللغة",
+    "stays": "الإقامات",
+    "flights": "الرحلات الجوية",
+    "carRentals": "تأجير السيارات",
+    "transfers": "التنقلات"
   },
   "activities": {
     "description": "استعرض أفضل الأنشطة للحجز بالقرب منك."
@@ -356,7 +360,11 @@
       "payments": "المدفوعات",
       "users": "المستخدمون",
       "viewSite": "عرض الموقع",
-      "logout": "تسجيل الخروج"
+      "logout": "تسجيل الخروج",
+      "stays": "الإقامات",
+      "flights": "الرحلات الجوية",
+      "carRentals": "تأجير السيارات",
+      "transfers": "التنقلات"
     },
     "common": {
       "loading": "جارٍ التحميل…",
@@ -534,6 +542,116 @@
       "slotDeleteAria": "حذف الموعد",
       "translations": "الترجمات",
       "translationsHint": "اترك الحقل فارغًا لعرض النص الفرنسي تلقائيًا."
+    },
+    "travel": {
+      "editTitle": "تعديل",
+      "requiredHint": "الحقول المميزة بـ * إلزامية.",
+      "deleteConfirm": "حذف «{{name}}»؟",
+      "stays": {
+        "title": "الإقامات",
+        "new": "إقامة جديدة",
+        "empty": "لا توجد إقامات.",
+        "fields": {
+          "nom": "الاسم",
+          "type": "النوع",
+          "description": "الوصف",
+          "localisation": "الموقع",
+          "etoiles": "النجوم",
+          "prix_nuit": "السعر / الليلة",
+          "capacite": "السعة (مسافرون)",
+          "latitude": "خط العرض",
+          "longitude": "خط الطول",
+          "equipements": "المرافق (مفصولة بفواصل)",
+          "nom_en": "الاسم (بالإنجليزية)",
+          "nom_ar": "الاسم (بالعربية)",
+          "description_en": "الوصف (بالإنجليزية)",
+          "description_ar": "الوصف (بالعربية)",
+          "actif": "نشط (ظاهر على الموقع)"
+        }
+      },
+      "flights": {
+        "title": "الرحلات الجوية",
+        "new": "رحلة جديدة",
+        "empty": "لا توجد رحلات.",
+        "fields": {
+          "compagnie": "شركة الطيران",
+          "numero_vol": "رقم الرحلة",
+          "ville_depart": "مدينة الانطلاق",
+          "aeroport_depart": "مطار الانطلاق (IATA)",
+          "ville_arrivee": "مدينة الوصول",
+          "aeroport_arrivee": "مطار الوصول (IATA)",
+          "depart_le": "الانطلاق",
+          "arrivee_le": "الوصول",
+          "classe": "الدرجة",
+          "prix": "السعر",
+          "places_totales": "السعة (مقاعد)",
+          "places_disponibles": "المقاعد المتبقية"
+        }
+      },
+      "carRentals": {
+        "title": "تأجير السيارات",
+        "new": "سيارة جديدة",
+        "empty": "لا توجد سيارات.",
+        "fields": {
+          "marque": "العلامة",
+          "modele": "الطراز",
+          "categorie": "الفئة",
+          "transmission": "ناقل الحركة",
+          "carburant": "الوقود",
+          "nb_places": "المقاعد",
+          "agence": "الوكالة",
+          "localisation": "مكان الاستلام",
+          "prix_jour": "السعر / اليوم",
+          "disponible": "متاحة"
+        }
+      },
+      "transfers": {
+        "title": "التنقلات",
+        "new": "تنقل جديد",
+        "empty": "لا توجد تنقلات.",
+        "fields": {
+          "depart": "من",
+          "arrivee": "إلى",
+          "type_vehicule": "المركبة",
+          "capacite": "أقصى عدد ركاب",
+          "bagages": "أقصى عدد حقائب",
+          "duree": "المدة (دقيقة)",
+          "prix": "السعر (للمركبة)",
+          "description": "الوصف",
+          "actif": "نشط (ظاهر على الموقع)"
+        }
+      },
+      "options": {
+        "hotel": "فندق",
+        "riad": "رياض",
+        "maison_hotes": "دار ضيافة",
+        "appartement": "شقة",
+        "economy": "اقتصادية",
+        "business": "رجال الأعمال",
+        "economique": "اقتصادية",
+        "compacte": "صغيرة",
+        "suv": "رباعية الدفع",
+        "van": "فان",
+        "manuelle": "يدوي",
+        "automatique": "أوتوماتيكي",
+        "essence": "بنزين",
+        "diesel": "ديزل",
+        "hybride": "هجين",
+        "electrique": "كهربائي",
+        "taxi": "تاكسي",
+        "grand_taxi": "تاكسي جماعي (لواج)",
+        "berline": "سيدان",
+        "minibus": "حافلة صغيرة"
+      }
     }
+  },
+  "comingSoon": {
+    "badge": "قريبًا",
+    "body": "نعمل على تجهيز هذا القسم. في الأثناء، اكتشف أنشطتنا.",
+    "cta": "تصفح الأنشطة",
+    "stays": "فنادق ورياض ودور ضيافة في كامل تونس.",
+    "flights": "رحلات جوية من وإلى تونس.",
+    "carRentals": "استأجر سيارة وتنقّل على راحتك.",
+    "transfers": "تنقلات مع سائق بين المطار وفندقك."
   }
 }

@@ -1,6 +1,10 @@
 export const paths = {
   home: "/",
   activities: "/activities",
+  stays: "/stays",
+  flights: "/flights",
+  carRentals: "/car-rentals",
+  transfers: "/transfers",
   favorites: "/favorites",
   bookings: "/bookings",
   login: "/login",

@@ -56,7 +56,11 @@
     "favoritesShort": "Favorites",
     "cart": "Cart",
     "cartSoon": "The cart is coming soon.",
-    "switchLanguage": "Change language"
+    "switchLanguage": "Change language",
+    "stays": "Stays",
+    "flights": "Flights",
+    "carRentals": "Car rentals",
+    "transfers": "Airport taxis"
   },
   "activities": {
     "description": "Browse the best activities to book near you."
@@ -356,7 +360,11 @@
       "payments": "Payments",
       "users": "Users",
       "viewSite": "View site",
-      "logout": "Log out"
+      "logout": "Log out",
+      "stays": "Stays",
+      "flights": "Flights",
+      "carRentals": "Car rentals",
+      "transfers": "Transfers"
     },
     "common": {
       "loading": "Loading…",
@@ -534,6 +542,116 @@
       "slotDeleteAria": "Delete time slot",
       "translations": "Translations",
       "translationsHint": "Leave a field empty to fall back to the French text automatically."
+    },
+    "travel": {
+      "editTitle": "Edit",
+      "requiredHint": "Fields marked * are required.",
+      "deleteConfirm": "Delete “{{name}}”?",
+      "stays": {
+        "title": "Stays",
+        "new": "New stay",
+        "empty": "No stays.",
+        "fields": {
+          "nom": "Name",
+          "type": "Type",
+          "description": "Description",
+          "localisation": "Location",
+          "etoiles": "Stars",
+          "prix_nuit": "Price / night",
+          "capacite": "Capacity (guests)",
+          "latitude": "Latitude",
+          "longitude": "Longitude",
+          "equipements": "Amenities (comma-separated)",
+          "nom_en": "Name (English)",
+          "nom_ar": "Name (Arabic)",
+          "description_en": "Description (English)",
+          "description_ar": "Description (Arabic)",
+          "actif": "Active (visible on the site)"
+        }
+      },
+      "flights": {
+        "title": "Flights",
+        "new": "New flight",
+        "empty": "No flights.",
+        "fields": {
+          "compagnie": "Airline",
+          "numero_vol": "Flight no.",
+          "ville_depart": "Departure city",
+          "aeroport_depart": "Departure airport (IATA)",
+          "ville_arrivee": "Arrival city",
+          "aeroport_arrivee": "Arrival airport (IATA)",
+          "depart_le": "Departure",
+          "arrivee_le": "Arrival",
+          "classe": "Class",
+          "prix": "Price",
+          "places_totales": "Capacity (seats)",
+          "places_disponibles": "Seats left"
+        }
+      },
+      "carRentals": {
+        "title": "Car rentals",
+        "new": "New car",
+        "empty": "No cars.",
+        "fields": {
+          "marque": "Make",
+          "modele": "Model",
+          "categorie": "Category",
+          "transmission": "Transmission",
+          "carburant": "Fuel",
+          "nb_places": "Seats",
+          "agence": "Agency",
+          "localisation": "Pick-up location",
+          "prix_jour": "Price / day",
+          "disponible": "Available"
+        }
+      },
+      "transfers": {
+        "title": "Transfers",
+        "new": "New transfer",
+        "empty": "No transfers.",
+        "fields": {
+          "depart": "From",
+          "arrivee": "To",
+          "type_vehicule": "Vehicle",
+          "capacite": "Max passengers",
+          "bagages": "Max luggage",
+          "duree": "Duration (min)",
+          "prix": "Price (per vehicle)",
+          "description": "Description",
+          "actif": "Active (visible on the site)"
+        }
+      },
+      "options": {
+        "hotel": "Hotel",
+        "riad": "Riad",
+        "maison_hotes": "Guesthouse",
+        "appartement": "Apartment",
+        "economy": "Economy",
+        "business": "Business",
+        "economique": "Economy",
+        "compacte": "Compact",
+        "suv": "SUV",
+        "van": "Van",
+        "manuelle": "Manual",
+        "automatique": "Automatic",
+        "essence": "Petrol",
+        "diesel": "Diesel",
+        "hybride": "Hybrid",
+        "electrique": "Electric",
+        "taxi": "Taxi",
+        "grand_taxi": "Shared taxi (louage)",
+        "berline": "Sedan",
+        "minibus": "Minibus"
+      }
     }
+  },
+  "comingSoon": {
+    "badge": "Coming soon",
+    "body": "We're working on this section. In the meantime, explore our activities.",
+    "cta": "Browse activities",
+    "stays": "Hotels, riads and guesthouses across Tunisia.",
+    "flights": "Flights to and from Tunisia.",
+    "carRentals": "Rent a car and travel at your own pace.",
+    "transfers": "Private rides between the airport and your hotel."
   }
 }

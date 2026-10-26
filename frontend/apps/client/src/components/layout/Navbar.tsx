@@ -1,6 +1,15 @@
 "use client";
 
-import { Heart, LogIn, ShoppingCart } from "lucide-react";
+import {
+  BedDouble,
+  Car,
+  CarTaxiFront,
+  FerrisWheel,
+  Heart,
+  LogIn,
+  Plane,
+  ShoppingCart,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -29,6 +38,16 @@ function Badge({ count, tone }: { count: number; tone: "accent" | "primary" }) {
     </span>
   );
 }
+
+/** Onglets des offres de voyage, dans l'ordre des grands sites de réservation.
+ *  Seules les Activités sont réservables ; les autres mènent à une page « bientôt ». */
+const TRAVEL_TABS = [
+  { href: paths.stays, labelKey: "nav.stays", Icon: BedDouble },
+  { href: paths.flights, labelKey: "nav.flights", Icon: Plane },
+  { href: paths.carRentals, labelKey: "nav.carRentals", Icon: Car },
+  { href: paths.activities, labelKey: "nav.activities", Icon: FerrisWheel },
+  { href: paths.transfers, labelKey: "nav.transfers", Icon: CarTaxiFront },
+] as const;
 
 const ICON_TAB_CLASS =
   "flex flex-col items-center gap-1 text-foreground/70 transition-colors hover:text-primary";
@@ -176,9 +195,16 @@ export function Navbar() {
           <Link href={paths.home} className={tabClass(pathname === "/")}>
             {t("nav.home")}
           </Link>
-          <Link href={paths.activities} className={tabClass(pathname === paths.activities)}>
-            {t("nav.activities")}
-          </Link>
+          {TRAVEL_TABS.map(({ href, labelKey, Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className={cn(tabClass(pathname === href), "flex items-center gap-2")}
+            >
+              <Icon className="size-[18px]" strokeWidth={1.7} />
+              {t(labelKey)}
+            </Link>
+          ))}
         </nav>
       )}
     </header>
